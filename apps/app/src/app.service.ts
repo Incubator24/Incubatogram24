@@ -6,4 +6,8 @@ export class AppService {
     getHello(): string {
         return 'Hello World, ' + `${process.env.CITY}`
     }
+
+    sayGoodbay(): string {
+        return 'Goodbay,  World'
+    }
 }

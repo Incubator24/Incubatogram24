@@ -8,6 +8,6 @@ export class AppService {
     }
 
     sayGoodbay(): string {
-        return 'Goodbay,  World 123456'
+        return 'Goodbay,  World 1234567'
     }
 }

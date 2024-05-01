@@ -8,7 +8,7 @@ export class AppService {
     getHello(): string {
         return (
             'Hello World, ' +
-            `${this.configService.get<string>('CITY', 'Syktyvkar')}`
+            `${this.configService.get<string>('CITY', 'Moscow')}`
         )
     }
 

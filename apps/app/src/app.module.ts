@@ -3,8 +3,12 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 
+const configModule = ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: '.env',
+})
 @Module({
-    imports: [ConfigModule.forRoot()],
+    imports: [configModule],
     controllers: [AppController],
     providers: [AppService, ConfigService],
 })

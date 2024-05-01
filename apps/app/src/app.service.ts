@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common'
-import * as process from 'process'
+import { ConfigService } from '@nestjs/config'
+import { ConfigType } from './config/congiguration'
 
 @Injectable()
 export class AppService {
+    constructor(protected configService: ConfigService<ConfigType, true>) {}
     getHello(): string {
-        return 'Hello World, ' + `${process.env.CITY}`
+        return (
+            'Hello World, ' +
+            `${this.configService.get<string>('CITY', 'Syktyvkar')}`
+        )
     }
 
     sayGoodbay(): string {

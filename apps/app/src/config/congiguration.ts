@@ -10,7 +10,7 @@ class Configuration {
         return Number(this.readEnvVariableWithDefault('PORT', 5978))
     }
     private static getCity(): string {
-        return String(this.readEnvVariableWithDefault('CITY', 'Syktyvkar'))
+        return String(this.readEnvVariableWithDefault('CITY', 'Moscow'))
     }
 
     static getConfiguration() {

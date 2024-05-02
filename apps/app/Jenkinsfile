@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3397
+        PORT = 3398
         NAMESPACE = "incubatogram-org"
         REGISTRY_HOSTNAME = "incubator24"
         PROJECT = "app-mono-repo"

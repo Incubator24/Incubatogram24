@@ -1,15 +1,15 @@
 def app
+
 pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3383
+        PORT = 3395
         NAMESPACE = "incubatogram-org"
         REGISTRY_HOSTNAME = "incubator24"
-        PROJECT = "app-mono-test"
-        SERVICE="app"
+        PROJECT = "backend-nest"
         REGISTRY = "registry.hub.docker.com"
-        DEPLOYMENT_NAME = "app-mono-test-deployment"
+        DEPLOYMENT_NAME = "backend-nest-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
     }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 echo "Build image started..."
                     script {
-                       app = docker.build("${env.DOCKER_BUILD_NAME}", "--build-arg service=${env.SERVICE} --build-arg port=${env.PORT} -f ./apps/${env.SERVICE}/Dockerfile ./")
+                        app = docker.build("${env.DOCKER_BUILD_NAME}")
                     }
                 echo "Build image finished..."
             }
@@ -67,15 +67,15 @@ pipeline {
                  echo "Preparing started..."
                      sh 'ls -ltr'
                      sh 'pwd'
-                     sh "chmod +x ./apps/${env.SERVICE}/preparingDeploy.sh"
-                     sh "./apps/${env.SERVICE}/preparingDeploy.sh ${env.REGISTRY_HOSTNAME} ${env.PROJECT} ${env.IMAGE_NAME} ${env.DEPLOYMENT_NAME} ${env.PORT} ${env.NAMESPACE}"
-                     sh "cat ./apps/${env.SERVICE}/deployment.yaml"
+                     sh "chmod +x preparingDeploy.sh"
+                     sh "./preparingDeploy.sh ${env.REGISTRY_HOSTNAME} ${env.PROJECT} ${env.IMAGE_NAME} ${env.DEPLOYMENT_NAME} ${env.PORT} ${env.NAMESPACE}"
+                     sh "cat deployment.yaml"
              }
         }
         stage('Deploy to Kubernetes') {
              steps {
                  withKubeConfig([credentialsId: 'prod-kubernetes']) {
-                    sh "kubectl apply -f ./apps/${env.SERVICE}/deployment.yaml"
+                    sh 'kubectl apply -f deployment.yaml'
                     sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} --namespace=${env.NAMESPACE}"
                     sh "kubectl get services -o wide"
                  }

@@ -25,10 +25,10 @@ spec:
              - name: CITY
                valueFrom:
                  secretKeyRef:
-                   name: backend-nest-production-config-secret
+                   name: app-mono-repo-production-config-secret
                    key: CITY
              - name: PORT
                valueFrom:
                  secretKeyRef:
-                   name: backend-nest-production-config-secret
+                   name: app-mono-repo-production-config-secret
                    key: PORT

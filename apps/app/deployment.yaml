@@ -21,3 +21,14 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: CITY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: CITY
+             - name: PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: PORT

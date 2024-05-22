@@ -17,12 +17,16 @@ class Configuration {
             this.readEnvVariableWithDefault('DATABASE_URL', 'Database')
         )
     }
+    private static getPassworSalt(): number {
+        return Number(this.readEnvVariableWithDefault('10', 10))
+    }
 
     static getConfiguration() {
         return {
             PORT: Configuration.getPort(),
             CITY: Configuration.getCity(),
             DATABASE_URL: Configuration.getUrl(),
+            PASSWORD_SALT: Configuration.getPassworSalt(),
         }
     }
 }

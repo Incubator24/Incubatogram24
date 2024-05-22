@@ -11,11 +11,15 @@ import {
 import { CreateUserDto } from './dto/CreateUserDto'
 import { mappingErrorStatus, ResultObject } from '../../helpers/helpersType'
 import { CreateUserByRegistrationCommand } from './application/use-cases/CreateUserByRegistration'
+import { AuthService } from './auth.service'
 
 @Injectable()
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly commandBus: CommandBus) {}
+    constructor(
+        private readonly commandBus: CommandBus,
+        private readonly authService: AuthService
+    ) {}
     @Post('/registration')
     @HttpCode(HttpStatus.CREATED)
     async registrationUser(@Body() createUserDto: CreateUserDto) {
@@ -27,8 +31,8 @@ export class AuthController {
         if (newUser.data === null) return mappingErrorStatus(newUser)
         return true
     }
-    @Get('get')
-    async getUserr() {
-        return 'hello world'
+    @Get()
+    getHello(): string {
+        return this.authService.getHello()
     }
 }

@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { AuthModule } from './auth.module'
-import { AppController } from '../app.controller'
+import { AuthController } from './auth.controller'
 
-describe('AppController', () => {
-    let appController: AppController
+describe('AuthController', () => {
+    let authController: AuthController
 
     beforeEach(async () => {
         const app: TestingModule = await Test.createTestingModule({
             imports: [AuthModule],
         }).compile()
 
-        appController = app.get<AppController>(AppController)
+        authController = app.get<AuthController>(AuthController)
     })
 
     describe('root', () => {
         it('should return registration User"', () => {
-            expect(appController.getHello()).toBe('Hello World, Moscow')
+            expect(authController.getHello()).toBe('Hello World, Moscow')
         })
     })
 })

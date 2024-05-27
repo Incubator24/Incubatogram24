@@ -5,7 +5,7 @@ import { AuthService } from '../../auth.service'
 import { HttpStatus } from '@nestjs/common'
 import { CreateUserDto } from '../../dto/CreateUserDto'
 import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../config/congiguration'
+import { ConfigType } from '../../../config/configuration'
 import { Prisma } from '@prisma/client'
 import { UserRepository } from '../../../user/user.repository'
 
@@ -33,9 +33,10 @@ export class CreateUserByRegistration
             command
         ) // Лог выполнения
 
-        const passwordSalt = await bcrypt.genSalt(
-            this.configService.get<number>('PASSWORD_SALT', 10)
-        )
+        // const passwordSalt = await bcrypt.genSalt(
+        //     this.configService.get<number>('PASSWORD_SALT', 10)
+        // )
+        const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.authService._generateHash(
             command.userPostInputData.password,
             passwordSalt

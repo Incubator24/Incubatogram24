@@ -13,6 +13,7 @@ export class UserRepository {
             },
         })
     }
+
     async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {
         const createdUser = await this.prisma.user.create({
             data: newUser,
@@ -32,5 +33,13 @@ export class UserRepository {
         } catch (e) {
             return false
         }
+    }
+
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null> {
+        return this.prisma.user.findFirst({
+            where: {
+                OR: [{ email: loginOrEmail }, { login: loginOrEmail }],
+            },
+        })
     }
 }

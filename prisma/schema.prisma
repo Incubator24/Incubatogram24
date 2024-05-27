@@ -14,19 +14,21 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  login          String          @unique
-  email          String          @unique
-  name           String?
-  githubId       String?
-  googleId       String?
-  confirmed      Boolean         @default(false)
-  passwordHash   String?
-  passwordSalt   String?
-  emails         String[]
-  posts          Post[]
-  githubAccounts GithubAccount[]
-  googleAccounts GoogleAccount[]
+  id                    Int                     @id @default(autoincrement())
+  login                 String                  @unique
+  email                 String                  @unique
+  name                  String?
+  githubId              String?
+  googleId              String?
+  confirmed             Boolean                 @default(false)
+  passwordHash          String?
+  passwordSalt          String?
+  emails                String[]
+  posts                 Post[]
+  githubAccounts        GithubAccount[]
+  googleAccounts        GoogleAccount[]
+  device                Device[]
+  emailConfirmationUser EmailConfirmationUser[]
 }
 
 model Post {
@@ -52,4 +54,42 @@ model GoogleAccount {
   email    String
   user     User   @relation(references: [id], fields: [userId])
   userId   Int
+}
+
+model LoginAttempt {
+  id       Int      @id @default(autoincrement())
+  userName String
+  url      String
+  date     DateTime @default(now())
+}
+
+model RecoveryCodes {
+  id           Int    @id @default(autoincrement())
+  email        String
+  recoveryCode String
+}
+
+model TokensBlackList {
+  id    Int    @id @default(autoincrement())
+  token String
+}
+
+model Device {
+  id           Int    @id @default(autoincrement())
+  issuedAt     BigInt
+  expirationAt BigInt
+  deviceId     String
+  ip           String
+  deviceName   String
+  user         User   @relation(references: [id], fields: [userId])
+  userId       Int
+}
+
+model EmailConfirmationUser {
+  id               Int     @id @default(autoincrement())
+  confirmationCode String
+  emailExpiration  String
+  isConfirmed      Boolean
+  user             User    @relation(references: [id], fields: [userId])
+  userId           Int
 }

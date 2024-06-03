@@ -1,6 +1,8 @@
 import { DeviceDBModel, DeviceViewModel } from './device.types'
 import { PrismaService } from '../../../../prisma/prisma.service'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class DeviceQueryRepositorySql {
     constructor(private prisma: PrismaService) {}
 

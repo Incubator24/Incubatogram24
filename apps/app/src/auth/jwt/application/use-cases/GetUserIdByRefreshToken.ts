@@ -1,11 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import jwt from 'jsonwebtoken'
-import { AuthRepository } from '../../../auth.repository.sql'
+import { AuthRepository } from '../../../auth.repository'
 import { ResultObject } from '../../../../../helpers/helpersType'
-import { HttpStatus } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ConfigType } from '../../../../config/configuration'
 
+@Injectable()
 export class GetUserIdByRefreshTokenCommand {
     constructor(public token: string) {}
 }

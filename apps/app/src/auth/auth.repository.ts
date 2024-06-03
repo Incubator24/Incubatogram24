@@ -1,6 +1,8 @@
 import { DeviceDBModel } from '../devices/device.types'
 import { PrismaService } from '../../../../prisma/prisma.service'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class AuthRepository {
     constructor(private prisma: PrismaService) {}
 
@@ -57,7 +59,7 @@ export class AuthRepository {
                 deviceId: refreshTokenInfo.deviceId,
             },
         })
-        if (foundUserDevices.id) {
+        if (foundUserDevices) {
             const updatedDevice = await this.prisma.device.updateMany({
                 where: {
                     userId: refreshTokenInfo.userId,

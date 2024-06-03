@@ -4,10 +4,13 @@ import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import Configuration from './config/configuration'
 import { PrismaService } from '../../../prisma/prisma.service'
-import { AuthModule } from './auth/auth.module'
-import { AuthController } from './auth/auth.controller'
-import { CqrsModule } from '@nestjs/cqrs'
 import { AuthService } from './auth/auth.service'
+import { CheckCredential } from './auth/application/use-cases/CheckCredential'
+import { UserRepository } from './user/user.repository'
+import { AuthModule } from './auth/auth.module'
+import { CqrsModule } from '@nestjs/cqrs'
+import { JwtModule } from '@nestjs/jwt'
+import { AuthRepository } from './auth/auth.repository'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -16,8 +19,17 @@ const configModule = ConfigModule.forRoot({
 })
 
 @Module({
-    imports: [configModule, AuthModule, CqrsModule],
-    controllers: [AppController, AuthController],
-    providers: [AppService, ConfigService, PrismaService, AuthService],
+    imports: [configModule, CqrsModule, AuthModule, JwtModule],
+    controllers: [AppController],
+    providers: [
+        AppService,
+        ConfigService,
+        PrismaService,
+        AuthService,
+        CheckCredential,
+        UserRepository,
+        AuthRepository,
+    ],
+    exports: [PrismaService],
 })
 export class AppModule {}

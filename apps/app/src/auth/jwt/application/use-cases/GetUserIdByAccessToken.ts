@@ -2,7 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import jwt from 'jsonwebtoken'
 import { ConfigService } from '@nestjs/config'
 import { ConfigType } from '../../../../config/configuration'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class GetUserIdByAccessTokenCommand {
     constructor(public token: string | null) {}
 }

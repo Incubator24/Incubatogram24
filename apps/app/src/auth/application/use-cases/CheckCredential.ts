@@ -1,7 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../../auth.service'
 import { UserRepository } from '../../../user/user.repository'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class CheckCredentialCommand {
     constructor(
         public loginOrEmail: string,
@@ -27,6 +29,7 @@ export class CheckCredential
             command.password,
             user.passwordSalt
         )
+
         if (user.passwordHash === passwordHash) {
             return user.id
         } else return false

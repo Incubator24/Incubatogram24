@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { DeviceRepositorySql } from '../../device.repository.sql'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class DeleteOtherUserDeviceCommand {
     constructor(
         public userId: number,

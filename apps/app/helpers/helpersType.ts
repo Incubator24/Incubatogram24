@@ -6,11 +6,35 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common'
+import { ApiProperty } from '@nestjs/swagger'
 
-export type ResultObject<T> = {
+export class ResultObject<T> {
+    @ApiProperty({
+        description: 'The data returned by the operation',
+        nullable: true,
+        example: 'example data',
+    })
     data: T | null
+
+    @ApiProperty({
+        description: 'The HTTP status code of the result',
+        enum: HttpStatus,
+        example: HttpStatus.OK,
+    })
     resultCode: HttpStatus
+
+    @ApiProperty({
+        description: 'An optional message providing additional information',
+        required: false,
+        example: 'Operation completed successfully',
+    })
     message?: string
+
+    @ApiProperty({
+        description: 'An optional field indicating which field caused an error',
+        required: false,
+        example: 'username',
+    })
     field?: string
 }
 

@@ -49,6 +49,22 @@ class Configuration {
             this.readEnvVariableWithDefault('HTTP_BASIC_USER', 'admin')
         )
     }
+    private static getEmailServiceUser(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'EMAIL_SERVICE_USER',
+                'incubator2404@gmail.com'
+            )
+        )
+    }
+    private static getEmailServicePasswordUser(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'EMAIL_SERVICE_PASSWORD_USER',
+                'kzwougluujijgrmm'
+            )
+        )
+    }
 
     private static getHttpBasicPass(): string {
         return String(
@@ -68,6 +84,9 @@ class Configuration {
             REFRESH_JWT_LIFETIME: Configuration.getRefreshJwtLifetime(),
             HTTP_BASIC_USER: Configuration.getHttpBasicUser(),
             HTTP_BASIC_PASS: Configuration.getHttpBasicPass(),
+            EMAIL_SERVICE_USER: Configuration.getEmailServiceUser(),
+            EMAIL_SERVICE_PASSWORD_USER:
+                Configuration.getEmailServicePasswordUser(),
         }
     }
 }

@@ -4,10 +4,11 @@ import { ResultObject } from '../../../../helpers/helpersType'
 import { CreateJWTCommand } from '../../jwt/application/use-cases/CreateJWT'
 import { CreateRefreshJWTCommand } from '../../jwt/application/use-cases/CreateRefreshJWT'
 import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cases/GetTokenInfoByRefreshToken'
-import { HttpStatus } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { DeviceDBModel } from '../../../devices/device.types'
-import { AuthRepository } from '../../auth.repository.sql'
+import { AuthRepository } from '../../auth.repository'
 
+@Injectable()
 export class AddDeviceInfoToDBCommand {
     constructor(
         public userId: number,
@@ -29,6 +30,7 @@ export class AddDeviceInfoToDB
     async execute(
         command: AddDeviceInfoToDBCommand
     ): Promise<ResultObject<any>> {
+        console.log('AddDeviceInfoToDB is working')
         const accessToken = await this.commandBus.execute(
             new CreateJWTCommand(command.userId)
         )

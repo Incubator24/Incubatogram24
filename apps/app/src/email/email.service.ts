@@ -1,7 +1,9 @@
-import nodemailer from 'nodemailer'
+import * as nodemailer from 'nodemailer'
 import { ConfigService } from '@nestjs/config'
 import { ConfigType } from '../config/configuration'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class EmailService {
     private transporter: nodemailer.Transporter
 
@@ -16,6 +18,7 @@ export class EmailService {
             },
         })
     }
+
     async sendConfirmationEmail(confirmationCode: string, email: string) {
         // const transporter = nodemailer.createTransport({
         //     service: 'gmail',

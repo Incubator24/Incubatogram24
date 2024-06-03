@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module'
 import { CqrsModule } from '@nestjs/cqrs'
 import { JwtModule } from '@nestjs/jwt'
 import { AuthRepository } from './auth/auth.repository'
+import { EmailService } from './email/email.service'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,

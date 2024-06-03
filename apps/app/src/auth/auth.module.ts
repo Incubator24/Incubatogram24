@@ -24,6 +24,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { JwtStrategy } from './jwt/jwt.strategy'
 import { BasicStrategy } from './strategies/basic.strategy'
 import { BasicAuthGuard } from './guards/basic-auth.guard'
+import { EmailService } from '../email/email.service'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -57,6 +58,7 @@ import { BasicAuthGuard } from './guards/basic-auth.guard'
         JwtAuthGuard,
         LocalAuthGuard,
         LocalStrategy,
+        EmailService,
         PrismaService,
     ],
     exports: [PrismaService],

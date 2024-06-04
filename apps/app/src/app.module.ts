@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, ValidationPipe } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -11,7 +11,8 @@ import { AuthModule } from './auth/auth.module'
 import { CqrsModule } from '@nestjs/cqrs'
 import { JwtModule } from '@nestjs/jwt'
 import { AuthRepository } from './auth/auth.repository'
-import { EmailService } from './email/email.service'
+import { APP_PIPE } from '@nestjs/core'
+import { EmailExistsRule, LoginExistsRule } from './auth/dto/CreateUserDto'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -28,7 +29,13 @@ const configModule = ConfigModule.forRoot({
         PrismaService,
         AuthService,
         CheckCredential,
+        LoginExistsRule,
+        EmailExistsRule,
         UserRepository,
+        {
+            provide: APP_PIPE,
+            useClass: ValidationPipe,
+        },
         AuthRepository,
     ],
     exports: [PrismaService],

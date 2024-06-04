@@ -47,7 +47,7 @@ export class AuthRepository {
             where: { token },
         })
 
-        return !!isTokenInBlackList.token
+        return isTokenInBlackList ? isTokenInBlackList.token : null
     }
 
     async createOrUpdateRefreshToken(

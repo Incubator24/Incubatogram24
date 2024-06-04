@@ -41,7 +41,7 @@ export class CreateUserByRegistration
         )
         const dataForUser: Prisma.UserCreateInput = {
             email: command.userPostInputData.email,
-            login: command.userPostInputData.userName,
+            userName: command.userPostInputData.userName,
             passwordSalt,
             passwordHash,
         }

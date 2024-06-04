@@ -47,7 +47,7 @@ export class UserRepository {
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null> {
         return this.prisma.user.findFirst({
             where: {
-                OR: [{ email: loginOrEmail }, { login: loginOrEmail }],
+                OR: [{ email: loginOrEmail }, { userName: loginOrEmail }],
             },
         })
     }
@@ -64,7 +64,7 @@ export class UserRepository {
             },
             where: {
                 user: {
-                    OR: [{ login: loginOrEmail }, { email: loginOrEmail }],
+                    OR: [{ userName: loginOrEmail }, { email: loginOrEmail }],
                 },
             },
         })

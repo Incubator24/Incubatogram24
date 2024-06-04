@@ -25,6 +25,14 @@ import { JwtStrategy } from './jwt/jwt.strategy'
 import { BasicStrategy } from './strategies/basic.strategy'
 import { BasicAuthGuard } from './guards/basic-auth.guard'
 import { EmailService } from '../email/email.service'
+import { EmailExistsRule, LoginExistsRule } from './dto/CreateUserDto'
+import { LogoutUser } from './application/use-cases/LogoutUser'
+import { RecoveryCodesRepository } from '../email/recoveryCodes.repository'
+import { DeviceController } from '../devices/device.controller'
+import { AddRecoveryCodeAndEmail } from './application/use-cases/AddRecoveryCodeAndEmail'
+import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChangePassword'
+import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
+import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -34,31 +42,41 @@ import { EmailService } from '../email/email.service'
 
 @Module({
     imports: [CqrsModule],
-    controllers: [AuthController],
+    controllers: [AuthController, DeviceController],
     providers: [
         AuthService,
         ConfigService,
-        UserRepository,
         AuthRepository,
         CreateUserByRegistration,
         AddDeviceInfoToDB,
+        AddRecoveryCodeAndEmail,
         CheckCredential,
         CreateJWT,
         CreateRefreshJWT,
         GetTokenInfoByRefreshToken,
         GetUserIdByAccessToken,
         GetUserIdByRefreshToken,
+        ConfirmAndChangePassword,
+        ConfirmEmail,
         DeleteOtherUserDevice,
+        RefreshTokenByRefresh,
         DeleteUserDeviceById,
         DeviceRepositorySql,
         DeviceQueryRepositorySql,
         BasicStrategy,
         BasicAuthGuard,
+        LogoutUser,
+        RecoveryCodesRepository,
         JwtStrategy,
         JwtAuthGuard,
         LocalAuthGuard,
         LocalStrategy,
         EmailService,
+        LoginExistsRule,
+        EmailExistsRule,
+        UserRepository,
+        DeviceRepositorySql,
+        DeviceQueryRepositorySql,
         PrismaService,
     ],
     exports: [PrismaService],

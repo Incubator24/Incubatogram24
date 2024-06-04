@@ -70,7 +70,21 @@ export class AuthController {
 
     @Post('/login')
     @UseGuards(LocalAuthGuard)
-    @ApiOperation({ summary: 'login user' })
+    @ApiOperation({
+        summary: 'login user',
+        requestBody: {
+            content: {
+                'text/plain': {
+                    schema: {
+                        example: {
+                            loginOrEmail: 'string',
+                            password: 'string',
+                        },
+                    },
+                },
+            },
+        },
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'success login  user',
@@ -114,6 +128,19 @@ export class AuthController {
     }
 
     @Post('/refresh-token')
+    @ApiOperation({ summary: 'refresh your token' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'success refresh token',
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'refreshToken used before or expired',
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'error on refresh user',
+    })
     async refreshToken(
         @Res({ passthrough: true }) res: Response,
         @Headers('User-Agent') userAgent: string | 'unknow',
@@ -136,30 +163,51 @@ export class AuthController {
     }
 
     @Post('/logout')
+    @ApiOperation({ summary: 'logout user. Should send correct refresh token' })
+    @ApiResponse({
+        status: HttpStatus.NO_CONTENT,
+        description: 'success logout',
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'refreshToken used before or expired',
+    })
     @HttpCode(204)
     async logoutUser(
         @Res({ passthrough: true }) res: Response,
         @Cookies('refreshToken') refreshToken: string
     ) {
-        //убрать лишнюю инфу в базе данных ( обнулить дату создания )
         const result = await this.commandBus.execute(
             new LogoutUserCommand(refreshToken)
         )
         if (result.data == null) mappingErrorStatus(result)
-        // const currentUserInfo = await this.commandBus.execute(
-        //   new GetTokenInfoByRefreshTokenCommand(refreshToken),
-        // );
-        // if (!currentUserInfo.data) return mappingErrorStatus(currentUserInfo);
-        // const currentUserId: string = currentUserInfo.data.userId;
-        // const currentDeviceId: string = currentUserInfo.data.deviceId;
-        // await this.deviceRepository.updateIssuedDate(
-        //   currentUserId,
-        //   currentDeviceId,
-        // );
+
         res.clearCookie('refreshToken')
     }
 
     @Post('/registration-confirmation')
+    @ApiOperation({
+        summary: 'registration confirmation',
+        requestBody: {
+            content: {
+                'text/plain': {
+                    schema: {
+                        example: {
+                            code: 'string',
+                        },
+                    },
+                },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.NO_CONTENT,
+        description: 'registration confirmation',
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'code is invalid, incorrect or expired',
+    })
     @HttpCode(204)
     async registrationConfirmation(@Query('code') code: string) {
         const result = await this.commandBus.execute(
@@ -170,6 +218,28 @@ export class AuthController {
     }
 
     @Post('/registration-email-resending')
+    @ApiOperation({
+        summary: 'registration email resending',
+        requestBody: {
+            content: {
+                'text/plain': {
+                    schema: {
+                        example: {
+                            email: 'ivan777@gmail.com',
+                        },
+                    },
+                },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.NO_CONTENT,
+        description: 'registration email successfully resented',
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'incorrect values',
+    })
     @HttpCode(204)
     async registrationEmailResending(@Body() { email }: emailDto) {
         const newUserConfirmationCode = await this.commandBus.execute(
@@ -190,6 +260,28 @@ export class AuthController {
     }
 
     @Post('/password-recovery')
+    @ApiOperation({
+        summary: 'password recovery',
+        requestBody: {
+            content: {
+                'text/plain': {
+                    schema: {
+                        example: {
+                            email: 'ivan777@gmail.com',
+                        },
+                    },
+                },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.NO_CONTENT,
+        description: 'password recovery was successfully send',
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'incorrect values',
+    })
     @HttpCode(204)
     async passwordRecovery(@Body() { email }: emailDto) {
         const recoveryCode = await this.commandBus.execute(

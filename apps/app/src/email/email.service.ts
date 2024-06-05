@@ -27,7 +27,7 @@ export class EmailService {
         //         pass: 'kzwougluujijgrmm', // generated ethereal password
         //     },
         // })
-
+        //process.env.baseURL_FRONT
         const url = `https://app.incubatogram.org/api/v1/auth/confirm?code=${confirmationCode}`
 
         return await this.transporter.sendMail({

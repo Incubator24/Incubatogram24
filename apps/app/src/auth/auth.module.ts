@@ -21,11 +21,9 @@ import { DeviceQueryRepositorySql } from '../devices/deviceQuery.repository.sql'
 import { LocalStrategy } from './strategies/local.strategy'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
-import { JwtStrategy } from './jwt/jwt.strategy'
 import { BasicStrategy } from './strategies/basic.strategy'
 import { BasicAuthGuard } from './guards/basic-auth.guard'
 import { EmailService } from '../email/email.service'
-import { EmailExistsRule, LoginExistsRule } from './dto/CreateUserDto'
 import { LogoutUser } from './application/use-cases/LogoutUser'
 import { RecoveryCodesRepository } from '../email/recoveryCodes.repository'
 import { DeviceController } from '../devices/device.controller'
@@ -33,6 +31,7 @@ import { AddRecoveryCodeAndEmail } from './application/use-cases/AddRecoveryCode
 import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChangePassword'
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
+import { JwtStrategy } from './strategies/jwt.strategy'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -72,8 +71,6 @@ import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRef
         LocalAuthGuard,
         LocalStrategy,
         EmailService,
-        LoginExistsRule,
-        EmailExistsRule,
         UserRepository,
         DeviceRepositorySql,
         DeviceQueryRepositorySql,

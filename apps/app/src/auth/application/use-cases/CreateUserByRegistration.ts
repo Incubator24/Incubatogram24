@@ -27,9 +27,42 @@ export class CreateUserByRegistration
     async execute(
         command: CreateUserByRegistrationCommand
     ): Promise<ResultObject<number>> {
-        // const passwordSalt = await bcrypt.genSalt(
-        //     this.configService.get<number>('PASSWORD_SALT', 10)
-        // )
+        const [isUserNameExist, isEmailExist] = await Promise.all([
+            this.userRepository.findUserByLoginOrEmail(
+                command.userPostInputData.userName
+            ),
+            this.userRepository.findUserByLoginOrEmail(
+                command.userPostInputData.email
+            ),
+        ])
+
+        if (isUserNameExist && isEmailExist) {
+            return {
+                resultCode: HttpStatus.BAD_REQUEST,
+                field: 'email and username',
+                message: 'Email and username already exist in system',
+                data: null,
+            }
+        }
+
+        if (isUserNameExist) {
+            return {
+                resultCode: HttpStatus.BAD_REQUEST,
+                field: 'username',
+                message: 'Username already exists in system',
+                data: null,
+            }
+        }
+
+        if (isEmailExist) {
+            return {
+                resultCode: HttpStatus.BAD_REQUEST,
+                field: 'email',
+                message: 'Email already exists in system',
+                data: null,
+            }
+        }
+
         const passwordSaltNumber = this.configService.get<number>(
             'PASSWORD_SALT',
             10

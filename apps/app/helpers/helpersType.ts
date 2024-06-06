@@ -2,11 +2,14 @@ import {
     BadRequestException,
     ForbiddenException,
     HttpStatus,
+    Injectable,
     InternalServerErrorException,
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
+import { ConfigService } from '@nestjs/config'
+import { ConfigType } from '../src/config/configuration'
 
 export class ResultObject<T> {
     @ApiProperty({
@@ -71,4 +74,42 @@ export const mappingErrorStatus = (resultObject: ResultObject<any>) => {
         default:
             throw new InternalServerErrorException()
     }
+}
+
+@Injectable()
+export class RecaptchaAdapter {
+    constructor(protected configService: ConfigService<ConfigType, true>) {}
+
+    async isValid(value) {
+        try {
+            const response = await fetch(
+                'https://www.google.com/recaptcha/api/siteverify/',
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    method: 'POST',
+                    body: `secret=${this.configService.get('RECAPTCHA_PRIVATE_KEY')}&response=${value}`,
+                }
+            )
+
+            const data: RecaptchaResponse = await response.json()
+
+            if (!data || !data.success) {
+                return false
+            }
+
+            return data.success
+        } catch (error) {
+            console.error('Error validating reCAPTCHA:', error)
+            return false
+        }
+    }
+}
+
+type RecaptchaResponse = {
+    success: true | false
+    challenge_ts: string
+    hostname: string
+    'error-codes': any[]
 }

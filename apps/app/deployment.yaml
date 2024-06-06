@@ -27,8 +27,3 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: CITY
-             - name: PORT
-               valueFrom:
-                 secretKeyRef:
-                   name: app-mono-repo-production-config-secret
-                   key: PORT

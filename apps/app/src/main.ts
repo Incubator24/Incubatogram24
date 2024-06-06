@@ -34,8 +34,9 @@ async function bootstrap() {
         })
     )
     app.useGlobalFilters(new HttpExceptionFilter())
+
     const configService = app.get(ConfigService<ConfigType, true>)
-    const port = configService.get<number>('PORT') || 5978
+    const port = configService.get<number>('PORT')
 
     const config = new DocumentBuilder()
         .setTitle('API Documentation of Incubatogram')
@@ -44,7 +45,7 @@ async function bootstrap() {
         .build()
     const document = SwaggerModule.createDocument(app, config)
     SwaggerModule.setup('api', app, document)
-
+    console.log(port)
     await app.listen(port)
 }
 

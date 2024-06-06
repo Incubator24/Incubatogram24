@@ -7,7 +7,7 @@ class Configuration {
     }
 
     private static getPort(): number {
-        return Number(this.readEnvVariableWithDefault('PORT', 3002))
+        return Number(this.readEnvVariableWithDefault('PORT', 3001))
     }
 
     private static getCity(): string {
@@ -71,6 +71,23 @@ class Configuration {
             this.readEnvVariableWithDefault('HTTP_BASIC_PASS', '123456')
         )
     }
+    private static getRecaptchaPublicKey(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'RECAPCHA_PUBLIK_KEY',
+                '6LcHa_IpAAAAAHtV6uwC9bUDjnF3UXvWP256VQXR'
+            )
+        )
+    }
+
+    private static getRecaptchaPrivateKey(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'RECAPCHA_PRIVATE_KEY',
+                '6LcHa_IpAAAAAJ8GVbnesouqGGnvZp8dJgrcB2K1'
+            )
+        )
+    }
 
     static getConfiguration() {
         return {
@@ -87,6 +104,8 @@ class Configuration {
             EMAIL_SERVICE_USER: Configuration.getEmailServiceUser(),
             EMAIL_SERVICE_PASSWORD_USER:
                 Configuration.getEmailServicePasswordUser(),
+            RECAPTCHA_PUBLIC_KEY: Configuration.getRecaptchaPublicKey(),
+            RECAPTCHA_PRIVATE_KEY: Configuration.getRecaptchaPrivateKey(),
         }
     }
 }

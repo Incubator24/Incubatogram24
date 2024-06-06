@@ -283,9 +283,9 @@ export class AuthController {
         description: 'incorrect values',
     })
     @HttpCode(204)
-    async passwordRecovery(@Body() { email }: emailDto) {
+    async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
         const recoveryCode = await this.commandBus.execute(
-            new AddRecoveryCodeAndEmailCommand(email)
+            new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
         )
         if (recoveryCode.data === null) return mappingErrorStatus(recoveryCode)
         try {
@@ -302,12 +302,12 @@ export class AuthController {
     @Post('/new-password')
     @HttpCode(204)
     async getNewPassword(
-        @Query() { recoveryCode }: { recoveryCode: string },
+        @Query() { code }: { code: string },
         @Body() { newPassword }: { newPassword: string }
         // @Body() { newPassword, newRecoveryCode }: newPasswordWithRecoveryCodeDto
     ) {
         const result = await this.commandBus.execute(
-            new ConfirmAndChangePasswordCommand(recoveryCode, newPassword)
+            new ConfirmAndChangePasswordCommand(code, newPassword)
         )
         if (result.data === null) return mappingErrorStatus(result)
         return true

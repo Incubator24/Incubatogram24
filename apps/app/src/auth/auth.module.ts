@@ -32,6 +32,7 @@ import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChan
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
 import { JwtStrategy } from './strategies/jwt.strategy'
+import { RecaptchaAdapter } from '../../helpers/helpersType'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -74,6 +75,7 @@ import { JwtStrategy } from './strategies/jwt.strategy'
         UserRepository,
         DeviceRepositorySql,
         DeviceQueryRepositorySql,
+        RecaptchaAdapter,
         PrismaService,
     ],
     exports: [PrismaService],

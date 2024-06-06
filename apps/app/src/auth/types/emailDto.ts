@@ -10,4 +10,13 @@ export class emailDto {
     @IsString()
     @Length(1)
     email: string
+
+    @ApiProperty({
+        example: 'ivan777@gmail.com',
+        description: 'recaptcha value',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @Length(1)
+    recaptchaValue: string
 }

@@ -28,7 +28,7 @@ export class EmailService {
         //     },
         // })
         //process.env.baseURL_FRONT
-        const url = `https://app.incubatogram.org/api/v1/auth/confirm?code=${confirmationCode}`
+        const url = `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${confirmationCode}`
 
         return await this.transporter.sendMail({
             from: `Incubatogram <incubator2404@gmail.com>`, // sender address

@@ -268,6 +268,7 @@ export class AuthController {
                     schema: {
                         example: {
                             email: 'ivan777@gmail.com',
+                            recaptchaValue: 'asyuiagiagigabigaigdgild',
                         },
                     },
                 },

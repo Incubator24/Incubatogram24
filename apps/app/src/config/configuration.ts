@@ -1,33 +1,22 @@
 import * as dotenv from 'dotenv'
-import * as path from 'path'
-import * as fs from 'fs'
 
 class Configuration {
+    // private static loadEnv() {
+    //     const environment =
+    //         process.env.NODE_ENV === 'development' ? 'development' : ''
+    //     console.log(environment + '!!!!!!')
+    //     const envFilePath = environment
+    //         ? ['.env.development', '.env.development.local']
+    //         : ''
+    //     dotenv.config({ path: envFilePath, override: true })
+    // }
     private static loadEnv() {
         const environment =
             process.env.NODE_ENV === 'development' ? 'development' : ''
-        console.log(environment + '!!!!!!')
-
-        if (environment === 'development') {
-            const envFiles = [
-                '.env.development.local',
-                '.env.development',
-                '.env',
-            ]
-
-            envFiles.forEach((file) => {
-                const fullPath = path.resolve(file)
-                if (fs.existsSync(fullPath)) {
-                    console.log(`Loading environment variables from ${file}`)
-                    dotenv.config({ path: fullPath, override: true })
-                }
-            })
-        } else {
-            dotenv.config() // This will load variables from process.env directly (useful for Vercel)
-            console.log(
-                'Loading environment variables from default .env or process.env'
-            )
-        }
+        const envFilePath = environment
+            ? ['.env.development', '.env.development.local']
+            : ''
+        dotenv.config({ path: envFilePath, override: true })
     }
     private static readEnvVariableWithDefault(
         variable: string,

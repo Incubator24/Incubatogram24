@@ -117,7 +117,6 @@ export class UserRepository {
             hours: 2,
             minutes: 3,
         }).toISOString()
-
         const updatedConfirmationCode =
             await this.prisma.emailConfirmationUser.updateMany({
                 where: { userId: userId },

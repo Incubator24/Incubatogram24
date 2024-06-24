@@ -6,10 +6,8 @@ import { ConfigType } from './config/configuration'
 export class AppService {
     constructor(protected configService: ConfigService<ConfigType, true>) {}
     getHello(): string {
-        return (
-            'Hello World, ' +
-            `${this.configService.get<string>('CITY', 'Moscow')}`
-        )
+        console.log(this.configService.get<string>('DATABASE_URL'))
+        return 'Hello World, ' + `${this.configService.get<string>('CITY')}`
     }
 
     sayGoodbay(): string {

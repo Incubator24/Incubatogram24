@@ -11,6 +11,7 @@ import {
     Ip,
     Post,
     Query,
+    Req,
     Res,
     UnauthorizedException,
     UseGuards,
@@ -38,6 +39,7 @@ import { LogoutUserCommand } from './application/use-cases/LogoutUser'
 import { EmailService } from '../email/email.service'
 import { RefreshTokenByRefreshCommand } from './application/use-cases/RefreshTokenByRefresh'
 import { emailDto } from './types/emailDto'
+import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
 @ApiTags('auth')
@@ -312,6 +314,60 @@ export class AuthController {
         )
         if (result.data === null) return mappingErrorStatus(result)
         return true
+    }
+
+    @Get('github')
+    @UseGuards(AuthGuard('github'))
+    async githubAuth() {}
+
+    @Get('github/callback')
+    @UseGuards(AuthGuard('github'))
+    async githubAuthCallback(
+        @Req() req,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('User-Agent') userAgent: string | 'unknow',
+        @Ip() ip: string
+    ) {
+        userAgent = userAgent ?? 'unknow'
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+        )
+        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+
+        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+        }).header('accessToken', tokensInfo.data.accessToken)
+        return { accessToken: tokensInfo.data.accessToken }
+
+        //   res.redirect(`http://localhost:3000/login/success?token=${jwt}`)
+    }
+
+    @Get('google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth() {}
+
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+    async googleAuthCallback(
+        @Req() req,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('User-Agent') userAgent: string | 'unknow',
+        @Ip() ip: string
+    ) {
+        userAgent = userAgent ?? 'unknow'
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+        )
+        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+
+        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+        }).header('accessToken', tokensInfo.data.accessToken)
+        return { accessToken: tokensInfo.data.accessToken }
+
+        //   res.redirect(`http://localhost:3000/login/success?token=${jwt}`)
     }
 
     @Get()

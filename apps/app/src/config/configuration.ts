@@ -1,4 +1,20 @@
+import * as dotenv from 'dotenv'
+import * as path from 'path'
+import * as fs from 'fs'
+
 class Configuration {
+    private static loadEnv() {
+        const environment =
+            process.env.NODE_ENV === 'development' ? 'development' : ''
+        const envFilePath = environment ? `envs/.env.${environment}` : '.env'
+        const fullPath = path.resolve(envFilePath)
+
+        if (fs.existsSync(fullPath)) {
+            dotenv.config({ path: fullPath, override: true })
+        } else {
+            dotenv.config()
+        }
+    }
     private static readEnvVariableWithDefault(
         variable: string,
         defaultValue: any
@@ -11,7 +27,8 @@ class Configuration {
     }
 
     private static getCity(): string {
-        return String(this.readEnvVariableWithDefault('CITY', 'Moscow'))
+        const city = this.readEnvVariableWithDefault('CITY', 'Moscow')
+        return String(city)
     }
 
     private static getUrl(): string {
@@ -88,8 +105,57 @@ class Configuration {
             )
         )
     }
+    private static getGithubClientId(): string {
+        return String(
+            this.readEnvVariableWithDefault('GITHUB_CLIENT_ID', '123')
+        )
+    }
+    private static getGithubClientSecret(): string {
+        return String(
+            this.readEnvVariableWithDefault('GITHUB_CLIENT_SECRET', '123')
+        )
+    }
+    private static getGithubCallbackUrl(): string {
+        // return String(
+        //     this.readEnvVariableWithDefault(
+        //         'GITHUB_CALLBACK_URL',
+        //         'https://app.incubatogram.org/api/v1/auth/github/callback'
+        //     )
+        // )
+        return String(
+            this.readEnvVariableWithDefault(
+                'GITHUB_CALLBACK_URL',
+                'http://localhost:3001/api/v1/auth/github/callback'
+            )
+        )
+    }
 
+    private static getGoogleClientId(): string {
+        return String(
+            this.readEnvVariableWithDefault('GOOGLE_CLIENT_ID', '123')
+        )
+    }
+    private static getGoogleClientSecret(): string {
+        return String(
+            this.readEnvVariableWithDefault('GOOGLE_CLIENT_SECRET', '123')
+        )
+    }
+    private static getGoogleCallbackUrl(): string {
+        // return String(
+        //     this.readEnvVariableWithDefault(
+        //         'GOOGLE_CALLBACK_URL',
+        //         'https://app.incubatogram.org/api/v1/auth/google/callback'
+        //     )
+        // )
+        return String(
+            this.readEnvVariableWithDefault(
+                'GOOGLE_CALLBACK_URL',
+                'http://localhost:3001/api/v1/auth/google/callback'
+            )
+        )
+    }
     static getConfiguration() {
+        Configuration.loadEnv()
         return {
             PORT: Configuration.getPort(),
             CITY: Configuration.getCity(),
@@ -106,6 +172,12 @@ class Configuration {
                 Configuration.getEmailServicePasswordUser(),
             RECAPTCHA_PUBLIC_KEY: Configuration.getRecaptchaPublicKey(),
             RECAPTCHA_PRIVATE_KEY: Configuration.getRecaptchaPrivateKey(),
+            GITHUB_CLIENT_ID: Configuration.getGithubClientId(),
+            GITHUB_CLIENT_SECRET: Configuration.getGithubClientSecret(),
+            GITHUB_CALLBACK_URL: Configuration.getGithubCallbackUrl(),
+            GOOGLE_CLIENT_SECRET: Configuration.getGoogleClientSecret(),
+            GOOGLE_CLIENT_ID: Configuration.getGoogleClientId(),
+            GOOGLE_CALLBACK_URL: Configuration.getGoogleCallbackUrl(),
         }
     }
 }

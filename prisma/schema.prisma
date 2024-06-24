@@ -5,13 +5,19 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
+
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+ enum ProviderType {
+  GOOGLE
+  GITHUB
 }
 
 model User {
@@ -24,12 +30,20 @@ model User {
   confirmed             Boolean                 @default(false)
   passwordHash          String?
   passwordSalt          String?
-  emails                String[]
   posts                 Post[]
-  githubAccounts        GithubAccount[]
-  googleAccounts        GoogleAccount[]
+  accounts              Providers[]             @relation("UserAccounts") // Обратная связь
   device                Device[]
   emailConfirmationUser EmailConfirmationUser[]
+}
+
+model Providers {
+  id         Int          @id @default(autoincrement())
+  providerId String
+  type       ProviderType
+  email      String?
+  userName   String?
+  userId     Int
+  owner      User         @relation("UserAccounts", fields: [userId], references: [id])
 }
 
 model Post {
@@ -39,22 +53,6 @@ model Post {
   published Boolean @default(false)
   author    User    @relation(references: [id], fields: [userId])
   userId    Int
-}
-
-model GithubAccount {
-  id       Int    @id @default(autoincrement())
-  userName String
-  email    String
-  user     User   @relation(references: [id], fields: [userId])
-  userId   Int
-}
-
-model GoogleAccount {
-  id       Int    @id @default(autoincrement())
-  userName String
-  email    String
-  user     User   @relation(references: [id], fields: [userId])
-  userId   Int
 }
 
 model LoginAttempt {

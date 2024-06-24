@@ -17,9 +17,7 @@ import { UsersService } from './user/user.service'
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
     envFilePath:
-        process.env.NODE_ENV === 'development'
-            ? 'envs/.env.main.development'
-            : 'envs/.env.main',
+        process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     load: [Configuration.getConfiguration],
 })
 

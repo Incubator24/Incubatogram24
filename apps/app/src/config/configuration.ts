@@ -6,13 +6,27 @@ class Configuration {
     private static loadEnv() {
         const environment =
             process.env.NODE_ENV === 'development' ? 'development' : ''
-        const envFilePath = environment ? `envs/.env.${environment}` : '.env'
-        const fullPath = path.resolve(envFilePath)
+        console.log(environment + '!!!!!!')
 
-        if (fs.existsSync(fullPath)) {
-            dotenv.config({ path: fullPath, override: true })
+        if (environment === 'development') {
+            const envFiles = [
+                '.env.development.local',
+                '.env.development',
+                '.env',
+            ]
+
+            envFiles.forEach((file) => {
+                const fullPath = path.resolve(file)
+                if (fs.existsSync(fullPath)) {
+                    console.log(`Loading environment variables from ${file}`)
+                    dotenv.config({ path: fullPath, override: true })
+                }
+            })
         } else {
-            dotenv.config()
+            dotenv.config() // This will load variables from process.env directly (useful for Vercel)
+            console.log(
+                'Loading environment variables from default .env or process.env'
+            )
         }
     }
     private static readEnvVariableWithDefault(

@@ -1,15 +1,6 @@
 import * as dotenv from 'dotenv'
 
 class Configuration {
-    // private static loadEnv() {
-    //     const environment =
-    //         process.env.NODE_ENV === 'development' ? 'development' : ''
-    //     console.log(environment + '!!!!!!')
-    //     const envFilePath = environment
-    //         ? ['.env.development', '.env.development.local']
-    //         : ''
-    //     dotenv.config({ path: envFilePath, override: true })
-    // }
     private static loadEnv() {
         const environment =
             process.env.NODE_ENV === 'development' ? 'development' : ''
@@ -119,12 +110,6 @@ class Configuration {
         )
     }
     private static getGithubCallbackUrl(): string {
-        // return String(
-        //     this.readEnvVariableWithDefault(
-        //         'GITHUB_CALLBACK_URL',
-        //         'https://app.incubatogram.org/api/v1/auth/github/callback'
-        //     )
-        // )
         return String(
             this.readEnvVariableWithDefault(
                 'GITHUB_CALLBACK_URL',
@@ -144,12 +129,6 @@ class Configuration {
         )
     }
     private static getGoogleCallbackUrl(): string {
-        // return String(
-        //     this.readEnvVariableWithDefault(
-        //         'GOOGLE_CALLBACK_URL',
-        //         'https://app.incubatogram.org/api/v1/auth/google/callback'
-        //     )
-        // )
         return String(
             this.readEnvVariableWithDefault(
                 'GOOGLE_CALLBACK_URL',

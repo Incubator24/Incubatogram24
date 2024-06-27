@@ -5,10 +5,11 @@ class Configuration {
         const environment =
             process.env.NODE_ENV === 'development' ? 'development' : ''
         const envFilePath = environment
-            ? ['.env.development', '.env.development.local']
+            ? ['.env', '.env.development', '.env.development.local']
             : ''
         dotenv.config({ path: envFilePath, override: true })
     }
+
     private static readEnvVariableWithDefault(
         variable: string,
         defaultValue: any
@@ -60,6 +61,7 @@ class Configuration {
             this.readEnvVariableWithDefault('HTTP_BASIC_USER', 'admin')
         )
     }
+
     private static getEmailServiceUser(): string {
         return String(
             this.readEnvVariableWithDefault(
@@ -68,6 +70,7 @@ class Configuration {
             )
         )
     }
+
     private static getEmailServicePasswordUser(): string {
         return String(
             this.readEnvVariableWithDefault(
@@ -82,6 +85,7 @@ class Configuration {
             this.readEnvVariableWithDefault('HTTP_BASIC_PASS', '123456')
         )
     }
+
     private static getRecaptchaPublicKey(): string {
         return String(
             this.readEnvVariableWithDefault(
@@ -99,16 +103,19 @@ class Configuration {
             )
         )
     }
+
     private static getGithubClientId(): string {
         return String(
             this.readEnvVariableWithDefault('GITHUB_CLIENT_ID', '123')
         )
     }
+
     private static getGithubClientSecret(): string {
         return String(
             this.readEnvVariableWithDefault('GITHUB_CLIENT_SECRET', '123')
         )
     }
+
     private static getGithubCallbackUrl(): string {
         return String(
             this.readEnvVariableWithDefault(
@@ -123,11 +130,13 @@ class Configuration {
             this.readEnvVariableWithDefault('GOOGLE_CLIENT_ID', '123')
         )
     }
+
     private static getGoogleClientSecret(): string {
         return String(
             this.readEnvVariableWithDefault('GOOGLE_CLIENT_SECRET', '123')
         )
     }
+
     private static getGoogleCallbackUrl(): string {
         return String(
             this.readEnvVariableWithDefault(
@@ -136,6 +145,7 @@ class Configuration {
             )
         )
     }
+
     static getConfiguration() {
         Configuration.loadEnv()
         return {
@@ -163,6 +173,9 @@ class Configuration {
         }
     }
 }
+
+console.log(Configuration.getConfiguration().DATABASE_URL + '!!!')
+console.log(Configuration.getConfiguration().CITY + '!!!')
 
 export type ConfigType = ReturnType<typeof Configuration.getConfiguration>
 

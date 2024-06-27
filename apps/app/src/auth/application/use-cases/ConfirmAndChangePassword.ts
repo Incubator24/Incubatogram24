@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../../auth.service'
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcryptjs'
 import { RecoveryCodesRepository } from '../../../email/recoveryCodes.repository'
 import { AuthRepository } from '../../auth.repository'
 import { ResultObject } from '../../../../helpers/helpersType'

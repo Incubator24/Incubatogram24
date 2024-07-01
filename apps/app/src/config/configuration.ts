@@ -174,9 +174,6 @@ class Configuration {
     }
 }
 
-console.log(Configuration.getConfiguration().DATABASE_URL + '!!!')
-console.log(Configuration.getConfiguration().CITY + '!!!')
-
 export type ConfigType = ReturnType<typeof Configuration.getConfiguration>
 
 export default Configuration

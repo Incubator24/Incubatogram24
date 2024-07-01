@@ -9,13 +9,12 @@ generator client {
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
- enum ProviderType {
+enum ProviderType {
   GOOGLE
   GITHUB
 }
@@ -25,11 +24,11 @@ model User {
   userName              String                  @unique
   email                 String                  @unique
   name                  String?
-  githubId              String?
-  googleId              String?
   confirmed             Boolean                 @default(false)
   passwordHash          String?
   passwordSalt          String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now()) @updatedAt
   posts                 Post[]
   accounts              Providers[]             @relation("UserAccounts") // Обратная связь
   device                Device[]

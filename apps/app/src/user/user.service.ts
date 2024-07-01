@@ -30,7 +30,9 @@ export class UsersService {
         const foundUserByEmail = await this.userRepository.findUserByEmail(
             profile.emails[0].value
         )
-        let userName = profile.displayName
+        let userName =
+            profile.displayName ??
+            (await this.makeUniqueUserName('user', this.userRepository))
 
         const isUniqueUserName =
             await this.userRepository.findUserByLoginOrEmail(

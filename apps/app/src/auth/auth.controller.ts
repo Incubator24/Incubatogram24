@@ -11,6 +11,7 @@ import {
     Ip,
     Post,
     Query,
+    Req,
     Res,
     UnauthorizedException,
     UseGuards,
@@ -24,11 +25,15 @@ import {
 } from '../../helpers/helpersType'
 import { CreateUserByRegistrationCommand } from './application/use-cases/CreateUserByRegistration'
 import { AuthService } from './auth.service'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import {
+    ApiOperation,
+    ApiProperty,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AddDeviceInfoToDBCommand } from './application/use-cases/AddDeviceInfoToDB'
 import { UserId } from './decorators/user.decorator'
-import { LoginSuccessViewModel } from './types/LoginSuccessView'
 import { ConfirmEmailCommand } from './application/use-cases/ConfirmEmail'
 import { ChangeUserConfirmationCodeCommand } from './application/use-cases/ChangeUserConfirmationCode'
 import { AddRecoveryCodeAndEmailCommand } from './application/use-cases/AddRecoveryCodeAndEmail'
@@ -38,6 +43,17 @@ import { LogoutUserCommand } from './application/use-cases/LogoutUser'
 import { EmailService } from '../email/email.service'
 import { RefreshTokenByRefreshCommand } from './application/use-cases/RefreshTokenByRefresh'
 import { emailDto } from './types/emailDto'
+import { AuthGuard } from '@nestjs/passport'
+import { UserRepository } from '../user/user.repository'
+
+class ResponseAccessTokenViewDTO {
+    @ApiProperty()
+    accessToken: string
+
+    constructor(data: any) {
+        this.accessToken = data.accessToken
+    }
+}
 
 @Injectable()
 @ApiTags('auth')
@@ -46,7 +62,8 @@ export class AuthController {
     constructor(
         private readonly commandBus: CommandBus,
         private readonly authService: AuthService,
-        private readonly emailService: EmailService
+        private readonly emailService: EmailService,
+        private readonly userRepository: UserRepository
     ) {}
 
     @Post('/registration')
@@ -65,7 +82,7 @@ export class AuthController {
             new CreateUserByRegistrationCommand(createUserDto)
         )
         if (newUser.data === null) return mappingErrorStatus(newUser)
-        return true
+        return await this.userRepository.findUserById(Number(newUser.data))
     }
 
     @Post('/login')
@@ -88,16 +105,17 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'success login  user',
-        content: {
-            'text/plain': {
-                schema: {
-                    example: {
-                        accessToken: 'string',
-                    },
-                },
-            },
-        },
-        type: LoginSuccessViewModel,
+        type: ResponseAccessTokenViewDTO,
+        // content: {
+        //     'text/plain': {
+        //         schema: {
+        //             example: {
+        //                 accessToken: 'string',
+        //             },
+        //         },
+        //     },
+        // },
+        // type: LoginSuccessViewModel,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -124,7 +142,10 @@ export class AuthController {
             httpOnly: true,
             secure: true,
         }).header('accessToken', tokensInfo.data.accessToken)
-        return { accessToken: tokensInfo.data.accessToken }
+        return new ResponseAccessTokenViewDTO({
+            accessToken: tokensInfo.data.accessToken,
+        })
+        // return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Post('/refresh-token')
@@ -268,6 +289,7 @@ export class AuthController {
                     schema: {
                         example: {
                             email: 'ivan777@gmail.com',
+                            recaptchaValue: 'asyuiagiagigabigaigdgild',
                         },
                     },
                 },
@@ -283,9 +305,9 @@ export class AuthController {
         description: 'incorrect values',
     })
     @HttpCode(204)
-    async passwordRecovery(@Body() { email }: emailDto) {
+    async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
         const recoveryCode = await this.commandBus.execute(
-            new AddRecoveryCodeAndEmailCommand(email)
+            new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
         )
         if (recoveryCode.data === null) return mappingErrorStatus(recoveryCode)
         try {
@@ -302,15 +324,65 @@ export class AuthController {
     @Post('/new-password')
     @HttpCode(204)
     async getNewPassword(
-        @Query() { recoveryCode }: { recoveryCode: string },
+        @Query() { code }: { code: string },
         @Body() { newPassword }: { newPassword: string }
         // @Body() { newPassword, newRecoveryCode }: newPasswordWithRecoveryCodeDto
     ) {
         const result = await this.commandBus.execute(
-            new ConfirmAndChangePasswordCommand(recoveryCode, newPassword)
+            new ConfirmAndChangePasswordCommand(code, newPassword)
         )
         if (result.data === null) return mappingErrorStatus(result)
         return true
+    }
+
+    @Get('github')
+    @UseGuards(AuthGuard('github'))
+    async githubAuth() {}
+
+    @Get('github/callback')
+    @UseGuards(AuthGuard('github'))
+    async githubAuthCallback(
+        @Req() req,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('User-Agent') userAgent: string | 'unknow',
+        @Ip() ip: string
+    ) {
+        userAgent = userAgent ?? 'unknow'
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+        )
+        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+
+        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+        }).header('accessToken', tokensInfo.data.accessToken)
+        return { accessToken: tokensInfo.data.accessToken }
+    }
+
+    @Get('google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth() {}
+
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+    async googleAuthCallback(
+        @Req() req,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('User-Agent') userAgent: string | 'unknow',
+        @Ip() ip: string
+    ) {
+        userAgent = userAgent ?? 'unknow'
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+        )
+        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+
+        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+        }).header('accessToken', tokensInfo.data.accessToken)
+        return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Get()

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html  lang="ru">
+<head>
+  <title>reCAPTCHA Test</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+<h1>reCAPTCHA Test</h1>
+<form>
+  <div class="g-recaptcha" data-sitekey="6LcjmPIpAAAAALFWGUdJj8kzfCGmgPy0mJVgEeAQ"></div>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+  function onSubmit(token) {
+    console.log('reCAPTCHA token:', token);
+    // отправьте запрос на ваш сервер с токеном reCAPTCHA
+    fetch('http://localhost:3001/api/v1/password-recovery', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: JSON.stringify({
+        email: 'azi.rovshan@gmail.com',
+        recaptchaValue: token
+      }) 
+    })
+      .then(response => response.json())
+      .then(data => console.log('Server response:', data))
+      .catch(error => console.error('Error:', error));
+  }
+</script>
+</body>
+</html>

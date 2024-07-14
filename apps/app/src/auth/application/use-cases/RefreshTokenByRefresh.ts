@@ -1,7 +1,6 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { DeviceQueryRepositorySql } from '../../../devices/deviceQuery.repository.sql'
 import { AuthRepository } from '../../auth.repository'
-import { UserRepository } from '../../../user/user.repository'
 import {
     mappingErrorStatus,
     ResultObject,
@@ -27,7 +26,6 @@ export class RefreshTokenByRefresh
 {
     constructor(
         public authRepository: AuthRepository,
-        public usersQueryRepository: UserRepository,
         public deviceQueryRepository: DeviceQueryRepositorySql,
         private commandBus: CommandBus
     ) {}

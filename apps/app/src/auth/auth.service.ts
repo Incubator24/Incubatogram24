@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../config/configuration'
+import Configuration from '../config/configuration'
 import { UsersService } from '../user/user.service'
 
 @Injectable()
 export class AuthService {
-    constructor(
-        protected configService: ConfigService<ConfigType, true>,
-        private usersService: UsersService
-    ) {}
+    constructor(private usersService: UsersService) {}
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     }
@@ -17,10 +13,7 @@ export class AuthService {
         return await bcrypt.hash(password, salt)
     }
     getHello(): string {
-        return (
-            'Hello World, ' +
-            `${this.configService.get<string>('CITY', 'Moscow')}`
-        )
+        return 'Hello World, ' + `${Configuration.getConfiguration().CITY}`
     }
 
     async validateOAuthLogin(profile: any, provider: string): Promise<any> {

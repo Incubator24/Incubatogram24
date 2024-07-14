@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import jwt from 'jsonwebtoken'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../../config/configuration'
+import Configuration from '../../../../config/configuration'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -13,7 +12,7 @@ export class GetUserIdByAccessTokenCommand {
 export class GetUserIdByAccessToken
     implements ICommandHandler<GetUserIdByAccessTokenCommand>
 {
-    constructor(protected configService: ConfigService<ConfigType, true>) {}
+    constructor() {}
 
     async execute(
         command: GetUserIdByAccessTokenCommand
@@ -23,7 +22,7 @@ export class GetUserIdByAccessToken
         try {
             result = jwt.verify(
                 command.token,
-                this.configService.get<string>('JWT_SECRET', '123')
+                Configuration.getConfiguration().JWT_SECRET
             ) as {
                 userId: string
                 iat: number

@@ -5,8 +5,7 @@ import { RecoveryCodesRepository } from '../../../email/recoveryCodes.repository
 import { AuthRepository } from '../../auth.repository'
 import { ResultObject } from '../../../../helpers/helpersType'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../config/configuration'
+import Configuration from '../../../config/configuration'
 
 @Injectable()
 export class ConfirmAndChangePasswordCommand {
@@ -23,8 +22,7 @@ export class ConfirmAndChangePassword
     constructor(
         public authService: AuthService,
         public authRepository: AuthRepository,
-        public recoveryCodesRepository: RecoveryCodesRepository,
-        protected configService: ConfigService<ConfigType, true>
+        public recoveryCodesRepository: RecoveryCodesRepository
     ) {}
 
     async execute(
@@ -43,10 +41,8 @@ export class ConfirmAndChangePassword
             }
         }
 
-        const passwordSaltNumber = this.configService.get<number>(
-            'PASSWORD_SALT',
-            10
-        )
+        const passwordSaltNumber =
+            Configuration.getConfiguration().PASSWORD_SALT
         const passwordSalt = await bcrypt.genSalt(Number(passwordSaltNumber))
         const passwordHash = await this.authService._generateHash(
             command.password,

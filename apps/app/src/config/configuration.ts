@@ -120,7 +120,7 @@ class Configuration {
         return String(
             this.readEnvVariableWithDefault(
                 'GITHUB_CALLBACK_URL',
-                'http://localhost:3001/api/v1/auth/github/callback'
+                'http://localhost:3000/auth/github-success'
             )
         )
     }
@@ -141,7 +141,7 @@ class Configuration {
         return String(
             this.readEnvVariableWithDefault(
                 'GOOGLE_CALLBACK_URL',
-                'http://localhost:3001/api/v1/auth/google/callback'
+                'http://localhost:3000/auth/google-success'
             )
         )
     }

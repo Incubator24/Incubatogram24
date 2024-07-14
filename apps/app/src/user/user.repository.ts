@@ -8,12 +8,21 @@ import { emailConfirmationType } from '../email/emailConfirmationType'
 export class UserRepository {
     constructor(private prisma: PrismaService) {}
 
-    async findUserById(userId: number): Promise<User | null> {
-        return this.prisma.user.findUnique({
+    async findUserById(userId: number): Promise<any | null> {
+        const foundUser = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
         })
+
+        return {
+            id: foundUser.id,
+            userName: foundUser.userName,
+            name: foundUser.name,
+            email: foundUser.email,
+            createdAt: foundUser.createdAt,
+            confirmed: foundUser.confirmed,
+        }
     }
 
     async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {

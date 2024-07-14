@@ -8,8 +8,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../src/config/configuration'
+import Configuration from '../src/config/configuration'
 
 export class ResultObject<T> {
     @ApiProperty({
@@ -78,7 +77,7 @@ export const mappingErrorStatus = (resultObject: ResultObject<any>) => {
 
 @Injectable()
 export class RecaptchaAdapter {
-    constructor(protected configService: ConfigService<ConfigType, true>) {}
+    constructor() {}
 
     async isValid(value) {
         try {
@@ -89,7 +88,7 @@ export class RecaptchaAdapter {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     method: 'POST',
-                    body: `secret=${this.configService.get('RECAPTCHA_PRIVATE_KEY')}&response=${value}`,
+                    body: `secret=${Configuration.getConfiguration().RECAPTCHA_PRIVATE_KEY}&response=${value}`,
                 }
             )
 

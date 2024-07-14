@@ -1,34 +1,31 @@
-import {CommandHandler, ICommandHandler} from '@nestjs/cqrs'
-import {ResultObject} from '../../../../helpers/helpersType'
-import {AuthService} from '../../auth.service'
-import {HttpStatus, Injectable} from '@nestjs/common'
-import {CreateUserDto} from '../../dto/CreateUserDto'
-import {ConfigService} from '@nestjs/config'
-import {ConfigType} from '../../../config/configuration'
-import {Prisma} from '@prisma/client'
-import {UserRepository} from '../../../user/user.repository'
-import {v4 as uuidv4} from 'uuid'
-import {add} from 'date-fns'
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
+import { ResultObject } from '../../../../helpers/helpersType'
+import { AuthService } from '../../auth.service'
+import { HttpStatus, Injectable } from '@nestjs/common'
+import { CreateUserDto } from '../../dto/CreateUserDto'
+import Configuration from '../../../config/configuration'
+import { Prisma } from '@prisma/client'
+import { UserRepository } from '../../../user/user.repository'
+import { v4 as uuidv4 } from 'uuid'
+import { add } from 'date-fns'
 import * as bcrypt from 'bcryptjs'
-import {emailConfirmationType} from '../../../email/emailConfirmationType'
-import {EmailService} from '../../../email/email.service'
+import { emailConfirmationType } from '../../../email/emailConfirmationType'
+import { EmailService } from '../../../email/email.service'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {
-    constructor(public userPostInputData: CreateUserDto) {
-    }
+    constructor(public userPostInputData: CreateUserDto) {}
 }
 
 @CommandHandler(CreateUserByRegistrationCommand)
 export class CreateUserByRegistration
-    implements ICommandHandler<CreateUserByRegistrationCommand> {
+    implements ICommandHandler<CreateUserByRegistrationCommand>
+{
     constructor(
         public authService: AuthService,
         public userRepository: UserRepository,
-        public emailService: EmailService,
-        protected configService: ConfigService<ConfigType, true>
-    ) {
-    }
+        public emailService: EmailService
+    ) {}
 
     async execute(
         command: CreateUserByRegistrationCommand
@@ -69,10 +66,8 @@ export class CreateUserByRegistration
             }
         }
 
-        const passwordSaltNumber = this.configService.get<number>(
-            'PASSWORD_SALT',
-            10
-        )
+        const passwordSaltNumber =
+            Configuration.getConfiguration().PASSWORD_SALT
         const passwordSalt = await bcrypt.genSalt(Number(passwordSaltNumber))
         const passwordHash = await this.authService._generateHash(
             command.userPostInputData.password,

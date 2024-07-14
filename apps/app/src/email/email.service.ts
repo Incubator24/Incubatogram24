@@ -1,20 +1,18 @@
 import * as nodemailer from 'nodemailer'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../config/configuration'
+import Configuration from '../config/configuration'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class EmailService {
     private transporter: nodemailer.Transporter
 
-    constructor(
-        private readonly configService: ConfigService<ConfigType, true>
-    ) {
+    constructor() {
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: this.configService.get('EMAIL_SERVICE_USER'), // замените на ваш email
-                pass: this.configService.get('EMAIL_SERVICE_PASSWORD_USER'), // замените на ваш пароль или app password
+                user: Configuration.getConfiguration().EMAIL_SERVICE_USER,
+                pass: Configuration.getConfiguration()
+                    .EMAIL_SERVICE_PASSWORD_USER,
             },
         })
     }

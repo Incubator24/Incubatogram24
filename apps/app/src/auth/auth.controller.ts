@@ -339,7 +339,7 @@ export class AuthController {
     @UseGuards(AuthGuard('github'))
     async githubAuth() {}
 
-    @Get('github/callback')
+    @Get('github-success')
     @UseGuards(AuthGuard('github'))
     async githubAuthCallback(
         @Req() req,
@@ -364,7 +364,7 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     async googleAuth() {}
 
-    @Get('google/callback')
+    @Get('google-success')
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,

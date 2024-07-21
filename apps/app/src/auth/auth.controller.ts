@@ -25,12 +25,7 @@ import {
 } from '../../helpers/helpersType'
 import { CreateUserByRegistrationCommand } from './application/use-cases/CreateUserByRegistration'
 import { AuthService } from './auth.service'
-import {
-    ApiOperation,
-    ApiProperty,
-    ApiResponse,
-    ApiTags,
-} from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AddDeviceInfoToDBCommand } from './application/use-cases/AddDeviceInfoToDB'
 import { UserId } from './decorators/user.decorator'
@@ -45,15 +40,14 @@ import { RefreshTokenByRefreshCommand } from './application/use-cases/RefreshTok
 import { emailDto } from './types/emailDto'
 import { AuthGuard } from '@nestjs/passport'
 import { UserRepository } from '../user/user.repository'
-
-class ResponseAccessTokenViewDTO {
-    @ApiProperty()
-    accessToken: string
-
-    constructor(data: any) {
-        this.accessToken = data.accessToken
-    }
-}
+import { RegistrationEndpoint } from './swagger/RegistrationEndpoin'
+import { LoginEndpoint } from './swagger/LoginEndpoint'
+import { ResponseAccessTokenViewDTO } from './dto/ResponseAccessTokenViewDTO'
+import { RefreshTokenEndpoint } from './swagger/RefreshTokenEndpoint'
+import { LogoutEndpoint } from './swagger/LogoutEndpoint'
+import { RegistrationConfirmationEndpoint } from './swagger/RegistrationConfirmationEndpoint'
+import { RegistrationEmailResendingEndpoint } from './swagger/RegistrationEmailResendingEndpoint'
+import { PasswordRecoveryEndpoint } from './swagger/PasswordRecoveryEndpoint'
 
 @Injectable()
 @ApiTags('auth')
@@ -67,15 +61,7 @@ export class AuthController {
     ) {}
 
     @Post('/registration')
-    @ApiOperation({ summary: 'registration user' })
-    @ApiResponse({
-        status: HttpStatus.CREATED,
-        description: 'success registration  user',
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'error on registration user',
-    })
+    @RegistrationEndpoint()
     @HttpCode(HttpStatus.CREATED)
     async registrationUser(@Body() createUserDto: CreateUserDto) {
         const newUser: ResultObject<string> = await this.commandBus.execute(
@@ -87,44 +73,7 @@ export class AuthController {
 
     @Post('/login')
     @UseGuards(LocalAuthGuard)
-    @ApiOperation({
-        summary: 'login user',
-        requestBody: {
-            content: {
-                'text/plain': {
-                    schema: {
-                        example: {
-                            loginOrEmail: 'string',
-                            password: 'string',
-                        },
-                    },
-                },
-            },
-        },
-    })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'success login  user',
-        type: ResponseAccessTokenViewDTO,
-        // content: {
-        //     'text/plain': {
-        //         schema: {
-        //             example: {
-        //                 accessToken: 'string',
-        //             },
-        //         },
-        //     },
-        // },
-        // type: LoginSuccessViewModel,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'incorrect values',
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: 'login or password is incorrect',
-    })
+    @LoginEndpoint()
     @HttpCode(200)
     async loginUser(
         @Res({ passthrough: true }) res: Response,
@@ -145,23 +94,10 @@ export class AuthController {
         return new ResponseAccessTokenViewDTO({
             accessToken: tokensInfo.data.accessToken,
         })
-        // return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Post('/refresh-token')
-    @ApiOperation({ summary: 'refresh your token' })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'success refresh token',
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: 'refreshToken used before or expired',
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'error on refresh user',
-    })
+    @RefreshTokenEndpoint()
     async refreshToken(
         @Res({ passthrough: true }) res: Response,
         @Headers('User-Agent') userAgent: string | 'unknow',
@@ -184,15 +120,7 @@ export class AuthController {
     }
 
     @Post('/logout')
-    @ApiOperation({ summary: 'logout user. Should send correct refresh token' })
-    @ApiResponse({
-        status: HttpStatus.NO_CONTENT,
-        description: 'success logout',
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: 'refreshToken used before or expired',
-    })
+    @LogoutEndpoint()
     @HttpCode(204)
     async logoutUser(
         @Res({ passthrough: true }) res: Response,
@@ -207,28 +135,7 @@ export class AuthController {
     }
 
     @Post('/registration-confirmation')
-    @ApiOperation({
-        summary: 'registration confirmation',
-        requestBody: {
-            content: {
-                'text/plain': {
-                    schema: {
-                        example: {
-                            code: 'string',
-                        },
-                    },
-                },
-            },
-        },
-    })
-    @ApiResponse({
-        status: HttpStatus.NO_CONTENT,
-        description: 'registration confirmation',
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'code is invalid, incorrect or expired',
-    })
+    @RegistrationConfirmationEndpoint()
     @HttpCode(204)
     async registrationConfirmation(@Query('code') code: string) {
         const result = await this.commandBus.execute(
@@ -239,28 +146,7 @@ export class AuthController {
     }
 
     @Post('/registration-email-resending')
-    @ApiOperation({
-        summary: 'registration email resending',
-        requestBody: {
-            content: {
-                'text/plain': {
-                    schema: {
-                        example: {
-                            email: 'ivan777@gmail.com',
-                        },
-                    },
-                },
-            },
-        },
-    })
-    @ApiResponse({
-        status: HttpStatus.NO_CONTENT,
-        description: 'registration email successfully resented',
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'incorrect values',
-    })
+    @RegistrationEmailResendingEndpoint()
     @HttpCode(204)
     async registrationEmailResending(@Body() { email }: emailDto) {
         const newUserConfirmationCode = await this.commandBus.execute(
@@ -281,29 +167,7 @@ export class AuthController {
     }
 
     @Post('/password-recovery')
-    @ApiOperation({
-        summary: 'password recovery',
-        requestBody: {
-            content: {
-                'text/plain': {
-                    schema: {
-                        example: {
-                            email: 'ivan777@gmail.com',
-                            recaptchaValue: 'asyuiagiagigabigaigdgild',
-                        },
-                    },
-                },
-            },
-        },
-    })
-    @ApiResponse({
-        status: HttpStatus.NO_CONTENT,
-        description: 'password recovery was successfully send',
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'incorrect values',
-    })
+    @PasswordRecoveryEndpoint()
     @HttpCode(204)
     async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
         const recoveryCode = await this.commandBus.execute(

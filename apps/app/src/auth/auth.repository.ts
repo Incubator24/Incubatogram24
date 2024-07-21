@@ -12,6 +12,7 @@ export class AuthRepository {
                 where: { userId: userId },
                 data: { isConfirmed: true },
             })
+
         return isUpdatedEmailConfirmation.count
             ? isUpdatedEmailConfirmation.count >= 1
             : false

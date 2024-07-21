@@ -46,7 +46,6 @@ export class UsersService {
                 data: {
                     userName: userName,
                     email: profile.emails[0].value,
-                    confirmed: true,
                     accounts: {
                         create: {
                             providerId: profile.id,

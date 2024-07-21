@@ -24,7 +24,6 @@ model User {
   userName              String                  @unique
   email                 String                  @unique
   name                  String?
-  confirmed             Boolean                 @default(false)
   passwordHash          String?
   passwordSalt          String?
   createdAt             DateTime                @default(now())

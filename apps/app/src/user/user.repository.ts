@@ -21,7 +21,6 @@ export class UserRepository {
             name: foundUser.name,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            confirmed: foundUser.confirmed,
         }
     }
 

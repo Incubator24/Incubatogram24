@@ -48,6 +48,7 @@ import { LogoutEndpoint } from './swagger/LogoutEndpoint'
 import { RegistrationConfirmationEndpoint } from './swagger/RegistrationConfirmationEndpoint'
 import { RegistrationEmailResendingEndpoint } from './swagger/RegistrationEmailResendingEndpoint'
 import { PasswordRecoveryEndpoint } from './swagger/PasswordRecoveryEndpoint'
+import axios from 'axios'
 
 @Injectable()
 @ApiTags('auth')
@@ -142,7 +143,39 @@ export class AuthController {
             new ConfirmEmailCommand(code)
         )
         if (!result.data) return mappingErrorStatus(result)
-        return true
+        return {
+            data: 'ok',
+            message: 'Your email has been confirmed',
+            link: 'https://incubatogram.org/auth/sign-up/congratulations',
+        }
+    }
+
+    @Get('/registration-confirmation')
+    async getRegistrationConfirmation(
+        @Query('code') code: string,
+        @Res() res: Response
+    ) {
+        try {
+            // Отправка POST-запроса с помощью axios
+            const result = await axios.post(
+                `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${code}`
+            )
+            // const result = await axios.post(
+            //     `http://localhost:3001/api/v1/auth/registration-confirmation?code=${code}`
+            // )
+
+            if (result.status === 204 || (result.data && result.data !== '')) {
+                res.send({
+                    message: 'Your email has been confirmed',
+                    link: 'https://incubatogram.org/auth/sign-up/congratulations',
+                })
+            } else {
+                res.status(500).send('Error confirming registration')
+            }
+        } catch (error) {
+            console.error('Error confirming registration:', error)
+            res.status(500).send('Error confirming registration')
+        }
     }
 
     @Post('/registration-email-resending')

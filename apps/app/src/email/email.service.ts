@@ -26,16 +26,18 @@ export class EmailService {
         //     },
         // })
         //process.env.baseURL_FRONT
+
         const url = `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${confirmationCode}`
+        //const url = `http://localhost:3001/api/v1/auth/registration-confirmation?code=${confirmationCode}`
 
         return await this.transporter.sendMail({
             from: `Incubatogram <incubator2404@gmail.com>`, // sender address
             to: email, // list of receivers
             subject: 'Email Confirmation', // Subject line
             html: ` <h1>Thank for your registration</h1>
- <p>To finish registration please follow the link below:
-     <a href="${url}" >complete registration</a>
- </p>`, // html body
+        <p>To finish registration please follow the link below:
+            <a href="${url}" >complete registration</a>
+        </p>`, // html body
         })
     }
 

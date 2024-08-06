@@ -112,6 +112,16 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: GOOGLE_CALLBACK_URL
+             - name: FRONT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: FRONT_URL
+             - name: BACK_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: BACK_URL
              - name: CITY
                valueFrom:
                  secretKeyRef:

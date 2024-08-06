@@ -157,7 +157,7 @@ class Configuration {
     private static getFrontUrl(): string {
         return String(
             this.readEnvVariableWithDefault(
-                'GOOGLE_CALLBACK_URL',
+                'FRONT_URL',
                 'https://incubatogram.org/'
             )
         )

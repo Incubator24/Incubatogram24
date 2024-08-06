@@ -146,6 +146,23 @@ class Configuration {
         )
     }
 
+    private static getBackUrl(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'BACK_URL',
+                'https://app.incubatogram.org/api/v1/'
+            )
+        )
+    }
+    private static getFrontUrl(): string {
+        return String(
+            this.readEnvVariableWithDefault(
+                'GOOGLE_CALLBACK_URL',
+                'https://incubatogram.org/'
+            )
+        )
+    }
+
     static getConfiguration() {
         Configuration.loadEnv()
         return {
@@ -170,6 +187,8 @@ class Configuration {
             GOOGLE_CLIENT_SECRET: Configuration.getGoogleClientSecret(),
             GOOGLE_CLIENT_ID: Configuration.getGoogleClientId(),
             GOOGLE_CALLBACK_URL: Configuration.getGoogleCallbackUrl(),
+            FRONT_URL: Configuration.getFrontUrl(),
+            BACK_URL: Configuration.getBackUrl(),
         }
     }
 }

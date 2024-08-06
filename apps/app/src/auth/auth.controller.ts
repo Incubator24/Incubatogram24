@@ -49,6 +49,7 @@ import { RegistrationConfirmationEndpoint } from './swagger/RegistrationConfirma
 import { RegistrationEmailResendingEndpoint } from './swagger/RegistrationEmailResendingEndpoint'
 import { PasswordRecoveryEndpoint } from './swagger/PasswordRecoveryEndpoint'
 import axios from 'axios'
+import Configuration from '../config/configuration'
 
 @Injectable()
 @ApiTags('auth')
@@ -156,14 +157,9 @@ export class AuthController {
         @Res() res: Response
     ) {
         try {
-            // Отправка POST-запроса с помощью axios
             const result = await axios.post(
                 `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${code}`
             )
-            // const result = await axios.post(
-            //     `http://localhost:3001/api/v1/auth/registration-confirmation?code=${code}`
-            // )
-
             if (result.status === 204 || (result.data && result.data !== '')) {
                 res.send({
                     message: 'Your email has been confirmed',
@@ -218,6 +214,29 @@ export class AuthController {
         }
     }
 
+    @Get('/new-password')
+    async getNewPasswordGetRequest(
+        @Query('code') code: string,
+        @Res() res: Response
+    ) {
+        try {
+            const result = await axios.post(
+                `https://app.incubatogram.org/api/v1/auth/new-password?code=${code}`
+            )
+
+            if (result.status === 204 || (result.data && result.data !== '')) {
+                res.send({
+                    message: 'Your password successfully changed',
+                })
+            } else {
+                res.status(500).send('Error change password')
+            }
+        } catch (error) {
+            console.error('Error confirming registration:', error)
+            res.status(500).send('Error change password')
+        }
+    }
+
     @Post('/new-password')
     @HttpCode(204)
     async getNewPassword(
@@ -249,11 +268,19 @@ export class AuthController {
             new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
         )
         if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+        const currentUser = await this.userRepository.findUserById(req.user.id)
 
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
         }).header('accessToken', tokensInfo.data.accessToken)
+
+        //передать инфу в access tokena, credencial отправить тоже  query ( url)  //res.redirect('https://incubatogram.org/auth/sign-up/congratulations')
+
+        res.redirect(
+            Configuration.getConfiguration().FRONT_URL +
+                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+        )
         return { accessToken: tokensInfo.data.accessToken }
     }
 
@@ -275,10 +302,16 @@ export class AuthController {
         )
         if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
 
+        const currentUser = await this.userRepository.findUserById(req.user.id)
+
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
         }).header('accessToken', tokensInfo.data.accessToken)
+        res.redirect(
+            Configuration.getConfiguration().FRONT_URL +
+                `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+        )
         return { accessToken: tokensInfo.data.accessToken }
     }
 

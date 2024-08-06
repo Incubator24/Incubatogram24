@@ -43,7 +43,8 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'email and username',
-                message: 'Email and username already exist in system',
+                message:
+                    'User with this email and username is already registered',
                 data: null,
             }
         }
@@ -52,7 +53,7 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'username',
-                message: 'Username already exists in system',
+                message: ' User with this username is already registered',
                 data: null,
             }
         }
@@ -61,7 +62,7 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'email',
-                message: 'Email already exists in system',
+                message: ' User with this email is already registered',
                 data: null,
             }
         }

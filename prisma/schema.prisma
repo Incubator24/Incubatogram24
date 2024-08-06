@@ -32,6 +32,14 @@ model User {
   accounts              Providers[]             @relation("UserAccounts") // Обратная связь
   device                Device[]
   emailConfirmationUser EmailConfirmationUser[]
+  isDeleted             Boolean                 @default(false)
+  firstName             String?
+  lastName              String?
+  dateOfBirth           DateTime?
+  country               String?
+  city                  String?
+  aboutMe               String?
+  avatarId              String?
 }
 
 model Providers {

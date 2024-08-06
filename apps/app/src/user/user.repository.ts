@@ -21,6 +21,7 @@ export class UserRepository {
             name: foundUser.name,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
+            avatarId: foundUser.avatarId,
         }
     }
 

@@ -1,8 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LoginSuccessViewModel } from '../../jwt.types'
 import * as jwt from 'jsonwebtoken'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../../config/configuration'
+import Configuration from '../../../../config/configuration'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -12,17 +11,15 @@ export class CreateJWTCommand {
 
 @CommandHandler(CreateJWTCommand)
 export class CreateJWT implements ICommandHandler<CreateJWTCommand> {
-    constructor(protected configService: ConfigService<ConfigType, true>) {}
+    constructor() {}
 
     async execute(command: CreateJWTCommand): Promise<LoginSuccessViewModel> {
         const token = jwt.sign(
             { userId: command.userId },
-            this.configService.get<string>('JWT_SECRET', '123'),
+            Configuration.getConfiguration().JWT_SECRET,
+
             {
-                expiresIn: this.configService.get<string>(
-                    'ACCESS_JWT_LIFETIME',
-                    '10h'
-                ),
+                expiresIn: Configuration.getConfiguration().ACCESS_JWT_LIFETIME,
             }
         )
         return {

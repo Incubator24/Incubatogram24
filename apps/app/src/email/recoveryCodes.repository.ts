@@ -47,6 +47,6 @@ export class RecoveryCodesRepository {
             },
         })
 
-        return userData.id ? userData : null
+        return userData ? userData : null
     }
 }

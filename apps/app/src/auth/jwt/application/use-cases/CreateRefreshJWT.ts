@@ -1,8 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LoginSuccessViewModelForRefresh } from '../../jwt.types'
 import * as jwt from 'jsonwebtoken'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../../config/configuration'
+import Configuration from '../../../../config/configuration'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -17,7 +16,7 @@ export class CreateRefreshJWTCommand {
 export class CreateRefreshJWT
     implements ICommandHandler<CreateRefreshJWTCommand>
 {
-    constructor(protected configService: ConfigService<ConfigType, true>) {}
+    constructor() {}
 
     async execute(
         command: CreateRefreshJWTCommand
@@ -27,12 +26,10 @@ export class CreateRefreshJWT
                 userId: command.userId,
                 deviceId: command.deviceId,
             },
-            this.configService.get<string>('JWT_SECRET', '123'),
+            Configuration.getConfiguration().JWT_SECRET,
             {
-                expiresIn: this.configService.get<string>(
-                    'REFRESH_JWT_LIFETIME',
-                    '10h'
-                ),
+                expiresIn:
+                    Configuration.getConfiguration().REFRESH_JWT_LIFETIME,
             }
         )
         return {

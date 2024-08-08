@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken'
 import { AuthRepository } from '../../../auth.repository'
 import { ResultObject } from '../../../../../helpers/helpersType'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../../config/configuration'
+import Configuration from '../../../../config/configuration'
 
 @Injectable()
 export class GetUserIdByRefreshTokenCommand {
@@ -15,10 +14,7 @@ export class GetUserIdByRefreshTokenCommand {
 export class GetUserIdByRefreshToken
     implements ICommandHandler<GetUserIdByRefreshTokenCommand>
 {
-    constructor(
-        public authRepository: AuthRepository,
-        protected configService: ConfigService<ConfigType, true>
-    ) {}
+    constructor(public authRepository: AuthRepository) {}
 
     async execute(
         command: GetUserIdByRefreshTokenCommand
@@ -36,7 +32,7 @@ export class GetUserIdByRefreshToken
         try {
             result = jwt.verify(
                 command.token,
-                this.configService.get<string>('JWT_SECRET', '123')
+                Configuration.getConfiguration().JWT_SECRET
             ) as {
                 userId: string
             }

@@ -1,13 +1,16 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { ResultObject } from '../../../../helpers/helpersType'
-import * as bcrypt from 'bcrypt'
 import { AuthService } from '../../auth.service'
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { CreateUserDto } from '../../dto/CreateUserDto'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from '../../../config/configuration'
+import Configuration from '../../../config/configuration'
 import { Prisma } from '@prisma/client'
 import { UserRepository } from '../../../user/user.repository'
+import { v4 as uuidv4 } from 'uuid'
+import { add } from 'date-fns'
+import * as bcrypt from 'bcryptjs'
+import { emailConfirmationType } from '../../../email/emailConfirmationType'
+import { EmailService } from '../../../email/email.service'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {
@@ -21,7 +24,7 @@ export class CreateUserByRegistration
     constructor(
         public authService: AuthService,
         public userRepository: UserRepository,
-        protected configService: ConfigService<ConfigType, true>
+        public emailService: EmailService
     ) {}
 
     async execute(
@@ -40,7 +43,8 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'email and username',
-                message: 'Email and username already exist in system',
+                message:
+                    'User with this email and username is already registered',
                 data: null,
             }
         }
@@ -49,7 +53,7 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'username',
-                message: 'Username already exists in system',
+                message: ' User with this username is already registered',
                 data: null,
             }
         }
@@ -58,15 +62,13 @@ export class CreateUserByRegistration
             return {
                 resultCode: HttpStatus.BAD_REQUEST,
                 field: 'email',
-                message: 'Email already exists in system',
+                message: ' User with this email is already registered',
                 data: null,
             }
         }
 
-        const passwordSaltNumber = this.configService.get<number>(
-            'PASSWORD_SALT',
-            10
-        )
+        const passwordSaltNumber =
+            Configuration.getConfiguration().PASSWORD_SALT
         const passwordSalt = await bcrypt.genSalt(Number(passwordSaltNumber))
         const passwordHash = await this.authService._generateHash(
             command.userPostInputData.password,
@@ -78,7 +80,8 @@ export class CreateUserByRegistration
             passwordSalt,
             passwordHash,
         }
-        const createdUserId = await this.userRepository.createUser(dataForUser)
+        const createdUserId: number =
+            await this.userRepository.createUser(dataForUser)
 
         if (!createdUserId) {
             console.log('Failed to create user')
@@ -89,7 +92,44 @@ export class CreateUserByRegistration
                 message: 'couldn`t create user',
             }
         }
-        console.log('User created successfully with ID:', createdUserId)
+        const emailConfirmationInfo: emailConfirmationType = {
+            userId: createdUserId!,
+            confirmationCode: uuidv4(),
+            emailExpiration: add(new Date(), {
+                hours: 24,
+                minutes: 3,
+            }).toISOString(),
+            isConfirmed: false,
+        }
+
+        const createdEmailConfirmation =
+            await this.userRepository.sendEmailConfirmation(
+                emailConfirmationInfo
+            )
+        console.log(createdEmailConfirmation)
+        if (!createdEmailConfirmation) {
+            return {
+                data: null,
+                resultCode: HttpStatus.BAD_REQUEST,
+                message: 'couldn`t create email confirmation',
+            }
+        }
+
+        const createdUser =
+            await this.userRepository.findUserById(createdUserId)
+        // const createdUserFullInformation = this.authService.usersMapping(newUser);
+        try {
+            await this.emailService.sendConfirmationEmail(
+                createdEmailConfirmation.confirmationCode,
+                createdUser!.email
+            )
+        } catch (e) {
+            return {
+                data: null,
+                resultCode: HttpStatus.BAD_REQUEST,
+                message: 'couldn`t send email' + e.message,
+            }
+        }
 
         return {
             data: createdUserId,

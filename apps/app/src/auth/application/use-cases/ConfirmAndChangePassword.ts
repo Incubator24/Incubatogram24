@@ -1,11 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../../auth.service'
-import bcrypt from 'bcrypt'
+import * as bcrypt from 'bcryptjs'
 import { RecoveryCodesRepository } from '../../../email/recoveryCodes.repository'
 import { AuthRepository } from '../../auth.repository'
 import { ResultObject } from '../../../../helpers/helpersType'
-import { HttpStatus } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
+import Configuration from '../../../config/configuration'
 
+@Injectable()
 export class ConfirmAndChangePasswordCommand {
     constructor(
         public recoveryCode: string,
@@ -38,7 +40,10 @@ export class ConfirmAndChangePassword
                 message: 'couldn`t find user be recovery code',
             }
         }
-        const passwordSalt = await bcrypt.genSalt(10)
+
+        const passwordSaltNumber =
+            Configuration.getConfiguration().PASSWORD_SALT
+        const passwordSalt = await bcrypt.genSalt(Number(passwordSaltNumber))
         const passwordHash = await this.authService._generateHash(
             command.password,
             passwordSalt

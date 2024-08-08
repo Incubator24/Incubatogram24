@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { ConfigType } from './config/configuration'
+import Configuration from './config/configuration'
 
 @Injectable()
 export class AppService {
-    constructor(protected configService: ConfigService<ConfigType, true>) {}
+    constructor() {}
+
     getHello(): string {
-        return (
-            'Hello World, ' +
-            `${this.configService.get<string>('CITY', 'Moscow')}`
-        )
+        console.log(Configuration.getConfiguration().DATABASE_URL)
+        return 'Hello World, ' + `${Configuration.getConfiguration().CITY}`
     }
 
     sayGoodbay(): string {

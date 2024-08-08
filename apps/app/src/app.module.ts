@@ -12,10 +12,12 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { JwtModule } from '@nestjs/jwt'
 import { AuthRepository } from './auth/auth.repository'
 import { APP_PIPE } from '@nestjs/core'
+import { UsersService } from './user/user.service'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
-    envFilePath: '.env',
+    envFilePath:
+        process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     load: [Configuration.getConfiguration],
 })
 
@@ -28,6 +30,7 @@ const configModule = ConfigModule.forRoot({
         PrismaService,
         AuthService,
         CheckCredential,
+        UsersService,
         UserRepository,
         {
             provide: APP_PIPE,

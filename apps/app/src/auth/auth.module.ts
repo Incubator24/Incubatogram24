@@ -32,10 +32,14 @@ import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChan
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
 import { JwtStrategy } from './strategies/jwt.strategy'
+import { RecaptchaAdapter } from '../../helpers/helpersType'
+import { GitHubStrategy } from './strategies/github.strategy'
+import { GoogleStrategy } from './strategies/google.strategy'
+import { UsersService } from '../user/user.service'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
-//     envFilePath: '.env',
+//     envFilePath: '.env.main.main',
 //     load: [Configuration.getConfiguration],
 // })
 
@@ -70,11 +74,15 @@ import { JwtStrategy } from './strategies/jwt.strategy'
         JwtAuthGuard,
         LocalAuthGuard,
         LocalStrategy,
+        GitHubStrategy,
+        GoogleStrategy,
         EmailService,
         UserRepository,
         DeviceRepositorySql,
         DeviceQueryRepositorySql,
+        RecaptchaAdapter,
         PrismaService,
+        UsersService,
     ],
     exports: [PrismaService],
 })

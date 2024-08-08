@@ -1,18 +1,28 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../../prisma/prisma.service'
-import { EmailConfirmationUser, Prisma, User } from '@prisma/client'
+import { EmailConfirmationUser, Prisma } from '@prisma/client'
 import { add } from 'date-fns'
+import { emailConfirmationType } from '../email/emailConfirmationType'
 
 @Injectable()
 export class UserRepository {
     constructor(private prisma: PrismaService) {}
 
-    async findUserById(userId: number): Promise<User | null> {
-        return this.prisma.user.findUnique({
+    async findUserById(userId: number): Promise<any | null> {
+        const foundUser = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
         })
+
+        return {
+            id: foundUser.id,
+            userName: foundUser.userName,
+            name: foundUser.name,
+            email: foundUser.email,
+            createdAt: foundUser.createdAt,
+            avatarId: foundUser.avatarId,
+        }
     }
 
     async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {
@@ -85,6 +95,29 @@ export class UserRepository {
         return null
     }
 
+    async sendEmailConfirmation(
+        emailConfirmationInfo: emailConfirmationType
+    ): Promise<any | null> {
+        const sentEmailConfirmation =
+            await this.prisma.emailConfirmationUser.create({
+                data: {
+                    userId: emailConfirmationInfo.userId,
+                    confirmationCode: emailConfirmationInfo.confirmationCode,
+                    emailExpiration: emailConfirmationInfo.emailExpiration,
+                    isConfirmed: emailConfirmationInfo.isConfirmed,
+                },
+            })
+
+        if (sentEmailConfirmation) {
+            return this.prisma.emailConfirmationUser.findFirst({
+                where: {
+                    id: sentEmailConfirmation.id,
+                },
+            })
+        }
+        return null
+    }
+
     async updateConfirmationCode(
         userId: number,
         code: string
@@ -93,7 +126,6 @@ export class UserRepository {
             hours: 2,
             minutes: 3,
         }).toISOString()
-
         const updatedConfirmationCode =
             await this.prisma.emailConfirmationUser.updateMany({
                 where: { userId: userId },
@@ -115,7 +147,7 @@ export class UserRepository {
             })
 
         return userEmailConfirmationData.userId
-            ? userEmailConfirmationData[0]
+            ? userEmailConfirmationData
             : null
     }
 }

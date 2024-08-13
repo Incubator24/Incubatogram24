@@ -50,6 +50,7 @@ import { RegistrationEmailResendingEndpoint } from './swagger/RegistrationEmailR
 import { PasswordRecoveryEndpoint } from './swagger/PasswordRecoveryEndpoint'
 import axios from 'axios'
 import Configuration from '../config/configuration'
+import { UserQueryRepository } from '../user/user.query.repository'
 
 @Injectable()
 @ApiTags('auth')
@@ -59,7 +60,8 @@ export class AuthController {
         private readonly commandBus: CommandBus,
         private readonly authService: AuthService,
         private readonly emailService: EmailService,
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly userQueryRepository: UserQueryRepository
     ) {}
 
     @Post('/registration')
@@ -70,7 +72,7 @@ export class AuthController {
             new CreateUserByRegistrationCommand(createUserDto)
         )
         if (newUser.data === null) return mappingErrorStatus(newUser)
-        return await this.userRepository.findUserById(Number(newUser.data))
+        return await this.userQueryRepository.findUserById(Number(newUser.data))
     }
 
     @Post('/login')

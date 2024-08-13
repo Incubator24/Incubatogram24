@@ -30,6 +30,25 @@ export class CreateUserByRegistration
     async execute(
         command: CreateUserByRegistrationCommand
     ): Promise<ResultObject<number>> {
+        const foundUser =
+            await this.userRepository.findUserByLoginOrEmailWithEmailInfo(
+                command.userPostInputData.userName,
+                command.userPostInputData.email
+            )
+
+        if (foundUser) {
+            if (foundUser.emailConfirmationUser[0].isConfirmed) {
+                return {
+                    resultCode: HttpStatus.BAD_REQUEST,
+                    field: 'email and username',
+                    message:
+                        'User with this email and username is already registered',
+                    data: null,
+                }
+            } else {
+                await this.userRepository.deleteUserByUserId(foundUser.id)
+            }
+        }
         const [isUserNameExist, isEmailExist] = await Promise.all([
             this.userRepository.findUserByLoginOrEmail(
                 command.userPostInputData.userName

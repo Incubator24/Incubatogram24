@@ -36,6 +36,7 @@ import { RecaptchaAdapter } from '../../helpers/helpersType'
 import { GitHubStrategy } from './strategies/github.strategy'
 import { GoogleStrategy } from './strategies/google.strategy'
 import { UsersService } from '../user/user.service'
+import { UserQueryRepository } from '../user/user.query.repository'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -78,6 +79,7 @@ import { UsersService } from '../user/user.service'
         GoogleStrategy,
         EmailService,
         UserRepository,
+        UserQueryRepository,
         DeviceRepositorySql,
         DeviceQueryRepositorySql,
         RecaptchaAdapter,

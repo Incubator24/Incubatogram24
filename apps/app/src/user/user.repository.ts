@@ -150,4 +150,34 @@ export class UserRepository {
             ? userEmailConfirmationData
             : null
     }
+
+    async deleteUserByUserId(userId: number) {
+        await this.prisma.emailConfirmationUser.deleteMany({
+            where: { userId: userId },
+        })
+        await this.prisma.user.delete({
+            where: { id: userId },
+        })
+    }
+
+    async findUserByLoginOrEmailWithEmailInfo(
+        userName: string,
+        email: string
+    ): Promise<any> {
+        return this.prisma.user.findFirst({
+            where: {
+                OR: [{ email: email }, { userName: userName }],
+            },
+            include: {
+                emailConfirmationUser: {
+                    select: {
+                        id: true,
+                        confirmationCode: true,
+                        emailExpiration: true,
+                        isConfirmed: true,
+                    },
+                },
+            },
+        })
+    }
 }

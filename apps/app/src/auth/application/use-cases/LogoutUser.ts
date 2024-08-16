@@ -1,7 +1,7 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 
 import { DeviceQueryRepositorySql } from '../../../devices/deviceQuery.repository.sql'
-import { DeviceRepositorySql } from '../../../devices/device.repository.sql'
+import { DeviceRepository } from '../../../devices/device.repository'
 import { AuthRepository } from '../../auth.repository'
 import { ResultObject } from '../../../../helpers/helpersType'
 import { HttpStatus } from '@nestjs/common'
@@ -16,7 +16,7 @@ export class LogoutUserCommand {
 export class LogoutUser implements ICommandHandler<LogoutUserCommand> {
     constructor(
         public authRepository: AuthRepository,
-        public deviceRepository: DeviceRepositorySql,
+        public deviceRepository: DeviceRepository,
         public deviceQueryRepository: DeviceQueryRepositorySql,
         private commandBus: CommandBus
     ) {}

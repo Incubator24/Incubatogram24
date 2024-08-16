@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { DeviceQueryRepositorySql } from './deviceQuery.repository.sql'
-import { DeviceRepositorySql } from './device.repository.sql'
+import { DeviceRepository } from './device.repository'
 
 @Injectable()
 export class DeviceService {
     constructor(
-        public deviceRepository: DeviceRepositorySql,
+        public deviceRepository: DeviceRepository,
         public deviceQueryRepository: DeviceQueryRepositorySql
     ) {}
 

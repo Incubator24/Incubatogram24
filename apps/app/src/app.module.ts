@@ -13,6 +13,8 @@ import { JwtModule } from '@nestjs/jwt'
 import { AuthRepository } from './auth/auth.repository'
 import { APP_PIPE } from '@nestjs/core'
 import { UsersService } from './user/user.service'
+import { RemoveAllModule } from './testing.removeAll/removeAll.module'
+import { UserModule } from './user/user.module'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -22,7 +24,14 @@ const configModule = ConfigModule.forRoot({
 })
 
 @Module({
-    imports: [configModule, CqrsModule, AuthModule, JwtModule],
+    imports: [
+        configModule,
+        CqrsModule,
+        AuthModule,
+        UserModule,
+        JwtModule,
+        RemoveAllModule,
+    ],
     controllers: [AppController],
     providers: [
         AppService,

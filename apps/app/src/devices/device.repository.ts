@@ -2,7 +2,7 @@ import { PrismaService } from '../../../../prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
-export class DeviceRepositorySql {
+export class DeviceRepository {
     constructor(private prisma: PrismaService) {}
 
     async deleteOtherUserDevice(
@@ -70,5 +70,10 @@ export class DeviceRepositorySql {
             where: { userId, deviceId: currentDeviceId },
         })
         return deletedUserSession.count ? deletedUserSession.count >= 0 : false
+    }
+
+    // for testing RemoveAll
+    async deleteAllDevices() {
+        await this.prisma.device.deleteMany({})
     }
 }

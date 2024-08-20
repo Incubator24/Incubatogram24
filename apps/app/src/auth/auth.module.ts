@@ -16,7 +16,7 @@ import { GetUserIdByRefreshToken } from './jwt/application/use-cases/GetUserIdBy
 import { DeleteOtherUserDevice } from '../devices/application/use-cases/DeleteOtherUserDevice'
 import { DeleteUserDeviceById } from '../devices/application/use-cases/DeleteUserDeviceById'
 import { AuthRepository } from './auth.repository'
-import { DeviceRepositorySql } from '../devices/device.repository.sql'
+import { DeviceRepository } from '../devices/device.repository'
 import { DeviceQueryRepositorySql } from '../devices/deviceQuery.repository.sql'
 import { LocalStrategy } from './strategies/local.strategy'
 import { LocalAuthGuard } from './guards/local-auth.guard'
@@ -65,7 +65,7 @@ import { UserQueryRepository } from '../user/user.query.repository'
         DeleteOtherUserDevice,
         RefreshTokenByRefresh,
         DeleteUserDeviceById,
-        DeviceRepositorySql,
+        DeviceRepository,
         DeviceQueryRepositorySql,
         BasicStrategy,
         BasicAuthGuard,
@@ -80,7 +80,7 @@ import { UserQueryRepository } from '../user/user.query.repository'
         EmailService,
         UserRepository,
         UserQueryRepository,
-        DeviceRepositorySql,
+        DeviceRepository,
         DeviceQueryRepositorySql,
         RecaptchaAdapter,
         PrismaService,

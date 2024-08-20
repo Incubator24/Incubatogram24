@@ -17,7 +17,6 @@ export class CreateJWT implements ICommandHandler<CreateJWTCommand> {
         const token = jwt.sign(
             { userId: command.userId },
             Configuration.getConfiguration().JWT_SECRET,
-
             {
                 expiresIn: Configuration.getConfiguration().ACCESS_JWT_LIFETIME,
             }

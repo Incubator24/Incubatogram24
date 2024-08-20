@@ -48,6 +48,33 @@ export class UserRepository {
         }
     }
 
+    async updateAvatarId(userId: number, url: string) {
+        const updateAvatarUrlForCurrentUser = await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                avatarId: url,
+            },
+        })
+        return updateAvatarUrlForCurrentUser
+            ? updateAvatarUrlForCurrentUser.avatarId === url
+            : false
+    }
+    async deleteAvatarId(userId: number) {
+        const updateAvatarUrlForCurrentUser = await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                avatarId: null,
+            },
+        })
+        return updateAvatarUrlForCurrentUser
+            ? updateAvatarUrlForCurrentUser.avatarId === null
+            : false
+    }
+
     async findUserByEmail(email: string): Promise<any | null> {
         return this.prisma.user.findFirst({
             where: {

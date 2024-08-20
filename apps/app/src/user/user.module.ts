@@ -6,8 +6,13 @@ import { PrismaService } from '../../../../prisma/prisma.service'
 import { GetUserIdByIdUseCase } from './application/use-cases/GetUserIdByUserId.useCase'
 import { UserRepository } from './user.repository'
 import { UpdateProfileUseCase } from './application/use-cases/UpdateProfile.useCase'
+import { GetUserByIdFromTokenUseCase } from './application/use-cases/GetUserByIdFromTokenUseCase'
 
-const useCases = [GetUserIdByIdUseCase, UpdateProfileUseCase]
+const useCases = [
+    GetUserIdByIdUseCase,
+    UpdateProfileUseCase,
+    GetUserByIdFromTokenUseCase,
+]
 
 @Module({
     imports: [CqrsModule],

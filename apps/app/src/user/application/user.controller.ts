@@ -6,6 +6,7 @@ import {
     NotFoundException,
     Param,
     Post,
+    Put,
     Req,
     UseGuards,
 } from '@nestjs/common'
@@ -16,6 +17,9 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { GetUserIdByUserIdCommand } from './use-cases/GetUserIdByUserId.useCase'
 import { UpdateProfileCommand } from './use-cases/UpdateProfile.useCase'
 import { ApiTags } from '@nestjs/swagger'
+import { isOlderThan13 } from '../../../helpers/functions'
+import { GetUserByIdFromTokenCommand } from './use-cases/GetUserByIdFromTokenUseCase'
+import { UserWithEmailViewModel } from '../../../helpers/types'
 
 @ApiTags('my-profile')
 @Controller('my-profile')
@@ -39,22 +43,32 @@ export class UserController {
             new GetUserIdByUserIdCommand(id)
         )
         if (foundUserIdByUrlId) {
-            const foundUserIdByToken: number | null =
+            const foundUserByToken: UserWithEmailViewModel | null =
                 await this.commandBus.execute(
-                    new GetUserIdByUserIdCommand(req.user.userId)
+                    new GetUserByIdFromTokenCommand(req.user.userId)
                 )
-            if (foundUserIdByUrlId !== foundUserIdByToken) {
+            if (foundUserIdByUrlId !== foundUserByToken.id) {
                 throw new ForbiddenException()
             } else {
-                await this.commandBus.execute(
-                    new UpdateProfileCommand(
-                        createProfileDto,
-                        foundUserIdByToken
+                if (!foundUserByToken.isConfirmed)
+                    return 'Error! Server is not available!'
+                if (isOlderThan13(createProfileDto.dateOfBirth)) {
+                    await this.commandBus.execute(
+                        new UpdateProfileCommand(
+                            createProfileDto,
+                            foundUserByToken.id
+                        )
                     )
-                )
+                } else {
+                    return 'A user under 13 cannot create a profile. Privacy Policy'
+                }
             }
         } else {
             throw new NotFoundException()
         }
     }
+
+    @Put(':id/settings')
+    @UseGuards(JwtAuthGuard)
+    async changeProfile() {}
 }

@@ -4,6 +4,7 @@ import { EmailConfirmationUser, Prisma } from '@prisma/client'
 import { add } from 'date-fns'
 import { emailConfirmationType } from '../email/emailConfirmationType'
 import { CreteProfileDto } from './dto/CreteProfileDto'
+import { UserWithEmailViewModel } from '../../helpers/types'
 
 @Injectable()
 export class UserRepository {
@@ -90,6 +91,60 @@ export class UserRepository {
                 confirmationCode: fullInfo[0].confirmationCode,
                 emailExpiration: fullInfo[0].emailExpiration,
                 isConfirmed: fullInfo[0].isConfirmed,
+            }
+        }
+
+        return null
+    }
+
+    async findUserByLoginOrEmailWithEmailInfo(
+        userName: string,
+        email: string
+    ): Promise<any> {
+        return this.prisma.user.findFirst({
+            where: {
+                OR: [{ email: email }, { userName: userName }],
+            },
+            include: {
+                emailConfirmationUser: {
+                    select: {
+                        id: true,
+                        confirmationCode: true,
+                        emailExpiration: true,
+                        isConfirmed: true,
+                    },
+                },
+            },
+        })
+    }
+
+    async findFullInfoUserAndEmailInfoById(
+        userId: string
+    ): Promise<UserWithEmailViewModel | null> {
+        const id = Number(userId)
+        if (isNaN(id)) return null
+        const fullInfo = await this.prisma.emailConfirmationUser.findFirst({
+            select: {
+                user: true,
+                confirmationCode: true,
+                emailExpiration: true,
+                isConfirmed: true,
+            },
+            where: {
+                user: { id: id },
+            },
+        })
+        if (fullInfo && fullInfo.user) {
+            return {
+                id: fullInfo.user.id,
+                login: fullInfo.user.userName,
+                email: fullInfo.user.email,
+                createdAt: fullInfo.user.createdAt,
+                passwordSalt: fullInfo.user.passwordSalt,
+                passwordHash: fullInfo.user.passwordHash,
+                confirmationCode: fullInfo.confirmationCode,
+                emailExpiration: fullInfo.emailExpiration,
+                isConfirmed: fullInfo.isConfirmed,
             }
         }
 
@@ -204,27 +259,6 @@ export class UserRepository {
         })
         await this.prisma.user.delete({
             where: { id: userId },
-        })
-    }
-
-    async findUserByLoginOrEmailWithEmailInfo(
-        userName: string,
-        email: string
-    ): Promise<any> {
-        return this.prisma.user.findFirst({
-            where: {
-                OR: [{ email: email }, { userName: userName }],
-            },
-            include: {
-                emailConfirmationUser: {
-                    select: {
-                        id: true,
-                        confirmationCode: true,
-                        emailExpiration: true,
-                        isConfirmed: true,
-                    },
-                },
-            },
         })
     }
 

@@ -6,6 +6,7 @@ import {
     NotFoundException,
     Param,
     Post,
+    Put,
     Req,
     UseGuards,
 } from '@nestjs/common'
@@ -66,4 +67,8 @@ export class UserController {
             throw new NotFoundException()
         }
     }
+
+    @Put(':id/settings')
+    @UseGuards(JwtAuthGuard)
+    async changeProfile() {}
 }

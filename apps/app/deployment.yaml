@@ -122,6 +122,31 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: BACK_URL
+             - name: YANDEX_S3_KEY_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_KEY_ID
+             - name: YANDEX_S3_SECRET_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_SECRET_KEY
+             - name: YANDEX_S3_BUCKET_NAME
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_BUCKET_NAME
+             - name: YANDEX_S3_ENDPOINT
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_ENDPOINT
+             - name: YANDEX_S3_ENDPOINT_WITH_BUCKET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_ENDPOINT_WITH_BUCKET
              - name: CITY
                valueFrom:
                  secretKeyRef:

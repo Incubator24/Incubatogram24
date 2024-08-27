@@ -13,7 +13,6 @@ import {
     Put,
     Query,
     Req,
-    Res,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -25,7 +24,6 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { UserId } from '../../auth/decorators/user.decorator'
 import { DeleteAvatarUseCaseCommand } from './use-cases/DeleteAvatarUseCase'
 import { SaveAvatarUseCaseCommand } from './use-cases/SaveAvatarUseCase'
-import { Response } from 'express'
 import Configuration from '../../config/configuration'
 import { UpdateAvatarEndpoint } from '../swagger/UpdateAvatarEndpoint'
 import { mappingErrorStatus } from '../../../helpers/helpersType'
@@ -93,15 +91,23 @@ export class UserController {
 
     @Get('avatar')
     @HttpCode(HttpStatus.OK)
-    async getAvatar(@Query('userId') userId: number, @Res() res: Response) {
+    async getAvatar(@Query('userId') userId: number) {
         const userInfo = await this.userRepository.findUserById(userId)
+        //fix this
         if (userInfo.avatarId === null) {
             return 'This user hasn`t avatar'
         }
-        res.redirect(
-            Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET +
-                userInfo.avatarId
-        )
+
+        // res.redirect(
+        //     Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET +
+        //         userInfo.avatarId
+        // )
+        //change redirect
+        return {
+            url:
+                Configuration.getConfiguration()
+                    .YANDEX_S3_ENDPOINT_WITH_BUCKET + userInfo.avatarId,
+        }
     }
 
     @UseGuards(JwtAuthGuard)

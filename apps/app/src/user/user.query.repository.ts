@@ -10,15 +10,23 @@ export class UserQueryRepository {
             where: {
                 id: userId,
             },
+            include: {
+                Profile: true,
+            },
         })
+        if (!foundUser) {
+            return null
+        }
+
+        const avatarId = foundUser.Profile?.avatarId || null
 
         return {
             id: foundUser.id,
             userName: foundUser.userName,
-            name: foundUser.name,
+            name: foundUser.userName,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            avatarId: foundUser.avatarId,
+            avatarId: avatarId,
         }
     }
 }

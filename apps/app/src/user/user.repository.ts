@@ -254,7 +254,6 @@ export class UserRepository {
         }
         const updateProfile = await this.prisma.user.updateMany({
             where: { id: userId },
-
             data: dataToUpdate,
         })
 

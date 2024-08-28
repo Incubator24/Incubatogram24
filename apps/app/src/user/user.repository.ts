@@ -15,15 +15,23 @@ export class UserRepository {
             where: {
                 id: userId,
             },
+            include: {
+                Profile: true,
+            },
         })
+        if (!foundUser) {
+            return null
+        }
+
+        const avatarId = foundUser.Profile?.avatarId || null
 
         return {
             id: foundUser.id,
             userName: foundUser.userName,
-            name: foundUser.name,
+            name: foundUser.userName,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            avatarId: foundUser.avatarId,
+            avatarId: avatarId,
         }
     }
 
@@ -49,7 +57,7 @@ export class UserRepository {
     }
 
     async updateAvatarId(userId: number, url: string) {
-        const updateAvatarUrlForCurrentUser = await this.prisma.user.update({
+        const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
             where: {
                 id: userId,
             },
@@ -61,8 +69,9 @@ export class UserRepository {
             ? updateAvatarUrlForCurrentUser.avatarId === url
             : false
     }
+
     async deleteAvatarId(userId: number) {
-        const updateAvatarUrlForCurrentUser = await this.prisma.user.update({
+        const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
             where: {
                 id: userId,
             },
@@ -245,7 +254,6 @@ export class UserRepository {
         }
         const updateProfile = await this.prisma.user.updateMany({
             where: { id: userId },
-
             data: dataToUpdate,
         })
 
@@ -293,6 +301,7 @@ export class UserRepository {
     async deleteAllEmailData() {
         await this.prisma.emailConfirmationUser.deleteMany({})
     }
+
     async deleteAllUsers() {
         await this.prisma.user.deleteMany({})
     }

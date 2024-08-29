@@ -82,7 +82,7 @@ export class RecaptchaAdapter {
     async isValid(value) {
         try {
             const response = await fetch(
-                'https://www.google.com/recaptcha/api/siteverify/',
+                'https://www.google.com/recaptcha/api/siteverify',
                 {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

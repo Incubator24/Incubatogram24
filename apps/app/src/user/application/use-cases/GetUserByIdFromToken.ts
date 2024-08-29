@@ -7,7 +7,7 @@ export class GetUserByIdFromTokenCommand {
 }
 
 @CommandHandler(GetUserByIdFromTokenCommand)
-export class GetUserByIdFromTokenUseCase
+export class GetUserByIdFromToken
     implements ICommandHandler<GetUserByIdFromTokenCommand>
 {
     constructor(private userRepository: UserRepository) {}

@@ -10,7 +10,7 @@ export class UpdateProfileCommand {
 }
 
 @CommandHandler(UpdateProfileCommand)
-export class UpdateProfileUseCase
+export class UpdateProfile
     implements ICommandHandler<UpdateProfileCommand>
 {
     constructor(private userRepository: UserRepository) {}

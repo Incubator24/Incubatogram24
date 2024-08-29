@@ -11,7 +11,7 @@ export class DeleteAvatarUseCaseCommand {
 
 @Injectable()
 @CommandHandler(DeleteAvatarUseCaseCommand)
-export class DeleteAvatarUseCase
+export class DeleteAvatar
     implements ICommandHandler<DeleteAvatarUseCaseCommand>
 {
     constructor(

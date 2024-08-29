@@ -14,7 +14,7 @@ export class SaveAvatarUseCaseCommand {
 
 @Injectable()
 @CommandHandler(SaveAvatarUseCaseCommand)
-export class SaveAvatarUseCase
+export class SaveAvatar
     implements ICommandHandler<SaveAvatarUseCaseCommand>
 {
     constructor(

@@ -9,7 +9,10 @@ import * as cookieParser from 'cookie-parser'
 
 export const appSettings = (app: INestApplication) => {
     app.setGlobalPrefix('api/v1')
-    app.enableCors()
+    app.enableCors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+    })
     app.use(cookieParser())
     app.useGlobalPipes(
         new ValidationPipe({

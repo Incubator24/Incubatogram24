@@ -3,21 +3,21 @@ import { CqrsModule } from '@nestjs/cqrs'
 import { UserController } from './application/user.controller'
 import { UserQueryRepository } from './user.query.repository'
 import { PrismaService } from '../../../../prisma/prisma.service'
-import { GetUserIdByIdUseCase } from './application/use-cases/GetUserIdByUserId.useCase'
+import { GetUserIdByIdUseCase } from './application/use-cases/GetUserIdByUserId'
 import { UserRepository } from './user.repository'
-import { UpdateProfileUseCase } from './application/use-cases/UpdateProfile.useCase'
-import { GetUserByIdFromTokenUseCase } from './application/use-cases/GetUserByIdFromTokenUseCase'
-import { DeleteAvatarUseCase } from './application/use-cases/DeleteAvatarUseCase'
-import { SaveAvatarUseCase } from './application/use-cases/SaveAvatarUseCase'
+import { UpdateProfile } from './application/use-cases/UpdateProfile'
+import { GetUserByIdFromToken } from './application/use-cases/GetUserByIdFromToken'
+import { DeleteAvatar } from './application/use-cases/DeleteAvatar'
+import { SaveAvatar } from './application/use-cases/SaveAvatar'
 import { S3StorageAdapter } from '../files/adapter/file-storage-adapter-service'
 import { UsersService } from './user.service'
 
 const useCases = [
     GetUserIdByIdUseCase,
-    UpdateProfileUseCase,
-    GetUserByIdFromTokenUseCase,
-    DeleteAvatarUseCase,
-    SaveAvatarUseCase,
+    UpdateProfile,
+    GetUserByIdFromToken,
+    DeleteAvatar,
+    SaveAvatar,
 ]
 
 @Module({

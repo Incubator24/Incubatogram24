@@ -30,7 +30,7 @@ export class AddRecoveryCodeAndEmail
             command.recaptchaResponse
         )
         if (!isValidRecaptcha) {
-            console.log(isValidRecaptcha + '!!!')
+            console.log(isValidRecaptcha + '!!!!')
             return {
                 data: null,
                 resultCode: HttpStatus.BAD_REQUEST,

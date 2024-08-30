@@ -11,9 +11,7 @@ export class GetUserIdByIdUseCase
 {
     constructor(private userRepository: UserRepository) {}
 
-    async execute(
-        command: GetUserIdByUserIdCommand
-    ): Promise<string | number | null> {
+    async execute(command: GetUserIdByUserIdCommand): Promise<number | null> {
         return await this.userRepository.findUserIdByUserId(command.userId)
     }
 }

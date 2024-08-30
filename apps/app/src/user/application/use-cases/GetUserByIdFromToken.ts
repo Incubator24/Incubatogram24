@@ -3,7 +3,7 @@ import { UserRepository } from '../../user.repository'
 import { UserWithEmailViewModel } from '../../../../helpers/types'
 
 export class GetUserByIdFromTokenCommand {
-    constructor(public userId: string) {}
+    constructor(public userId: number) {}
 }
 
 @CommandHandler(GetUserByIdFromTokenCommand)

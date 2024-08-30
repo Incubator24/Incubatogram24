@@ -12,13 +12,18 @@ export class UserQueryRepository {
             },
             include: {
                 Profile: true,
+                emailConfirmationUser: true,
             },
         })
         if (!foundUser) {
             return null
         }
-
         const avatarId = foundUser.Profile?.avatarId || null
+        const profile = foundUser.Profile ? foundUser.Profile : null
+        const isConfirmEmail =
+            foundUser.emailConfirmationUser.length > 0
+                ? foundUser.emailConfirmationUser[0].isConfirmed
+                : null
 
         return {
             id: foundUser.id,
@@ -27,6 +32,8 @@ export class UserQueryRepository {
             email: foundUser.email,
             createdAt: foundUser.createdAt,
             avatarId: avatarId,
+            isConfirmEmail: isConfirmEmail,
+            profile: profile,
         }
     }
 }

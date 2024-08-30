@@ -11,9 +11,11 @@ import { DeleteAvatar } from './application/use-cases/DeleteAvatar'
 import { SaveAvatar } from './application/use-cases/SaveAvatar'
 import { S3StorageAdapter } from '../files/adapter/file-storage-adapter-service'
 import { UsersService } from './user.service'
+import { CreateProfile } from './application/use-cases/CreateProfile'
 
 const useCases = [
     GetUserIdByIdUseCase,
+    CreateProfile,
     UpdateProfile,
     GetUserByIdFromToken,
     DeleteAvatar,

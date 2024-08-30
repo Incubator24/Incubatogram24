@@ -17,9 +17,7 @@ export class UpdateProfileCommand {
 export class UpdateProfile implements ICommandHandler<UpdateProfileCommand> {
     constructor(private userRepository: UserRepository) {}
 
-    async execute(
-        command: UpdateProfileCommand
-    ): Promise<ResultObject<number>> {
+    async execute(command: UpdateProfileCommand): Promise<any> {
         const foundUserByToken: UserWithEmailViewModel | null =
             await this.userRepository.findFullInfoUserAndEmailInfoById(
                 command.userId

@@ -12,6 +12,7 @@ export class TestingRemoveAll {
     @HttpCode(204)
     @Delete()
     async removeAllData() {
+        await this.userRepository.deleteAllProfile()
         await this.userRepository.deleteAllEmailData()
         await this.deviceRepositorySql.deleteAllDevices()
         await this.userRepository.deleteAllUsers()

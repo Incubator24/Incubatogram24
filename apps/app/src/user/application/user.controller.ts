@@ -2,17 +2,14 @@ import {
     Body,
     Controller,
     Delete,
-    ForbiddenException,
     Get,
     HttpCode,
     HttpStatus,
-    NotFoundException,
     Param,
     ParseFilePipeBuilder,
     Post,
     Put,
     Query,
-    Req,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -29,16 +26,20 @@ import { UpdateAvatarEndpoint } from '../swagger/UpdateAvatarEndpoint'
 import { mappingErrorStatus } from '../../../helpers/helpersType'
 
 import { UserQueryRepository } from '../user.query.repository'
-import { CreteProfileDto } from '../dto/CreteProfileDto'
-import { GetUserIdByUserIdCommand } from './use-cases/GetUserIdByUserId'
+import { CreateProfileDto } from '../dto/CreateProfileDto'
 import { UpdateProfileCommand } from './use-cases/UpdateProfile'
 import { isOlderThan13 } from '../../../helpers/functions'
 import { GetUserByIdFromTokenCommand } from './use-cases/GetUserByIdFromToken'
 import { UserWithEmailViewModel } from '../../../helpers/types'
 import { UserRepository } from '../user.repository'
+import { UpdateProfileDto } from '../dto/UpdateProfileDto'
+import { CreateProfileCommand } from './use-cases/CreateProfile'
+import { GetProfileEndpoint } from '../swagger/GetProfileEndpoint'
+import { CreateProfileEndpoint } from '../swagger/CreateProfileEndpoint'
+import { UpdateProfileEndpoint } from '../swagger/UpdateProfileEndpoint'
 
-@ApiTags('my-profile')
-@Controller('my-profile')
+@ApiTags('profile')
+@Controller('profile')
 export class UserController {
     constructor(
         private readonly commandBus: CommandBus,
@@ -47,51 +48,51 @@ export class UserController {
     ) {}
 
     @Get(':id')
-    async myProfile() {}
-
-    @Post(':id/settings')
-    @UseGuards(JwtAuthGuard)
-    async settings(
-        @Req() req,
-        @Body() createProfileDto: CreteProfileDto,
-        @Param('id') id: string
-    ) {
-        const foundUserIdByUrlId: number | null = await this.commandBus.execute(
-            new GetUserIdByUserIdCommand(id)
-        )
-        if (foundUserIdByUrlId) {
-            const foundUserByToken: UserWithEmailViewModel | null =
-                await this.commandBus.execute(
-                    new GetUserByIdFromTokenCommand(req.user.userId)
-                )
-            if (foundUserIdByUrlId !== foundUserByToken.id) {
-                throw new ForbiddenException()
-            } else {
-                if (!foundUserByToken.isConfirmed)
-                    return 'Error! Server is not available!'
-                if (isOlderThan13(createProfileDto.dateOfBirth)) {
-                    await this.commandBus.execute(
-                        new UpdateProfileCommand(
-                            createProfileDto,
-                            foundUserByToken.id
-                        )
-                    )
-                } else {
-                    return 'A user under 13 cannot create a profile. Privacy Policy'
-                }
-            }
-        } else {
-            throw new NotFoundException()
-        }
+    @GetProfileEndpoint()
+    async getProfile(@Param('id') id: string) {
+        return await this.userQueryRepository.findUserById(+id)
     }
 
-    @Put(':id/settings')
+    @Post('settings')
+    @CreateProfileEndpoint()
     @UseGuards(JwtAuthGuard)
-    async changeProfile() {}
+    async creteProfile(
+        @UserId()
+        userId: number,
+        @Body()
+        createProfileDto: CreateProfileDto
+    ) {
+        const createdProfile = await this.commandBus.execute(
+            new CreateProfileCommand(createProfileDto, userId)
+        )
+        if (createdProfile.data === null)
+            return mappingErrorStatus(createdProfile)
+        return createdProfile
+    }
+
+    @Put('settings')
+    @UpdateProfileEndpoint()
+    @UseGuards(JwtAuthGuard)
+    async changeProfile(
+        @UserId()
+        userId: number,
+        @Body()
+        updateProfileDto: UpdateProfileDto
+    ) {
+        const updateProfile = await this.commandBus.execute(
+            new UpdateProfileCommand(updateProfileDto, userId)
+        )
+        if (updateProfile.data === null)
+            return mappingErrorStatus(updateProfile)
+        return updateProfile
+    }
 
     @Get('avatar')
     @HttpCode(HttpStatus.OK)
-    async getAvatar(@Query('userId') userId: number) {
+    async getAvatar(
+        @Query('userId')
+        userId: number
+    ) {
         const userInfo = await this.userRepository.findUserById(userId)
         //fix this
         if (userInfo.avatarId === null) {
@@ -129,7 +130,8 @@ export class UserController {
                 })
         )
         file: Express.Multer.File,
-        @UserId() userId: number
+        @UserId()
+        userId: number
     ) {
         const uploadedAvatar = await this.commandBus.execute(
             new SaveAvatarUseCaseCommand(userId, file)
@@ -144,7 +146,10 @@ export class UserController {
     @Delete('avatar')
     @HttpCode(HttpStatus.NO_CONTENT)
     @UseInterceptors(FileInterceptor('file'))
-    async deleteAvatar(@UserId() userId: number) {
+    async deleteAvatar(
+        @UserId()
+        userId: number
+    ) {
         const deletedAvatar = await this.commandBus.execute(
             new DeleteAvatarUseCaseCommand(userId)
         )

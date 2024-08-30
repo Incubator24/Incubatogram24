@@ -3,8 +3,9 @@ import { PrismaService } from '../../../../prisma/prisma.service'
 import { EmailConfirmationUser, Prisma } from '@prisma/client'
 import { add } from 'date-fns'
 import { emailConfirmationType } from '../email/emailConfirmationType'
-import { CreteProfileDto } from './dto/CreteProfileDto'
+import { CreateProfileDto } from './dto/CreateProfileDto'
 import { UserWithEmailViewModel } from '../../helpers/types'
+import { UpdateProfileDto } from './dto/UpdateProfileDto'
 
 @Injectable()
 export class UserRepository {
@@ -155,7 +156,7 @@ export class UserRepository {
     }
 
     async findFullInfoUserAndEmailInfoById(
-        userId: string
+        userId: number
     ): Promise<UserWithEmailViewModel | null> {
         const id = Number(userId)
         if (isNaN(id)) return null
@@ -166,6 +167,7 @@ export class UserRepository {
                 emailExpiration: true,
                 isConfirmed: true,
             },
+
             where: {
                 user: { id: id },
             },
@@ -230,34 +232,66 @@ export class UserRepository {
         return updatedConfirmationCode.count > 0
     }
 
-    async updateProfile(
-        createProfileDto: CreteProfileDto,
-        userId: number
-    ): Promise<boolean> {
+    async createProfile(userId: number, createProfileDto: CreateProfileDto) {
+        const { userName, firstName, lastName, dateOfBirth, city, aboutMe } =
+            createProfileDto
+        const profile = await this.prisma.profile.create({
+            data: {
+                user: {
+                    connect: { id: userId },
+                },
+                firstName,
+                lastName,
+                dateOfBirth: new Date(dateOfBirth),
+                city,
+                aboutMe,
+            },
+        })
+
+        if (userName) {
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: {
+                    userName: createProfileDto.userName,
+                },
+            })
+        }
+
+        return profile
+    }
+
+    async updateProfile(changeProfileDto: UpdateProfileDto, userId: number) {
         const dataToUpdate: any = {
-            firstName: createProfileDto.firstName,
-            lastName: createProfileDto.lastName,
-        }
-        if (createProfileDto.dateOfBirth) {
-            dataToUpdate.dateOfBirth = new Date(createProfileDto.dateOfBirth)
+            dateOfBirth: new Date(changeProfileDto.dateOfBirth),
         }
 
-        if (createProfileDto.userName) {
-            dataToUpdate.userName = createProfileDto.userName
+        if (changeProfileDto.firstName) {
+            dataToUpdate.firstName = changeProfileDto.firstName
         }
 
-        if (createProfileDto.aboutMe) {
-            dataToUpdate.aboutMe = createProfileDto.aboutMe
+        if (changeProfileDto.lastName) {
+            dataToUpdate.lastName = changeProfileDto.lastName
         }
-        if (createProfileDto.city) {
-            dataToUpdate.city = createProfileDto.city
+
+        if (changeProfileDto.aboutMe) {
+            dataToUpdate.aboutMe = changeProfileDto.aboutMe
         }
-        const updateProfile = await this.prisma.user.updateMany({
+        if (changeProfileDto.city) {
+            dataToUpdate.city = changeProfileDto.city
+        }
+        const updateProfile = await this.prisma.profile.updateMany({
             where: { id: userId },
             data: dataToUpdate,
         })
 
-        return updateProfile.count > 0
+        if (changeProfileDto.userName) {
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: changeProfileDto.userName,
+            })
+        }
+
+        return updateProfile
     }
 
     async findUserByCode(code: string): Promise<EmailConfirmationUser | null> {
@@ -273,18 +307,14 @@ export class UserRepository {
             : null
     }
 
-    async findUserIdByUserId(userId: string): Promise<string | number> {
+    async findUserIdByUserId(userId: string): Promise<number | null> {
         const id = Number(userId)
         if (isNaN(id)) return null
-        const foundUserId = await this.prisma.user.findFirst({
-            select: {
-                id: true,
-            },
+        const foundUserId = await this.prisma.user.findUnique({
             where: {
                 id: id,
             },
         })
-
         return foundUserId ? foundUserId.id : null
     }
 
@@ -298,6 +328,11 @@ export class UserRepository {
     }
 
     // for testing RemoveAll
+
+    async deleteAllProfile() {
+        await this.prisma.profile.deleteMany({})
+    }
+
     async deleteAllEmailData() {
         await this.prisma.emailConfirmationUser.deleteMany({})
     }

@@ -1,24 +1,24 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserRepository } from '../../user.repository'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { CreateProfileDto } from '../../dto/CreateProfileDto'
 import { UserWithEmailViewModel } from '../../../../helpers/types'
 import { HttpStatus } from '@nestjs/common'
+import { ResultObject } from '../../../../helpers/helpersType'
 import { isOlderThan13 } from '../../../../helpers/functions'
-import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
 
-export class UpdateProfileCommand {
+export class CreateProfileCommand {
     constructor(
-        public updateProfileDto: UpdateProfileDto,
+        public createProfileDto: CreateProfileDto,
         public userId: number
     ) {}
 }
 
-@CommandHandler(UpdateProfileCommand)
-export class UpdateProfile implements ICommandHandler<UpdateProfileCommand> {
+@CommandHandler(CreateProfileCommand)
+export class CreateProfile implements ICommandHandler<CreateProfileCommand> {
     constructor(private userRepository: UserRepository) {}
 
     async execute(
-        command: UpdateProfileCommand
+        command: CreateProfileCommand
     ): Promise<ResultObject<number>> {
         const foundUserByToken: UserWithEmailViewModel | null =
             await this.userRepository.findFullInfoUserAndEmailInfoById(
@@ -32,10 +32,10 @@ export class UpdateProfile implements ICommandHandler<UpdateProfileCommand> {
                 data: null,
             }
         }
-        if (isOlderThan13(command.updateProfileDto.dateOfBirth)) {
-            return await this.userRepository.updateProfile(
-                command.updateProfileDto,
-                command.userId
+        if (isOlderThan13(command.createProfileDto.dateOfBirth)) {
+            return await this.userRepository.createProfile(
+                command.userId,
+                command.createProfileDto
             )
         } else {
             return {

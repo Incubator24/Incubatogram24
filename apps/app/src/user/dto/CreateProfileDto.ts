@@ -8,7 +8,7 @@ import {
     MaxLength,
 } from 'class-validator'
 
-export class CreteProfileDto {
+export class CreateProfileDto {
     @ApiProperty({
         example: 'Ivan_777',
         description:

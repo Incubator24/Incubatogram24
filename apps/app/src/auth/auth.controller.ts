@@ -201,6 +201,7 @@ export class AuthController {
     @PasswordRecoveryEndpoint()
     @HttpCode(204)
     async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
+        console.log('123')
         const recoveryCode = await this.commandBus.execute(
             new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
         )

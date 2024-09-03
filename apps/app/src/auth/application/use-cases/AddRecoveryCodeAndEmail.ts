@@ -46,7 +46,7 @@ export class AddRecoveryCodeAndEmail
             return {
                 data: null,
                 resultCode: HttpStatus.NOT_FOUND,
-                message: 'couldn`t find user',
+                message: 'User with this email doesn`t exist',
             }
         }
         const isExistRecoveryCodeForCurrentEmail =

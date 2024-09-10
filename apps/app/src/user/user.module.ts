@@ -12,6 +12,7 @@ import { SaveAvatar } from './application/use-cases/SaveAvatar'
 import { S3StorageAdapter } from '../files/adapter/file-storage-adapter-service'
 import { UsersService } from './user.service'
 import { CreateProfile } from './application/use-cases/CreateProfile'
+import { RemoveUserById } from './application/use-cases/RemoveUserById'
 
 const useCases = [
     GetUserIdByIdUseCase,
@@ -20,6 +21,7 @@ const useCases = [
     GetUserByIdFromToken,
     DeleteAvatar,
     SaveAvatar,
+    RemoveUserById,
 ]
 
 @Module({

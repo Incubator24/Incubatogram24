@@ -1,9 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 export function UpdateAvatarEndpoint() {
     return applyDecorators(
         ApiOperation({ summary: 'update avatar' }),
+        ApiBearerAuth('JWT-auth'),
         ApiResponse({
             status: HttpStatus.CREATED,
             description: 'success updated avatar',

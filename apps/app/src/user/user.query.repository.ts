@@ -36,4 +36,14 @@ export class UserQueryRepository {
             profile: profile,
         }
     }
+
+    // for test
+    async getAllUsers() {
+        return this.prisma.user.findMany({
+            include: {
+                Profile: true,
+                emailConfirmationUser: true,
+            },
+        })
+    }
 }

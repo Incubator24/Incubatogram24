@@ -1,9 +1,10 @@
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 
 export function RefreshTokenEndpoint() {
     return applyDecorators(
         ApiOperation({ summary: 'refresh your token' }),
+        ApiCookieAuth(),
         ApiResponse({
             status: HttpStatus.OK,
             description: 'success refresh token',

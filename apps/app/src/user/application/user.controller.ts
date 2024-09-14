@@ -28,15 +28,15 @@ import { mappingErrorStatus } from '../../../helpers/helpersType'
 import { UserQueryRepository } from '../user.query.repository'
 import { CreateProfileDto } from '../dto/CreateProfileDto'
 import { UpdateProfileCommand } from './use-cases/UpdateProfile'
-import { isOlderThan13 } from '../../../helpers/functions'
-import { GetUserByIdFromTokenCommand } from './use-cases/GetUserByIdFromToken'
-import { UserWithEmailViewModel } from '../../../helpers/types'
 import { UserRepository } from '../user.repository'
 import { UpdateProfileDto } from '../dto/UpdateProfileDto'
 import { CreateProfileCommand } from './use-cases/CreateProfile'
 import { GetProfileEndpoint } from '../swagger/GetProfileEndpoint'
 import { CreateProfileEndpoint } from '../swagger/CreateProfileEndpoint'
 import { UpdateProfileEndpoint } from '../swagger/UpdateProfileEndpoint'
+import { RemoveUserByIdCommand } from './use-cases/RemoveUserById'
+import { GetAllUsersEndpoint } from '../swagger/for-test/GetAllUsers'
+import { RemoveUserByIdEndpoint } from '../swagger/for-test/RemoveUserById'
 
 @ApiTags('profile')
 @Controller('profile')
@@ -157,5 +157,21 @@ export class UserController {
             return mappingErrorStatus(deletedAvatar)
 
         return 'avatar success deleted'
+    }
+
+    // for testing
+    @Get()
+    @GetAllUsersEndpoint()
+    async getAllUsers() {
+        return this.userQueryRepository.getAllUsers()
+    }
+
+    @Delete(':userId')
+    @RemoveUserByIdEndpoint()
+    async removeUserById(
+        @Param('userId')
+        userId: string
+    ) {
+        return await this.commandBus.execute(new RemoveUserByIdCommand(userId))
     }
 }

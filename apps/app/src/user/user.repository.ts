@@ -319,12 +319,34 @@ export class UserRepository {
     }
 
     async deleteUserByUserId(userId: number) {
-        await this.prisma.emailConfirmationUser.deleteMany({
-            where: { userId: userId },
-        })
-        await this.prisma.user.delete({
+        const foundUser = await this.prisma.user.findUnique({
             where: { id: userId },
         })
+        if (foundUser) {
+            // Получаем профиль пользователя
+            const profile = await this.prisma.profile.findUnique({
+                where: { userId },
+            })
+
+            // Если профиль существует, удаляем его
+            if (profile) {
+                await this.prisma.profile.delete({
+                    where: { userId: profile.userId },
+                })
+            }
+            // Удаляем все устройства, связанные с пользователем
+            await this.prisma.device.deleteMany({
+                where: { userId: userId },
+            })
+            await this.prisma.emailConfirmationUser.deleteMany({
+                where: { userId: userId },
+            })
+            await this.prisma.user.delete({
+                where: { id: userId },
+            })
+        } else {
+            return 'user not found'
+        }
     }
 
     // for testing RemoveAll

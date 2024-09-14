@@ -1,4 +1,4 @@
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 
 export function LogoutEndpoint() {
@@ -6,6 +6,7 @@ export function LogoutEndpoint() {
         ApiOperation({
             summary: 'logout user. Should send correct refresh token',
         }),
+        ApiCookieAuth(),
         ApiResponse({
             status: HttpStatus.NO_CONTENT,
             description: 'success logout',

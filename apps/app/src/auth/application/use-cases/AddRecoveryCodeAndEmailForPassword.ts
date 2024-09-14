@@ -6,31 +6,30 @@ import { RecaptchaAdapter, ResultObject } from '../../../../helpers/helpersType'
 import { HttpStatus, Injectable } from '@nestjs/common'
 
 @Injectable()
-export class AddRecoveryCodeAndEmailCommand {
+export class AddRecoveryCodeAndEmailForPasswordCommand {
     constructor(
         public email: string,
         public recaptchaResponse: string
     ) {}
 }
 
-@CommandHandler(AddRecoveryCodeAndEmailCommand)
-export class AddRecoveryCodeAndEmail
-    implements ICommandHandler<AddRecoveryCodeAndEmailCommand>
+@CommandHandler(AddRecoveryCodeAndEmailForPasswordCommand)
+export class AddRecoveryCodeAndEmailForPassword
+    implements ICommandHandler<AddRecoveryCodeAndEmailForPasswordCommand>
 {
     constructor(
         public userRepository: UserRepository,
         public recoveryCodesRepository: RecoveryCodesRepository,
-        public recaptchaAdapter: RecaptchaAdapter // добавьте это поле
+        public recaptchaAdapter: RecaptchaAdapter
     ) {}
 
     async execute(
-        command: AddRecoveryCodeAndEmailCommand
+        command: AddRecoveryCodeAndEmailForPasswordCommand
     ): Promise<ResultObject<string>> {
         const isValidRecaptcha = await this.recaptchaAdapter.isValid(
             command.recaptchaResponse
         )
         if (!isValidRecaptcha) {
-            console.log(isValidRecaptcha + '!!!!')
             return {
                 data: null,
                 resultCode: HttpStatus.BAD_REQUEST,
@@ -53,9 +52,6 @@ export class AddRecoveryCodeAndEmail
             await this.recoveryCodesRepository.findDataByRecoveryCode(
                 recoveryCode
             )
-        // await this.recoveryCodeModel.findOne({
-        //   email: command.email,
-        // });
 
         let result
         if (isExistRecoveryCodeForCurrentEmail) {

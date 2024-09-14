@@ -56,6 +56,24 @@ export class UserRepository {
         }
     }
 
+    async createPostImage(
+        imageUrl: string,
+        postId: number,
+        authorId: number
+    ): Promise<number | null> {
+        const createdImage = await this.prisma.postImages.create({
+            data: {
+                imageId: imageUrl,
+                postId: postId,
+                authorId: authorId,
+            },
+        })
+        if (createdImage.id) {
+            return createdImage.id
+        }
+        return null
+    }
+
     async updateAvatarId(userId: number, url: string) {
         const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
             where: {
@@ -215,8 +233,7 @@ export class UserRepository {
         code: string
     ): Promise<boolean> {
         const emailConfirmation = add(new Date(), {
-            hours: 2,
-            minutes: 3,
+            hours: 24,
         }).toISOString()
         const updatedConfirmationCode =
             await this.prisma.emailConfirmationUser.updateMany({

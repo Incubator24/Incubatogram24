@@ -14,9 +14,7 @@ export class SaveAvatarUseCaseCommand {
 
 @Injectable()
 @CommandHandler(SaveAvatarUseCaseCommand)
-export class SaveAvatar
-    implements ICommandHandler<SaveAvatarUseCaseCommand>
-{
+export class SaveAvatar implements ICommandHandler<SaveAvatarUseCaseCommand> {
     constructor(
         private fileStorage: S3StorageAdapter,
         public userRepository: UserRepository

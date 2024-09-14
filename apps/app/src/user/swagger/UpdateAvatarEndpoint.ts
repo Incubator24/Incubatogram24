@@ -1,5 +1,5 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 export function UpdateAvatarEndpoint() {
     return applyDecorators(
@@ -11,6 +11,19 @@ export function UpdateAvatarEndpoint() {
         ApiResponse({
             status: HttpStatus.BAD_REQUEST,
             description: 'error on update avatar',
+        }),
+        ApiBody({
+            schema: {
+                type: 'object',
+                properties: {
+                    file: {
+                        type: 'string',
+                        format: 'binary',
+                        description: 'User avatar file',
+                    },
+                },
+                required: ['file'],
+            },
         })
     )
 }

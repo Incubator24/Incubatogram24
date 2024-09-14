@@ -40,6 +40,13 @@ export class ConfirmAndChangePassword
                 message: 'couldn`t find user be recovery code',
             }
         }
+        if (foundEmailByRecoveryCode.expirationAt < new Date()) {
+            return {
+                data: null,
+                resultCode: HttpStatus.BAD_REQUEST,
+                message: 'this code is expired',
+            }
+        }
 
         const passwordSaltNumber =
             Configuration.getConfiguration().PASSWORD_SALT

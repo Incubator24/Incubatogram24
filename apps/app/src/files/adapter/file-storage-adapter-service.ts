@@ -6,6 +6,7 @@ import {
     S3Client,
 } from '@aws-sdk/client-s3'
 import Configuration from '../../config/configuration'
+import { v4 as uuidv4 } from 'uuid'
 import { UserRepository } from '../../user/user.repository'
 
 @Injectable()
@@ -83,5 +84,47 @@ export class S3StorageAdapter {
             console.error('Exeption', exeption)
             throw exeption
         }
+    }
+
+    async savePostImages(
+        userId: number,
+        postId: number,
+        images: Express.Multer.File[]
+    ) {
+        const validateImage = (image: Express.Multer.File) => {
+            if (!['image/png', 'image/jpeg'].includes(image.mimetype)) {
+                throw new Error(
+                    'Unsupported file type. Only PNG and JPEG are allowed.'
+                )
+            }
+        }
+
+        const uploadImage = async (image: Express.Multer.File) => {
+            validateImage(image)
+            const extension = image.mimetype.split('/')[1]
+            const key = `content/users/${userId}/posts/${postId}/${image.originalname}_postImage${uuidv4()}.${extension}`
+            const bucketParams = {
+                Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
+                Key: key,
+                Body: image.buffer,
+                ContentType: image.mimetype,
+            }
+
+            const command = new PutObjectCommand(bucketParams)
+
+            try {
+                const uploadResult: PutObjectCommandOutput =
+                    await this.s3Client.send(command)
+
+                return {
+                    url: key,
+                    fileId: uploadResult.ETag,
+                }
+            } catch (err) {
+                console.error('Error uploading avatar:', err)
+                throw err
+            }
+        }
+        return await Promise.all(images.map((image) => uploadImage(image)))
     }
 }

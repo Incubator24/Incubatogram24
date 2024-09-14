@@ -1,5 +1,6 @@
 import { PrismaService } from '../../../../prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
+import { add } from 'date-fns'
 
 @Injectable()
 export class RecoveryCodesRepository {
@@ -9,10 +10,13 @@ export class RecoveryCodesRepository {
         email: string,
         code: string
     ): Promise<string | boolean> {
+        const expirationAt = add(new Date(), { hours: 24 })
+
         await this.prisma.recoveryCodes.create({
             data: {
                 recoveryCode: code,
                 email: email,
+                expirationAt: expirationAt,
             },
         })
         const newInfoAboutRecoveryCode = await this.findDataByRecoveryCode(code)
@@ -26,9 +30,12 @@ export class RecoveryCodesRepository {
         email: string,
         code: string
     ): Promise<string | boolean> {
+        const expirationAt = add(new Date(), { hours: 24 })
+
         await this.prisma.recoveryCodes.updateMany({
             data: {
                 recoveryCode: code,
+                expirationAt: expirationAt,
             },
             where: { email: email },
         })

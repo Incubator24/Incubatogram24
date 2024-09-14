@@ -15,6 +15,7 @@ import { APP_PIPE } from '@nestjs/core'
 import { UsersService } from './user/user.service'
 import { RemoveAllModule } from './testing.removeAll/removeAll.module'
 import { UserModule } from './user/user.module'
+import { PostModule } from './post/post.module'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -30,6 +31,7 @@ const configModule = ConfigModule.forRoot({
         AuthModule,
         UserModule,
         JwtModule,
+        PostModule,
         RemoveAllModule,
     ],
     controllers: [AppController],

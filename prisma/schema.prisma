@@ -89,9 +89,10 @@ model LoginAttempt {
 }
 
 model RecoveryCodes {
-  id           Int    @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   email        String
   recoveryCode String
+  expirationAt DateTime @default(now())
 }
 
 model TokensBlackList {

@@ -27,7 +27,7 @@ import { EmailService } from '../email/email.service'
 import { LogoutUser } from './application/use-cases/LogoutUser'
 import { RecoveryCodesRepository } from '../email/recoveryCodes.repository'
 import { DeviceController } from '../devices/device.controller'
-import { AddRecoveryCodeAndEmail } from './application/use-cases/AddRecoveryCodeAndEmail'
+import { AddRecoveryCodeAndEmailForPassword } from './application/use-cases/AddRecoveryCodeAndEmailForPassword'
 import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChangePassword'
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
@@ -53,7 +53,7 @@ import { UserQueryRepository } from '../user/user.query.repository'
         AuthRepository,
         CreateUserByRegistration,
         AddDeviceInfoToDB,
-        AddRecoveryCodeAndEmail,
+        AddRecoveryCodeAndEmailForPassword,
         CheckCredential,
         CreateJWT,
         CreateRefreshJWT,

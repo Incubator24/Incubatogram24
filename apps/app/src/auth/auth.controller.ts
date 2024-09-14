@@ -31,7 +31,7 @@ import { AddDeviceInfoToDBCommand } from './application/use-cases/AddDeviceInfoT
 import { UserId } from './decorators/user.decorator'
 import { ConfirmEmailCommand } from './application/use-cases/ConfirmEmail'
 import { ChangeUserConfirmationCodeCommand } from './application/use-cases/ChangeUserConfirmationCode'
-import { AddRecoveryCodeAndEmailCommand } from './application/use-cases/AddRecoveryCodeAndEmail'
+import { AddRecoveryCodeAndEmailForPasswordCommand } from './application/use-cases/AddRecoveryCodeAndEmailForPassword'
 import { ConfirmAndChangePasswordCommand } from './application/use-cases/ConfirmAndChangePassword'
 import { Cookies } from './decorators/auth.decorator'
 import { LogoutUserCommand } from './application/use-cases/LogoutUser'
@@ -202,7 +202,7 @@ export class AuthController {
     @HttpCode(204)
     async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
         const recoveryCode = await this.commandBus.execute(
-            new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
+            new AddRecoveryCodeAndEmailForPasswordCommand(email, recaptchaValue)
         )
         if (recoveryCode.data === null) return mappingErrorStatus(recoveryCode)
         try {
@@ -244,7 +244,6 @@ export class AuthController {
     async getNewPassword(
         @Query() { code }: { code: string },
         @Body() { newPassword }: { newPassword: string }
-        // @Body() { newPassword, newRecoveryCode }: newPasswordWithRecoveryCodeDto
     ) {
         const result = await this.commandBus.execute(
             new ConfirmAndChangePasswordCommand(code, newPassword)

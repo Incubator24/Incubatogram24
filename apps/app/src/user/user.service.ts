@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ProviderType, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { PrismaService } from '../../../../prisma/prisma.service'
 import { UserRepository } from './user.repository'
 
@@ -10,21 +10,21 @@ export class UsersService {
         private userRepository: UserRepository
     ) {}
 
-    async findByProviderId(
-        providerId: string,
-        provider: string
-    ): Promise<User | null> {
-        return this.prisma.user.findFirst({
-            where: {
-                accounts: {
-                    some: {
-                        providerId,
-                        type: provider.toUpperCase() as ProviderType,
-                    },
-                },
-            },
-        })
-    }
+    // async findByProviderId(
+    //     providerId: string,
+    //     provider: string
+    // ): Promise<User | null> {
+    //     return this.prisma.user.findFirst({
+    //         where: {
+    //             accounts: {
+    //                 some: {
+    //                     providerId,
+    //                     type: provider.toUpperCase() as ProviderType,
+    //                 },
+    //             },
+    //         },
+    //     })
+    // }
 
     async createOAuthUser(profile: any, provider: string): Promise<User> {
         const foundUserByEmail = await this.userRepository.findUserByEmail(
@@ -51,22 +51,22 @@ export class UsersService {
                             providerId: profile.id,
                             email: profile.emails[0].value,
                             userName: profile.username || profile.displayName,
-                            type: provider.toUpperCase() as ProviderType,
+                            type: provider.toUpperCase() as any,
                         },
                     },
                 },
             })
         }
 
-        await this.prisma.providers.create({
-            data: {
-                userId: foundUserByEmail.id,
-                providerId: profile.id,
-                email: profile.emails[0].value,
-                userName: userName,
-                type: provider.toUpperCase() as ProviderType,
-            },
-        })
+        // await this.prisma.providers.create({
+        //     data: {
+        //         userId: foundUserByEmail.id,
+        //         providerId: profile.id,
+        //         email: profile.emails[0].value,
+        //         userName: userName,
+        //         type: provider.toUpperCase() as ProviderType,
+        //     },
+        // })
         return foundUserByEmail
     }
     async makeUniqueUserName(

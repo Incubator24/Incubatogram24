@@ -19,6 +19,21 @@ enum ProviderType {
   GITHUB
 }
 
+// model User {
+//   id                    Int                     @id @default(autoincrement())
+//   userName              String                  @unique
+//   email                 String                  @unique
+//   passwordHash          String?
+//   passwordSalt          String?
+//   createdAt             DateTime                @default(now())
+//   updatedAt             DateTime                @default(now()) @updatedAt
+//   isDeleted             Boolean                 @default(false)
+//   accounts              Providers[]             @relation("UserAccounts")
+//   device                Device[]
+//   emailConfirmationUser EmailConfirmationUser[]
+//   Profile               Profile?
+// }
+
 model User {
   id                    Int                     @id @default(autoincrement())
   userName              String                  @unique
@@ -28,7 +43,6 @@ model User {
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @default(now()) @updatedAt
   isDeleted             Boolean                 @default(false)
-  accounts              Providers[]             @relation("UserAccounts")
   device                Device[]
   emailConfirmationUser EmailConfirmationUser[]
   Profile               Profile?
@@ -51,15 +65,15 @@ model Profile {
   PostImages  PostImages[]
 }
 
-model Providers {
-  id         Int          @id @default(autoincrement())
-  providerId String
-  type       ProviderType
-  email      String?
-  userName   String?
-  userId     Int
-  owner      User         @relation("UserAccounts", fields: [userId], references: [id])
-}
+// model Providers {
+//   id         Int          @id @default(autoincrement())
+//   providerId String
+//   type       ProviderType
+//   email      String?
+//   userName   String?
+//   userId     Int
+//   owner      User         @relation("UserAccounts", fields: [userId], references: [id])
+// }
 
 model Post {
   id          Int          @id @default(autoincrement())

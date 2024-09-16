@@ -51,6 +51,8 @@ import { PasswordRecoveryEndpoint } from './swagger/PasswordRecoveryEndpoint'
 import axios from 'axios'
 import Configuration from '../config/configuration'
 import { UserQueryRepository } from '../user/user.query.repository'
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
+import { GetMeEndpoint } from './swagger/GetMeEndpoint'
 
 @Injectable()
 @ApiTags('auth')
@@ -316,6 +318,16 @@ export class AuthController {
                 `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
         )
         return { accessToken: tokensInfo.data.accessToken }
+    }
+
+    @Get('me')
+    @GetMeEndpoint()
+    @UseGuards(JwtAuthGuard)
+    async me(
+        @UserId()
+        userId: number
+    ) {
+        return await this.userQueryRepository.findUserById(userId)
     }
 
     @Get()

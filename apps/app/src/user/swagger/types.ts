@@ -17,11 +17,11 @@ export class ProfileTpeDTOSwagger {
     city: string
     @ApiProperty({ example: 'i am developer' })
     aboutMe: string
-    @ApiProperty({ example: 'null' })
+    @ApiProperty({ example: '12345' })
     avatarId: number
-    @ApiProperty({ example: 0 })
+    @ApiProperty({ example: '0189-12-11T21:29:43.000Z' })
     createdAt: string
-    @ApiProperty({ example: 0 })
+    @ApiProperty({ example: '0189-12-11T21:29:43.000Z' })
     updatedAt: string
 }
 

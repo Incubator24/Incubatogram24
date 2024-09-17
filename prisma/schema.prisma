@@ -14,11 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ProviderType {
-  GOOGLE
-  GITHUB
-}
-
 // model User {
 //   id                    Int                     @id @default(autoincrement())
 //   userName              String                  @unique
@@ -34,24 +29,50 @@ enum ProviderType {
 //   Profile               Profile?
 // }
 
+enum ProviderType {
+  GOOGLE
+  GITHUB
+}
+
 model User {
-  id                    Int                     @id @default(autoincrement())
-  userName              String                  @unique
-  email                 String                  @unique
+  id                    Int               @id @default(autoincrement())
+  userName              String            @unique
+  email                 String            @unique
   passwordHash          String?
   passwordSalt          String?
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @default(now()) @updatedAt
-  isDeleted             Boolean                 @default(false)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @default(now()) @updatedAt
+  isDeleted             Boolean           @default(false)
   device                Device[]
-  emailConfirmationUser EmailConfirmationUser[]
+  emailConfirmationUser EmailExpiration?  @relation("EmailConfirmationUser")
+  emailConfirmationId   Int?              @unique // Уникальное поле для связи один к одному
+  passwordRecovery      PasswordRecovery? @relation("PasswordRecoveryUser")
+  passwordRecoveryId    Int?              @unique // Уникальное поле для связи один к одному
   Profile               Profile?
+  Providers             Providers[]
+}
+
+model EmailExpiration {
+  id               Int     @id @default(autoincrement())
+  confirmationCode String
+  emailExpiration  String
+  isConfirmed      Boolean
+  user             User    @relation("EmailConfirmationUser", fields: [userId], references: [emailConfirmationId])
+  userId           Int     @unique // Уникальное поле для связи один к одному
+}
+
+model PasswordRecovery {
+  id           Int    @id @default(autoincrement())
+  recoveryCode String
+  expirationAt String
+  user         User   @relation("PasswordRecoveryUser", fields: [userId], references: [passwordRecoveryId])
+  userId       Int    @unique // Уникальное поле для связи один к одному
 }
 
 model Profile {
-  id          Int          @id @default(autoincrement())
-  user        User         @relation(fields: [userId], references: [id])
-  userId      Int          @unique
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int       @unique
   firstName   String?
   lastName    String?
   dateOfBirth DateTime?
@@ -59,41 +80,42 @@ model Profile {
   city        String?
   aboutMe     String?
   avatarId    String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now()) @updatedAt
-  Post        Post[]
-  PostImages  PostImages[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  // Post        Post[]
+  // PostImages  PostImages[]
 }
 
-// model Providers {
-//   id         Int          @id @default(autoincrement())
-//   providerId String
-//   type       ProviderType
-//   email      String?
-//   userName   String?
-//   userId     Int
-//   owner      User         @relation("UserAccounts", fields: [userId], references: [id])
+model Providers {
+  id         Int          @id @default(autoincrement())
+  providerId String
+  type       ProviderType
+  email      String?
+  userName   String?
+  userId     Int
+  // owner      User         @relation("UserAccounts", fields: [userId], references: [id])
+  User       User         @relation(fields: [userId], references: [id])
+}
+
+// model Post {
+//   id          Int          @id @default(autoincrement())
+//   description String?
+//   isDeleted   Boolean      @default(false)
+//   author      Profile      @relation(references: [id], fields: [authorId])
+//   authorId    Int
+//   createdAt   DateTime     @default(now())
+//   updatedAt   DateTime     @default(now()) @updatedAt
+//   PostImages  PostImages[]
 // }
 
-model Post {
-  id          Int          @id @default(autoincrement())
-  description String?
-  isDeleted   Boolean      @default(false)
-  author      Profile      @relation(references: [id], fields: [authorId])
-  authorId    Int
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now()) @updatedAt
-  PostImages  PostImages[]
-}
-
-model PostImages {
-  id       Int     @id @default(autoincrement())
-  imageId  String
-  post     Post    @relation(fields: [postId], references: [id])
-  postId   Int
-  author   Profile @relation(references: [id], fields: [authorId])
-  authorId Int
-}
+// model PostImages {
+//   id       Int     @id @default(autoincrement())
+//   imageId  String
+//   post     Post    @relation(fields: [postId], references: [id])
+//   postId   Int
+//   author   Profile @relation(references: [id], fields: [authorId])
+//   authorId Int
+// }
 
 model LoginAttempt {
   id       Int      @id @default(autoincrement())
@@ -102,11 +124,11 @@ model LoginAttempt {
   date     DateTime @default(now())
 }
 
-model RecoveryCodes {
-  id           Int    @id @default(autoincrement())
-  email        String
-  recoveryCode String
-}
+// model RecoveryCodes {
+//   id           Int    @id @default(autoincrement())
+//   email        String
+//   recoveryCode String
+// }
 
 model TokensBlackList {
   id    Int    @id @default(autoincrement())
@@ -122,13 +144,4 @@ model Device {
   deviceName   String
   user         User   @relation(references: [id], fields: [userId])
   userId       Int
-}
-
-model EmailConfirmationUser {
-  id               Int     @id @default(autoincrement())
-  confirmationCode String
-  emailExpiration  String
-  isConfirmed      Boolean
-  user             User    @relation(references: [id], fields: [userId])
-  userId           Int
 }

@@ -17,7 +17,7 @@ export abstract class IUserRepository {
         emailConfirmDto: EmailConfirmationType,
         userId: number
     ): Promise<string | null>
-    abstract async findUserByEmailCode(
+    abstract findUserByEmailCode(
         code: string
     ): Promise<EmailExpirationRawType | null>
 }

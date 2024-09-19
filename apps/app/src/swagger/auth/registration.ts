@@ -1,8 +1,9 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 export function RegistrationEndpoint() {
     return applyDecorators(
+        ApiTags('auth'),
         ApiOperation({
             summary:
                 'Registration in the system. Email with confirmation code will be send to passed email address',

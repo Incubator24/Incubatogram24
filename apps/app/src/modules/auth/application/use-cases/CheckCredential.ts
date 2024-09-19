@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../auth.service'
-import { UserRepository } from '../../../user/infrastructure/repositories/user.repository'
 import { Injectable } from '@nestjs/common'
+import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
 
 @Injectable()
 export class CheckCredentialCommand {
@@ -16,7 +16,7 @@ export class CheckCredential
     implements ICommandHandler<CheckCredentialCommand>
 {
     constructor(
-        public userRepository: UserRepository,
+        public userRepository: IUserRepository,
         public authService: AuthService
     ) {}
 
@@ -29,7 +29,6 @@ export class CheckCredential
             command.password,
             user.passwordSalt
         )
-
         if (user.passwordHash === passwordHash) {
             return user.id
         } else return false

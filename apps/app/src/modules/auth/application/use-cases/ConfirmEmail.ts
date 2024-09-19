@@ -3,6 +3,7 @@ import { UserRepository } from '../../../user/infrastructure/repositories/user.r
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus } from '@nestjs/common'
 import { ResultObject } from '../../../../helpers/helpersType'
+import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
 
 export class ConfirmEmailCommand {
     constructor(public code: string) {}
@@ -11,12 +12,14 @@ export class ConfirmEmailCommand {
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmail implements ICommandHandler<ConfirmEmailCommand> {
     constructor(
-        public userRepository: UserRepository,
+        public userRepository: IUserRepository,
         public authRepository: AuthRepository
     ) {}
 
     async execute(command: ConfirmEmailCommand): Promise<ResultObject<string>> {
-        const foundUser = await this.userRepository.findUserByCode(command.code)
+        const foundUser = await this.userRepository.findUserByEmailCode(
+            command.code
+        )
         if (!foundUser) {
             return {
                 data: null,

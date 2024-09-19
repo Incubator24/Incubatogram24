@@ -34,22 +34,55 @@ enum ProviderType {
   GITHUB
 }
 
+// model User {
+//   id                    Int               @id @default(autoincrement())
+//   userName              String            @unique
+//   email                 String            @unique
+//   passwordHash          String?
+//   passwordSalt          String?
+//   createdAt             DateTime          @default(now())
+//   updatedAt             DateTime          @default(now()) @updatedAt
+//   isDeleted             Boolean           @default(false)
+//   device                Device[]
+//   emailConfirmationUser EmailExpiration?  @relation("EmailExpirationUser")
+//   emailConfirmationId   Int?              @unique // Уникальное поле для связи один к одному
+//   passwordRecovery      PasswordRecovery? @relation("PasswordRecoveryUser")
+//   passwordRecoveryId    Int?              @unique // Уникальное поле для связи один к одному
+//   Profile               Profile?
+//   Providers             Providers[]
+// }
+//
+// model EmailExpiration {
+//   id               Int     @id @default(autoincrement())
+//   confirmationCode String
+//   emailExpiration  String
+//   isConfirmed      Boolean
+//   userId           Int     @unique // Уникальное поле для связи один к одному
+//   user             User    @relation("EmailExpirationUser", fields: [userId], references: [emailConfirmationId])
+// }
+//
+// model PasswordRecovery {
+//   id           Int    @id @default(autoincrement())
+//   recoveryCode String
+//   expirationAt String
+//   user         User   @relation("PasswordRecoveryUser", fields: [userId], references: [passwordRecoveryId])
+//   userId       Int    @unique // Уникальное поле для связи один к одному
+// }
+
 model User {
-  id                    Int               @id @default(autoincrement())
-  userName              String            @unique
-  email                 String            @unique
-  passwordHash          String?
-  passwordSalt          String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @default(now()) @updatedAt
-  isDeleted             Boolean           @default(false)
-  device                Device[]
-  emailConfirmationUser EmailExpiration?  @relation("EmailConfirmationUser")
-  emailConfirmationId   Int?              @unique // Уникальное поле для связи один к одному
-  passwordRecovery      PasswordRecovery? @relation("PasswordRecoveryUser")
-  passwordRecoveryId    Int?              @unique // Уникальное поле для связи один к одному
-  Profile               Profile?
-  Providers             Providers[]
+  id               Int               @id @default(autoincrement())
+  userName         String            @unique
+  email            String            @unique
+  passwordHash     String?
+  passwordSalt     String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  isDeleted        Boolean           @default(false)
+  device           Device[]
+  EmailExpiration  EmailExpiration?
+  PasswordRecovery PasswordRecovery?
+  Profile          Profile?
+  Providers        Providers[]
 }
 
 model EmailExpiration {
@@ -57,16 +90,16 @@ model EmailExpiration {
   confirmationCode String
   emailExpiration  String
   isConfirmed      Boolean
-  user             User    @relation("EmailConfirmationUser", fields: [userId], references: [emailConfirmationId])
-  userId           Int     @unique // Уникальное поле для связи один к одному
+  user             User    @relation(fields: [userId], references: [id])
+  userId           Int     @unique // relation scalar field (used in the `@relation` attribute above)
 }
 
 model PasswordRecovery {
   id           Int    @id @default(autoincrement())
   recoveryCode String
   expirationAt String
-  user         User   @relation("PasswordRecoveryUser", fields: [userId], references: [passwordRecoveryId])
-  userId       Int    @unique // Уникальное поле для связи один к одному
+  user         User   @relation(fields: [userId], references: [id])
+  userId       Int    @unique // relation scalar field (used in the `@relation` attribute above)
 }
 
 model Profile {

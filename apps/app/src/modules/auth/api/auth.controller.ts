@@ -20,7 +20,6 @@ import { CreateUserDto } from './dto/CreateUserDto'
 import { Response } from 'express'
 import { CreateUserByRegistrationCommand } from '../application/use-cases/CreateUserByRegistration'
 import { AuthService } from '../application/auth.service'
-import { ApiTags } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { AddDeviceInfoToDBCommand } from '../application/use-cases/AddDeviceInfoToDB'
 import { UserId } from './decorators/user.decorator'
@@ -39,12 +38,11 @@ import axios from 'axios'
 import { UserQueryRepository } from '../../user/infrastructure/repositories/user.query.repository'
 import { JwtAuthGuard } from '../guards/jwt-auth.guard'
 import { RegistrationEndpoint } from '../../../swagger/auth/registration'
-import { Login } from '../../../swagger/auth/login'
-import { RefreshTokenEndpoint } from '../../../swagger/auth/RefreshTokenEndpoint'
-import { LogoutEndpoint } from '../../../swagger/auth/LogoutEndpoint'
-import { RegistrationConfirmationEndpoint } from '../../../swagger/auth/RegistrationConfirmationEndpoint'
-import { RegistrationEmailResendingEndpoint } from '../../../swagger/auth/RegistrationEmailResendingEndpoint'
-import { PasswordRecoveryEndpoint } from '../../../swagger/auth/PasswordRecoveryEndpoint'
+import { LoginEndpoint } from '../../../swagger/auth/login'
+import { RefreshTokenEndpoint } from '../../../swagger/auth/refreshTokenEndpoint'
+import { LogoutEndpoint } from '../../../swagger/auth/logoutEndpoint'
+import { RegistrationEmailResendingEndpoint } from '../../../swagger/auth/registrationEmailResendingEndpoint'
+import { PasswordRecoveryEndpoint } from '../../../swagger/auth/passwordRecoveryEndpoint'
 import { EmailService } from '../../email/email.service'
 import {
     mappingBadRequest,
@@ -53,9 +51,15 @@ import {
 } from '../../../helpers/helpersType'
 import Configuration from '../../../config/configuration'
 import { Me } from '../../../swagger/auth/me'
+import { AuthInputModel } from './dto/AuthInputModel'
+import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../swagger/Internal/swaggerPostRegistrationConfirmationEndpoint'
+import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../swagger/Internal/swaggerGetRegistrationConfirmationEndpoint'
+import { SwaggerPostGithubEndpoint } from '../../../swagger/Internal/swaggerPostGithubEndpoint'
+import { githubEndpoint } from '../../../swagger/auth/githubEndpoint'
+import { SwaggerPostGoogleEndpoint } from '../../../swagger/Internal/swaggerPostGoogleEndpoint'
+import { GoogleEndpoint } from '../../../swagger/auth/googleEndpoint'
 
 @Injectable()
-@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -79,11 +83,12 @@ export class AuthController {
 
     @Post('/login')
     @UseGuards(LocalAuthGuard)
-    @Login()
+    @LoginEndpoint()
     @HttpCode(200)
     async loginUser(
         @Res({ passthrough: true }) res: Response,
         @Headers('User-Agent') userAgent: string | 'unknow',
+        @Body() authInputModel: AuthInputModel,
         @Ip() ip: string,
         @UserId() userId: number
     ) {
@@ -141,7 +146,7 @@ export class AuthController {
     }
 
     @Post('/registration-confirmation')
-    @RegistrationConfirmationEndpoint()
+    @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async registrationConfirmation(@Query('code') code: string) {
         const result = await this.commandBus.execute(
@@ -156,6 +161,7 @@ export class AuthController {
     }
 
     @Get('/registration-confirmation')
+    @SwaggerGetRegistrationConfirmationEndpoint()
     async getRegistrationConfirmation(
         @Query('code') code: string,
         @Res() res: Response
@@ -203,7 +209,6 @@ export class AuthController {
     @PasswordRecoveryEndpoint()
     @HttpCode(204)
     async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
-        console.log('123')
         const recoveryCode = await this.commandBus.execute(
             new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
         )
@@ -257,10 +262,12 @@ export class AuthController {
     }
 
     @Get('github')
+    @githubEndpoint()
     @UseGuards(AuthGuard('github'))
     async githubAuth() {}
 
     @Get('github-success')
+    @SwaggerPostGithubEndpoint()
     @UseGuards(AuthGuard('github'))
     async githubAuthCallback(
         @Req() req,
@@ -290,10 +297,12 @@ export class AuthController {
     }
 
     @Get('google')
+    @GoogleEndpoint()
     @UseGuards(AuthGuard('google'))
     async googleAuth() {}
 
     @Get('google-success')
+    @SwaggerPostGoogleEndpoint()
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,
@@ -328,10 +337,5 @@ export class AuthController {
         userId: number
     ) {
         return await this.userQueryRepository.findUserById(userId)
-    }
-
-    @Get()
-    getHello(): string {
-        return this.authService.getHello()
     }
 }

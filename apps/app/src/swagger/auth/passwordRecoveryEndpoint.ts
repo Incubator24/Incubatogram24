@@ -1,8 +1,9 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 export function PasswordRecoveryEndpoint() {
     return applyDecorators(
+        ApiTags('auth'),
         ApiOperation({
             summary: 'password recovery',
             requestBody: {

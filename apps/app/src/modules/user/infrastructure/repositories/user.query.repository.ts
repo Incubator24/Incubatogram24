@@ -12,7 +12,7 @@ export class UserQueryRepository {
             },
             include: {
                 Profile: true,
-                emailConfirmationUser: true,
+                EmailExpiration: true,
             },
         })
         if (!foundUser) {
@@ -21,8 +21,8 @@ export class UserQueryRepository {
         const avatarId = foundUser.Profile?.avatarId || null
         const profile = foundUser.Profile ? foundUser.Profile : null
         const isConfirmEmail =
-            foundUser.emailConfirmationUser.length > 0
-                ? foundUser.emailConfirmationUser[0].isConfirmed
+            foundUser.EmailExpiration.length > 0
+                ? foundUser.EmailExpiration[0].isConfirmed
                 : null
 
         return {
@@ -42,7 +42,7 @@ export class UserQueryRepository {
         return this.prisma.user.findMany({
             include: {
                 Profile: true,
-                emailConfirmationUser: true,
+                EmailExpiration: true,
             },
         })
     }

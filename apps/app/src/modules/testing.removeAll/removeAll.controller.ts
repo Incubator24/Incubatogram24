@@ -16,6 +16,7 @@ export class TestingRemoveAll {
     async removeAllData() {
         await this.userRepository.deleteAllProfile()
         await this.userRepository.deleteAllEmailData()
+        await this.userRepository.deletePassRecovery()
         await this.deviceRepositorySql.deleteAllDevices()
         await this.userRepository.deleteAllUsers()
     }

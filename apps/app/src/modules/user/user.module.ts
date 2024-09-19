@@ -31,7 +31,6 @@ const repositories = [{ provide: IUserRepository, useClass: UserRepository }]
     imports: [CqrsModule],
     controllers: [UserController],
     providers: [
-        IUserRepository,
         UserQueryRepository,
         UserRepository,
         PrismaService,
@@ -40,6 +39,11 @@ const repositories = [{ provide: IUserRepository, useClass: UserRepository }]
         ...useCases,
         ...repositories,
     ],
-    exports: [UserQueryRepository, PrismaService, ...repositories],
+    exports: [
+        UserQueryRepository,
+        PrismaService,
+        UserRepository,
+        ...repositories,
+    ],
 })
 export class UserModule {}

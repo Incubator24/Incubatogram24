@@ -4,7 +4,7 @@ import { applyDecorators, HttpStatus } from '@nestjs/common'
 export function RegistrationConfirmationEndpoint() {
     return applyDecorators(
         ApiOperation({
-            summary: 'registration confirmation',
+            summary: 'Confirm registration',
             requestBody: {
                 content: {
                     'text/plain': {
@@ -19,11 +19,22 @@ export function RegistrationConfirmationEndpoint() {
         }),
         ApiResponse({
             status: HttpStatus.NO_CONTENT,
-            description: 'registration confirmation',
+            description: 'Email was verified. Account was activated',
         }),
         ApiResponse({
             status: HttpStatus.BAD_REQUEST,
-            description: 'code is invalid, incorrect or expired',
+            description:
+                'If the confirmation code is incorrect, expired or already been applied',
+            schema: {
+                example: {
+                    errorsMessages: [
+                        {
+                            message: 'string',
+                            field: 'string',
+                        },
+                    ],
+                },
+            },
         })
     )
 }

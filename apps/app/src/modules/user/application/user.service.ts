@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import { UserRepository } from '../infrastructure/repositories/user.repository'
 import { PrismaService } from '../../../../../../prisma/prisma.service'
+import { IUserRepository } from '../infrastructure/interfaces/user.repository.interface'
 
 @Injectable()
 export class UsersService {
     constructor(
         private prisma: PrismaService,
-        private userRepository: UserRepository
+        private userRepository: IUserRepository
     ) {}
 
     async findByProviderId(
@@ -72,7 +73,7 @@ export class UsersService {
     }
     async makeUniqueUserName(
         displayName: string,
-        userRepository: UserRepository
+        userRepository: IUserRepository
     ): Promise<string> {
         let userName = displayName
         let suffix = 1

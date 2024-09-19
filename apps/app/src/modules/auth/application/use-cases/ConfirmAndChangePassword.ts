@@ -50,8 +50,7 @@ export class ConfirmAndChangePassword
         )
         await this.authRepository.updateUserPassword(
             foundEmailByRecoveryCode.email,
-            passwordHash,
-            passwordSalt
+            passwordHash
         )
         return {
             data: 'ok',

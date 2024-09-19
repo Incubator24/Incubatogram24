@@ -16,6 +16,9 @@ import { GetUserIdByRefreshTokenCommand } from '../auth/jwt/application/use-case
 import { GetTokenInfoByRefreshTokenCommand } from '../auth/jwt/application/use-cases/GetTokenInfoByRefreshToken'
 import { Cookies } from '../auth/api/decorators/auth.decorator'
 import { mappingErrorStatus } from '../../helpers/helpersType'
+import { DeleteDeviceByIdEndpoint } from '../../swagger/devices/deleteDeviceByIdEndpoint'
+import { DeleteDeviceEndpoint } from '../../swagger/devices/deleteDeviceEndpoint'
+import { GetDeviceEndpoint } from '../../swagger/devices/getDeviceEndpoint'
 
 @SkipThrottle()
 @Injectable()
@@ -27,6 +30,7 @@ export class DeviceController {
     ) {}
 
     @Get()
+    @GetDeviceEndpoint()
     async getDevices(@Cookies('refreshToken') refreshToken: string) {
         const currentUserId = await this.commandBus.execute(
             new GetUserIdByRefreshTokenCommand(refreshToken)
@@ -39,6 +43,7 @@ export class DeviceController {
     }
 
     @Delete()
+    @DeleteDeviceEndpoint()
     @HttpCode(204)
     async deleteDevice(@Cookies('refreshToken') refreshToken: string) {
         const currentUserInfo = await this.commandBus.execute(
@@ -59,6 +64,7 @@ export class DeviceController {
     }
 
     @Delete(':deviceId')
+    @DeleteDeviceByIdEndpoint()
     @HttpCode(204)
     async deleteDeviceById(
         @Param('deviceId') deviceId: string,

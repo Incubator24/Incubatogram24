@@ -2,15 +2,15 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../auth.service'
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { CreateUserDto } from '../../api/dto/CreateUserDto'
-import { Prisma } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import * as bcrypt from 'bcryptjs'
 import { EmailService } from '../../../email/email.service'
 import { ResultObject } from '../../../../helpers/helpersType'
 import Configuration from '../../../../config/configuration'
-import { emailConfirmationType } from '../../../email/emailConfirmationType'
+import { EmailConfirmationType } from '../../../email/emailConfirmationType'
 import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { CreatedUserDto } from '../../../../helpers/types'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {
@@ -30,18 +30,13 @@ export class CreateUserByRegistration
     async execute(
         command: CreateUserByRegistrationCommand
     ): Promise<ResultObject<number>> {
-        // ищем юзера
         const foundUser =
             await this.userRepository.findUserByLoginOrEmailWithEmailInfo(
                 command.registrationDto.userName,
                 command.registrationDto.email
             )
-        console.log('foundUser = ', foundUser)
         if (foundUser) {
-            if (
-                foundUser.emailConfirmationUser &&
-                foundUser.emailConfirmationUser[0].isConfirmed
-            ) {
+            if (foundUser) {
                 return {
                     resultCode: HttpStatus.BAD_REQUEST,
                     field: 'email and username',
@@ -53,7 +48,6 @@ export class CreateUserByRegistration
                 await this.userRepository.deleteUserByUserId(foundUser.id)
             }
         }
-        console.log('asd')
         const [isUserNameExist, isEmailExist] = await Promise.all([
             this.userRepository.findUserByLoginOrEmail(
                 command.registrationDto.userName
@@ -62,7 +56,6 @@ export class CreateUserByRegistration
                 command.registrationDto.email
             ),
         ])
-        console.log('foundUserName or email = ', isUserNameExist)
 
         if (isUserNameExist && isEmailExist) {
             return {
@@ -99,15 +92,19 @@ export class CreateUserByRegistration
             command.registrationDto.password,
             passwordSalt
         )
-        const dataForUser: Prisma.UserCreateInput = {
-            email: command.registrationDto.email,
+        const createdAt = new Date().toISOString()
+        const createdUserDataDto: CreatedUserDto = {
             userName: command.registrationDto.userName,
-            passwordSalt,
+            email: command.registrationDto.email,
             passwordHash,
+            passwordSalt,
+            createdAt: createdAt,
+            updatedAt: createdAt,
+            isDeleted: false,
         }
         const createdUserId: number =
-            await this.userRepository.createUser(dataForUser)
-
+            await this.userRepository.createUser(createdUserDataDto)
+        // получаем userId
         if (!createdUserId) {
             console.log('Failed to create user')
 
@@ -117,8 +114,8 @@ export class CreateUserByRegistration
                 message: 'couldn`t create user',
             }
         }
-        const emailConfirmationInfo: emailConfirmationType = {
-            userId: createdUserId!,
+        // создаем объект для отправки кода на мыло
+        const emailConfirmationInfo: EmailConfirmationType = {
             confirmationCode: uuidv4(),
             emailExpiration: add(new Date(), {
                 hours: 24,
@@ -127,26 +124,22 @@ export class CreateUserByRegistration
             isConfirmed: false,
         }
 
-        const createdEmailConfirmation =
-            await this.userRepository.sendEmailConfirmation(
-                emailConfirmationInfo
+        const createdEmailConfirmationCode =
+            await this.userRepository.createEmailExpiration(
+                emailConfirmationInfo,
+                createdUserId
             )
-        console.log(createdEmailConfirmation)
-        if (!createdEmailConfirmation) {
+        if (!createdEmailConfirmationCode) {
             return {
                 data: null,
                 resultCode: HttpStatus.BAD_REQUEST,
                 message: 'couldn`t create email confirmation',
             }
         }
-
-        const createdUser =
-            await this.userRepository.findUserById(createdUserId)
-        // const createdUserFullInformation = this.authService.usersMapping(newUser);
         try {
             await this.emailService.sendConfirmationEmail(
-                createdEmailConfirmation.confirmationCode,
-                createdUser!.email
+                createdEmailConfirmationCode,
+                createdUserDataDto.email
             )
         } catch (e) {
             return {

@@ -8,7 +8,7 @@ export class AuthRepository {
 
     async updateEmailConfirmation(userId: number): Promise<boolean> {
         const isUpdatedEmailConfirmation =
-            await this.prisma.emailConfirmationUser.updateMany({
+            await this.prisma.emailExpiration.updateMany({
                 where: { userId: userId },
                 data: { isConfirmed: true },
             })
@@ -20,14 +20,12 @@ export class AuthRepository {
 
     async updateUserPassword(
         email: string,
-        passwordHash: string,
-        passwordSalt: string
+        passwordHash: string
     ): Promise<boolean> {
         const updateUser = await this.prisma.user.updateMany({
             where: { email: email },
             data: {
                 passwordHash,
-                passwordSalt,
             },
         })
         return updateUser.count ? updateUser.count >= 0 : false

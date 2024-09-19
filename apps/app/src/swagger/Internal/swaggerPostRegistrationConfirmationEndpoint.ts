@@ -1,18 +1,17 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 
-export function LoginEndpoint() {
+export function SwaggerPostRegistrationConfirmationEndpoint() {
     return applyDecorators(
-        ApiTags('auth'),
+        ApiTags('Internal'),
         ApiOperation({
-            summary: 'Try login user to the system',
+            summary: 'Confirm registration',
             requestBody: {
                 content: {
                     'text/plain': {
                         schema: {
                             example: {
-                                loginOrEmail: 'string',
-                                password: 'string',
+                                code: 'string',
                             },
                         },
                     },
@@ -20,14 +19,13 @@ export function LoginEndpoint() {
             },
         }),
         ApiResponse({
-            status: HttpStatus.OK,
-            description:
-                'Returns JWT accessToken in body and JWT refreshToken in cookie',
-            schema: { example: { accessToken: 'string' } },
+            status: HttpStatus.NO_CONTENT,
+            description: 'Email was verified. Account was activated',
         }),
         ApiResponse({
             status: HttpStatus.BAD_REQUEST,
-            description: 'If the inputModel has incorrect values',
+            description:
+                'If the confirmation code is incorrect, expired or already been applied',
             schema: {
                 example: {
                     errorsMessages: [
@@ -38,10 +36,6 @@ export function LoginEndpoint() {
                     ],
                 },
             },
-        }),
-        ApiResponse({
-            status: HttpStatus.UNAUTHORIZED,
-            description: 'If the password or login is wrong',
         })
     )
 }

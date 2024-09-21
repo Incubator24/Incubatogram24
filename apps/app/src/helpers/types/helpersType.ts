@@ -8,7 +8,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
-import Configuration from '../config/configuration'
+import Configuration from '../../config/configuration'
 
 export class ResultObject<T> {
     @ApiProperty({

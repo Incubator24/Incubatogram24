@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import jwt from 'jsonwebtoken'
 import { AuthRepository } from '../../../infrastructure/repositories/auth.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ResultObject } from '../../../../../helpers/helpersType'
+import { ResultObject } from '../../../../../helpers/types/helpersType'
 import Configuration from '../../../../../config/configuration'
 
 @Injectable()

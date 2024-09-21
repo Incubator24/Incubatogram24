@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { UserRepository } from '../../infrastructure/repositories/user.repository'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { ResultObject } from '../../../../helpers/types/helpersType'
 import { S3StorageAdapter } from '../../../files/adapter/file-storage-adapter-service'
 
 @Injectable()

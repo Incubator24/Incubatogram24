@@ -3,9 +3,11 @@ import { AuthService } from '../auth.service'
 import * as bcrypt from 'bcryptjs'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { RecoveryCodesRepository } from '../../../email/recoveryCodes.repository'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { RecoveryCodesRepository } from '../../../email/infrastructure/repositories/recoveryCodes.repository'
+import { ResultObject } from '../../../../helpers/types/helpersType'
 import Configuration from '../../../../config/configuration'
+import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { UpdatePasswordDto } from '../../../../helpers/types/passwordRecoveryDto'
 
 @Injectable()
 export class ConfirmAndChangePasswordCommand {
@@ -22,6 +24,7 @@ export class ConfirmAndChangePassword
     constructor(
         public authService: AuthService,
         public authRepository: AuthRepository,
+        public userRepository: IUserRepository,
         public recoveryCodesRepository: RecoveryCodesRepository
     ) {}
 
@@ -40,7 +43,7 @@ export class ConfirmAndChangePassword
                 message: 'couldn`t find user be recovery code',
             }
         }
-
+        console.log('foundEmailByRecoveryCode = ', foundEmailByRecoveryCode)
         const passwordSaltNumber =
             Configuration.getConfiguration().PASSWORD_SALT
         const passwordSalt = await bcrypt.genSalt(Number(passwordSaltNumber))
@@ -48,9 +51,13 @@ export class ConfirmAndChangePassword
             command.password,
             passwordSalt
         )
-        await this.authRepository.updateUserPassword(
-            foundEmailByRecoveryCode.email,
-            passwordHash
+        const updatePasswordDto: UpdatePasswordDto = {
+            passwordSalt,
+            passwordHash,
+        }
+        await this.userRepository.updatePassword(
+            foundEmailByRecoveryCode.userId,
+            updatePasswordDto
         )
         return {
             data: 'ok',

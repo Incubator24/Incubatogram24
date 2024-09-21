@@ -3,7 +3,7 @@ import { UserAndDeviceTypeFromRefreshToken } from '../../jwt.types'
 import * as jwt from 'jsonwebtoken'
 import { UserRepository } from '../../../../user/infrastructure/repositories/user.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ResultObject } from '../../../../../helpers/helpersType'
+import { ResultObject } from '../../../../../helpers/types/helpersType'
 import Configuration from '../../../../../config/configuration'
 
 @Injectable()

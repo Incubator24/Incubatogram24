@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserRepository } from '../../infrastructure/repositories/user.repository'
-import { UserWithEmailViewModel } from '../../../../helpers/types'
+import { UserWithEmailViewModel } from '../../../../helpers/types/types'
 
 export class GetUserByIdFromTokenCommand {
     constructor(public userId: number) {}
@@ -14,9 +14,10 @@ export class GetUserByIdFromToken
 
     async execute(
         command: GetUserByIdFromTokenCommand
-    ): Promise<UserWithEmailViewModel | null> {
-        return await this.userRepository.findFullInfoUserAndEmailInfoById(
-            command.userId
-        )
+    ): Promise<UserWithEmailViewModel | null | any> {
+        // return await this.userRepository.findFullInfoUserAndEmailInfoById(
+        //     command.userId
+        // )
+        return
     }
 }

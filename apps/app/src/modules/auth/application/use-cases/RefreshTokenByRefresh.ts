@@ -10,7 +10,7 @@ import { DeviceDBModel } from '../../../devices/device.types'
 import {
     mappingErrorStatus,
     ResultObject,
-} from '../../../../helpers/helpersType'
+} from '../../../../helpers/types/helpersType'
 
 export class RefreshTokenByRefreshCommand {
     constructor(

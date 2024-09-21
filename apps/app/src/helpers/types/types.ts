@@ -6,7 +6,7 @@ export type UserWithEmailViewModel = {
     passwordHash: string
     passwordSalt: string
     confirmationCode: string
-    emailExpiration: string
+    emailExpiration: Date
     isConfirmed: boolean
 }
 export type CreatedUserDto = {

@@ -24,7 +24,7 @@ import { BasicStrategy } from './strategies/basic.strategy'
 import { BasicAuthGuard } from './guards/basic-auth.guard'
 import { LogoutUser } from './application/use-cases/LogoutUser'
 import { DeviceController } from '../devices/device.controller'
-import { AddRecoveryCodeAndEmail } from './application/use-cases/AddRecoveryCodeAndEmail'
+import { ChangePasswordRecoveryCode } from './application/use-cases/ChangePasswordRecoveryCode'
 import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChangePassword'
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
@@ -33,17 +33,24 @@ import { GitHubStrategy } from './strategies/github.strategy'
 import { GoogleStrategy } from './strategies/google.strategy'
 import { UsersService } from '../user/application/user.service'
 import { UserQueryRepository } from '../user/infrastructure/repositories/user.query.repository'
-import { RecoveryCodesRepository } from '../email/recoveryCodes.repository'
+import { RecoveryCodesRepository } from '../email/infrastructure/repositories/recoveryCodes.repository'
 import { EmailService } from '../email/email.service'
-import { RecaptchaAdapter } from '../../helpers/helpersType'
+import { RecaptchaAdapter } from '../../helpers/types/helpersType'
 import { PrismaService } from '../../../../../prisma/prisma.service'
 import { UserModule } from '../user/user.module'
+import { IRecoveryCodesRepository } from '../email/infrastructure/interfaces/recoveryCodes.repository.interface'
+import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
 //     envFilePath: '.env.main.main',
 //     load: [Configuration.getConfiguration],
 // })
+const repositories = [
+    { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
+]
+
+const useCases = [ChangeUserConfirmationCode]
 
 @Module({
     imports: [CqrsModule, UserModule],
@@ -54,7 +61,7 @@ import { UserModule } from '../user/user.module'
         AuthRepository,
         CreateUserByRegistration,
         AddDeviceInfoToDB,
-        AddRecoveryCodeAndEmail,
+        ChangePasswordRecoveryCode,
         CheckCredential,
         CreateJWT,
         CreateRefreshJWT,
@@ -86,7 +93,9 @@ import { UserModule } from '../user/user.module'
         RecaptchaAdapter,
         PrismaService,
         UsersService,
+        ...repositories,
+        ...useCases,
     ],
-    exports: [PrismaService],
+    exports: [PrismaService, ...repositories],
 })
 export class AuthModule {}

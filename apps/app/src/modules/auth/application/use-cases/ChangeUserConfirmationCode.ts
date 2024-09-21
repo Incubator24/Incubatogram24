@@ -1,8 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { v4 as uuidv4 } from 'uuid'
-import { UserRepository } from '../../../user/infrastructure/repositories/user.repository'
 import { HttpStatus } from '@nestjs/common'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { ResultObject } from '../../../../helpers/types/helpersType'
+import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { User } from '@prisma/client'
+import { EmailExpirationDto } from '../../../../helpers/types/emailConfirmationType'
+import { add } from 'date-fns'
 
 export class ChangeUserConfirmationCodeCommand {
     constructor(public email: string) {}
@@ -12,16 +15,15 @@ export class ChangeUserConfirmationCodeCommand {
 export class ChangeUserConfirmationCode
     implements ICommandHandler<ChangeUserConfirmationCodeCommand>
 {
-    constructor(public userRepository: UserRepository) {}
+    constructor(public userRepository: IUserRepository) {}
 
     async execute(
         command: ChangeUserConfirmationCodeCommand
     ): Promise<ResultObject<string>> {
-        const isExistUser = await this.userRepository.findUserByEmail(
+        const getUser: User = await this.userRepository.findUserByEmail(
             command.email
         )
-
-        if (!isExistUser) {
+        if (!getUser) {
             return {
                 data: null,
                 resultCode: HttpStatus.BAD_REQUEST,
@@ -29,12 +31,10 @@ export class ChangeUserConfirmationCode
                 message: 'user doesn`t exist',
             }
         }
-        const currentUserInfo =
-            await this.userRepository.findFullInfoUserAndEmailInfo(
-                command.email
-            )
-
-        if (currentUserInfo.isConfirmed) {
+        // узнать подтвержден ли емеил !!!!!!!!!!!!!!!!!
+        const foundEmailConfirmation =
+            await this.userRepository.findEmailConfirmationByUserId(getUser.id)
+        if (foundEmailConfirmation.isConfirmed) {
             return {
                 data: null,
                 resultCode: HttpStatus.BAD_REQUEST,
@@ -42,12 +42,18 @@ export class ChangeUserConfirmationCode
                 message: 'user already confirmed',
             }
         }
-        const newConfirmationCode = uuidv4()
+        const newEmailConfirmationDto: EmailExpirationDto = {
+            confirmationCode: uuidv4(),
+            emailExpiration: add(new Date(), {
+                hours: 2,
+                minutes: 3,
+            }),
+        }
 
         try {
-            await this.userRepository.updateConfirmationCode(
-                currentUserInfo.id,
-                newConfirmationCode
+            await this.userRepository.updateEmailConfirmationCode(
+                foundEmailConfirmation.id,
+                newEmailConfirmationDto
             )
         } catch (e) {
             return {
@@ -57,29 +63,29 @@ export class ChangeUserConfirmationCode
                 message: 'user some error on resending email' + e.message,
             }
         }
-        const updatedUserInfo =
-            await this.userRepository.findFullInfoUserAndEmailInfo(
-                command.email
-            )
-        if (!updatedUserInfo) {
-            return {
-                data: null,
-                resultCode: HttpStatus.BAD_REQUEST,
-                field: 'code',
-                message: 'user some error on resending email',
-            }
-        }
+        // const updatedUserInfo =
+        //     await this.userRepository.findFullInfoUserAndEmailInfo(
+        //         command.email
+        //     )
+        // if (!updatedUserInfo) {
+        //     return {
+        //         data: null,
+        //         resultCode: HttpStatus.BAD_REQUEST,
+        //         field: 'code',
+        //         message: 'user some error on resending email',
+        //     }
+        // }
 
-        if (updatedUserInfo.confirmationCode !== newConfirmationCode) {
-            return {
-                data: null,
-                resultCode: HttpStatus.BAD_REQUEST,
-                field: 'code',
-                message: 'user some error on resending email',
-            }
-        }
+        // if (updatedUserInfo.confirmationCode !== newConfirmationCode) {
+        //     return {
+        //         data: null,
+        //         resultCode: HttpStatus.BAD_REQUEST,
+        //         field: 'code',
+        //         message: 'user some error on resending email',
+        //     }
+        // }
         return {
-            data: updatedUserInfo.confirmationCode,
+            data: newEmailConfirmationDto.confirmationCode,
             resultCode: HttpStatus.NO_CONTENT,
         }
     }

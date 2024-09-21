@@ -6,11 +6,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
 import * as bcrypt from 'bcryptjs'
 import { EmailService } from '../../../email/email.service'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { ResultObject } from '../../../../helpers/types/helpersType'
 import Configuration from '../../../../config/configuration'
-import { EmailConfirmationType } from '../../../email/emailConfirmationType'
+import { EmailConfirmationType } from '../../../../helpers/types/emailConfirmationType'
 import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
-import { CreatedUserDto } from '../../../../helpers/types'
+import { CreatedUserDto } from '../../../../helpers/types/types'
+import { PasswordRecoveryDto } from '../../../../helpers/types/passwordRecoveryDto'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {
@@ -114,13 +115,25 @@ export class CreateUserByRegistration
                 message: 'couldn`t create user',
             }
         }
+        // создаем объект для восстановления пароля
+        const passRecoveryDto: PasswordRecoveryDto = {
+            recoveryCode: uuidv4(),
+            expirationAt: add(new Date(), {
+                hours: 24,
+                minutes: 3,
+            }),
+        }
+        await this.userRepository.createRecoveryCode(
+            passRecoveryDto,
+            createdUserId
+        )
         // создаем объект для отправки кода на мыло
         const emailConfirmationInfo: EmailConfirmationType = {
             confirmationCode: uuidv4(),
             emailExpiration: add(new Date(), {
                 hours: 24,
                 minutes: 3,
-            }).toISOString(),
+            }),
             isConfirmed: false,
         }
 

@@ -1,10 +1,11 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 export function RegistrationEmailResendingEndpoint() {
     return applyDecorators(
+        ApiTags('auth'),
         ApiOperation({
-            summary: 'registration email resending',
+            summary: 'Resend confirmation registration Email if user exist',
             requestBody: {
                 content: {
                     'text/plain': {
@@ -19,7 +20,8 @@ export function RegistrationEmailResendingEndpoint() {
         }),
         ApiResponse({
             status: HttpStatus.NO_CONTENT,
-            description: 'registration email successfully resented',
+            description:
+                'Input data is accepted.Email with confirmation code will be send to passed email address.Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere',
         }),
         ApiResponse({
             status: HttpStatus.BAD_REQUEST,

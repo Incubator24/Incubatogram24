@@ -6,7 +6,7 @@ import { AuthRepository } from '../../infrastructure/repositories/auth.repositor
 import { HttpStatus } from '@nestjs/common'
 import { UserAndDeviceTypeFromRefreshToken } from '../../jwt/jwt.types'
 import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cases/GetTokenInfoByRefreshToken'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { ResultObject } from '../../../../helpers/types/helpersType'
 
 export class LogoutUserCommand {
     constructor(public refreshToken: string) {}

@@ -1,16 +1,30 @@
 import { Injectable } from '@nestjs/common'
-import { EmailExpiration, Prisma } from '@prisma/client'
+import {
+    EmailExpiration,
+    PasswordRecovery,
+    Prisma,
+    Profile,
+    User,
+} from '@prisma/client'
 import { add } from 'date-fns'
 import { CreateProfileDto } from '../../dto/CreateProfileDto'
 import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import {
     CreatedUserDto,
-    EmailExpirationRawType,
     UserWithEmailViewModel,
-} from '../../../../helpers/types'
-import { EmailConfirmationType } from '../../../email/emailConfirmationType'
+} from '../../../../helpers/types/types'
+import {
+    EmailConfirmationType,
+    EmailExpirationDto,
+} from '../../../../helpers/types/emailConfirmationType'
 import { IUserRepository } from '../interfaces/user.repository.interface'
+import {
+    PasswordRecoveryDto,
+    UpdatePasswordDto,
+} from '../../../../helpers/types/passwordRecoveryDto'
+
+type GetFullInfoModelType = { user: User; emailExpiration: EmailExpiration }
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -41,14 +55,14 @@ export class UserRepository implements IUserRepository {
     //     }
     // }
     async findUserById(userId: number): Promise<any | null> {
-        const foundUser = await this.prisma.user.findUnique({
+        const foundUser: any = (await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
             include: {
                 Profile: true,
             },
-        })
+        })) as User
         if (!foundUser) {
             return null
         }
@@ -76,9 +90,9 @@ export class UserRepository implements IUserRepository {
     // }
 
     async createUser(newUser: CreatedUserDto): Promise<number | null> {
-        const createdUser: Prisma.User = await this.prisma.user.create({
+        const createdUser = (await this.prisma.user.create({
             data: newUser,
-        })
+        })) as User
         if (createdUser.id) {
             return createdUser.id
         }
@@ -97,14 +111,16 @@ export class UserRepository implements IUserRepository {
     }
 
     async updateAvatarId(userId: number, url: string) {
-        const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                avatarId: url,
-            },
-        })
+        const updateAvatarUrlForCurrentUser = (await this.prisma.profile.update(
+            {
+                where: {
+                    id: userId,
+                },
+                data: {
+                    avatarId: url,
+                },
+            }
+        )) as Profile
         return updateAvatarUrlForCurrentUser
             ? updateAvatarUrlForCurrentUser.avatarId === url
             : false
@@ -124,7 +140,7 @@ export class UserRepository implements IUserRepository {
             : false
     }
 
-    async findUserByEmail(email: string): Promise<any | null> {
+    async findUserByEmail(email: string): Promise<User | null> {
         return this.prisma.user.findFirst({
             where: {
                 email: email,
@@ -215,39 +231,40 @@ export class UserRepository implements IUserRepository {
         })
     }
 
-    async findFullInfoUserAndEmailInfoById(
-        userId: number
-    ): Promise<UserWithEmailViewModel | null> {
-        const id = Number(userId)
-        if (isNaN(id)) return null
-        const fullInfo = await this.prisma.emailExpiration.findFirst({
-            select: {
-                user: true,
-                confirmationCode: true,
-                emailExpiration: true,
-                isConfirmed: true,
-            },
-
-            where: {
-                user: { id: id },
-            },
-        })
-        if (fullInfo && fullInfo.user) {
-            return {
-                id: fullInfo.user.id,
-                login: fullInfo.user.userName,
-                email: fullInfo.user.email,
-                createdAt: fullInfo.user.createdAt,
-                passwordHash: fullInfo.user.passwordHash,
-                passwordSalt: fullInfo.user.passwordSalt,
-                confirmationCode: fullInfo.confirmationCode,
-                emailExpiration: fullInfo.emailExpiration,
-                isConfirmed: fullInfo.isConfirmed,
-            }
-        }
-
-        return null
-    }
+    // async findFullInfoUserAndEmailInfoById(
+    //     userId: number
+    // ): Promise<UserWithEmailViewModel | null> {
+    //     const id = Number(userId)
+    //     if (isNaN(id)) return null
+    //     const fullInfo = (await this.prisma.emailExpiration.findFirst({
+    //         include: {
+    //             user: true,
+    //             confirmationCode: true,
+    //             emailExpiration: true,
+    //             isConfirmed: true,
+    //         },
+    //
+    //         where: {
+    //             userId: id,
+    //         },
+    //     })) as GetFullInfoModelType
+    //     console.log('fullInfo = ', fullInfo)
+    //     if (fullInfo && fullInfo.user) {
+    //         return {
+    //             id: fullInfo.user.id,
+    //             login: fullInfo.user.userName,
+    //             email: fullInfo.user.email,
+    //             createdAt: fullInfo.user.createdAt,
+    //             passwordHash: fullInfo.user.passwordHash,
+    //             passwordSalt: fullInfo.user.passwordSalt,
+    //             confirmationCode: fullInfo.confirmationCode,
+    //             emailExpiration: fullInfo.emailExpiration,
+    //             isConfirmed: fullInfo.isConfirmed,
+    //         }
+    //     }
+    //
+    //     return null
+    // }
 
     // async sendEmailConfirmation(
     //     emailConfirmationInfo: emailConfirmationType
@@ -276,7 +293,7 @@ export class UserRepository implements IUserRepository {
         emailConfirmDto: EmailConfirmationType,
         userId: number
     ): Promise<string | null> {
-        const createdEmailExp = await this.prisma.emailExpiration.create({
+        const createdEmailExp = (await this.prisma.emailExpiration.create({
             data: {
                 user: {
                     connect: { id: userId },
@@ -285,31 +302,78 @@ export class UserRepository implements IUserRepository {
                 emailExpiration: emailConfirmDto.emailExpiration,
                 isConfirmed: emailConfirmDto.isConfirmed,
             },
-        })
+        })) as EmailExpiration
         if (createdEmailExp) {
             return createdEmailExp.confirmationCode
         } else {
             return null
         }
     }
-    async updateConfirmationCode(
-        userId: number,
-        code: string
-    ): Promise<boolean> {
-        const emailConfirmation = add(new Date(), {
-            hours: 2,
-            minutes: 3,
-        }).toISOString()
-        const updatedConfirmationCode =
-            await this.prisma.emailExpiration.updateMany({
-                where: { userId: userId },
+    async createRecoveryCode(
+        passRecoveryDto: PasswordRecoveryDto,
+        userId: number
+    ): Promise<string | null> {
+        const createdPasswordRecovery =
+            (await this.prisma.passwordRecovery.create({
                 data: {
-                    confirmationCode: code,
-                    emailExpiration: emailConfirmation,
+                    user: {
+                        connect: { id: userId },
+                    },
+                    recoveryCode: passRecoveryDto.recoveryCode,
+                    expirationAt: passRecoveryDto.expirationAt,
                 },
-            })
+            })) as PasswordRecovery
+        if (createdPasswordRecovery) {
+            return createdPasswordRecovery.recoveryCode
+        } else {
+            return null
+        }
+    }
+    // async updateConfirmationCode(
+    //     userId: number,
+    //     code: string
+    // ): Promise<boolean> {
+    //     const emailConfirmation = add(new Date(), {
+    //         hours: 2,
+    //         minutes: 3,
+    //     }).toISOString()
+    //     const updatedConfirmationCode =
+    //         await this.prisma.emailExpiration.updateMany({
+    //             where: { userId: userId },
+    //             data: {
+    //                 confirmationCode: code,
+    //                 emailExpiration: emailConfirmation,
+    //             },
+    //         })
+    //
+    //     return updatedConfirmationCode.count > 0
+    // }
 
-        return updatedConfirmationCode.count > 0
+    async updateEmailConfirmationCode(
+        id: number,
+        newEmailConfirmationDto: EmailExpirationDto
+    ) {
+        return this.prisma.emailExpiration.update({
+            where: { id: id },
+            data: newEmailConfirmationDto,
+        })
+    }
+
+    async updatePasswordRecoveryCode(
+        userId: number,
+        newPasswordRecoveryDto: PasswordRecoveryDto
+    ) {
+        return this.prisma.passwordRecovery.update({
+            where: { userId: userId },
+            data: newPasswordRecoveryDto,
+        })
+    }
+
+    async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto) {
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: updatePasswordDto,
+        })
     }
 
     async createProfile(userId: number, createProfileDto: CreateProfileDto) {
@@ -381,21 +445,19 @@ export class UserRepository implements IUserRepository {
                     confirmationCode: code,
                 },
             })
-        return userEmailConfirmationData.userId
+        return userEmailConfirmationData!.userId
             ? userEmailConfirmationData
             : null
     }
 
-    async findUserByEmailCode(
-        code: string
-    ): Promise<EmailExpirationRawType | null> {
+    async findUserByEmailCode(code: string): Promise<EmailExpiration | null> {
         console.log('code = ', code)
-        const userEmailConfirmationData: Prisma.EmailExpirationType =
-            await this.prisma.emailExpiration.findFirst({
+        const userEmailConfirmationData =
+            (await this.prisma.emailExpiration.findFirst({
                 where: {
                     confirmationCode: code,
                 },
-            })
+            })) as EmailExpiration
         if (userEmailConfirmationData) {
             return {
                 id: userEmailConfirmationData.id,
@@ -409,14 +471,23 @@ export class UserRepository implements IUserRepository {
         }
     }
 
+    async findEmailConfirmationByUserId(
+        userId: number
+    ): Promise<EmailExpiration | null> {
+        return this.prisma.emailExpiration.findFirst({
+            where: {
+                userId: userId,
+            },
+        })
+    }
     async findUserIdByUserId(userId: string): Promise<number | null> {
         const id = Number(userId)
         if (isNaN(id)) return null
-        const foundUserId = await this.prisma.user.findUnique({
+        const foundUserId = (await this.prisma.user.findUnique({
             where: {
                 id: id,
             },
-        })
+        })) as User
         return foundUserId ? foundUserId.id : null
     }
 
@@ -426,9 +497,9 @@ export class UserRepository implements IUserRepository {
         })
         if (foundUser) {
             // Получаем профиль пользователя
-            const profile = await this.prisma.profile.findUnique({
+            const profile = (await this.prisma.profile.findUnique({
                 where: { userId },
-            })
+            })) as Profile
 
             // Если профиль существует, удаляем его
             if (profile) {

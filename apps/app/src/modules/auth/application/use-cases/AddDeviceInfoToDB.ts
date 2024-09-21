@@ -6,7 +6,7 @@ import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cas
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { DeviceDBModel } from '../../../devices/device.types'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
-import { ResultObject } from '../../../../helpers/helpersType'
+import { ResultObject } from '../../../../helpers/types/helpersType'
 
 @Injectable()
 export class AddDeviceInfoToDBCommand {

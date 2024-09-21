@@ -5,7 +5,8 @@ export function PasswordRecoveryEndpoint() {
     return applyDecorators(
         ApiTags('auth'),
         ApiOperation({
-            summary: 'password recovery',
+            summary:
+                'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
             requestBody: {
                 content: {
                     'text/plain': {

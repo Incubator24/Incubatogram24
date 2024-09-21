@@ -25,7 +25,7 @@ import { AddDeviceInfoToDBCommand } from '../application/use-cases/AddDeviceInfo
 import { UserId } from './decorators/user.decorator'
 import { ConfirmEmailCommand } from '../application/use-cases/ConfirmEmail'
 import { ChangeUserConfirmationCodeCommand } from '../application/use-cases/ChangeUserConfirmationCode'
-import { AddRecoveryCodeAndEmailCommand } from '../application/use-cases/AddRecoveryCodeAndEmail'
+import { ChangePasswordRecoveryCodeCommand } from '../application/use-cases/ChangePasswordRecoveryCode'
 import { ConfirmAndChangePasswordCommand } from '../application/use-cases/ConfirmAndChangePassword'
 import { Cookies } from './decorators/auth.decorator'
 import { LogoutUserCommand } from '../application/use-cases/LogoutUser'
@@ -48,7 +48,7 @@ import {
     mappingBadRequest,
     mappingErrorStatus,
     ResultObject,
-} from '../../../helpers/helpersType'
+} from '../../../helpers/types/helpersType'
 import Configuration from '../../../config/configuration'
 import { Me } from '../../../swagger/auth/me'
 import { AuthInputModel } from './dto/AuthInputModel'
@@ -193,7 +193,6 @@ export class AuthController {
         )
         if (newUserConfirmationCode.data === null)
             return mappingErrorStatus(newUserConfirmationCode)
-
         try {
             await this.emailService.sendConfirmationEmail(
                 newUserConfirmationCode.data,
@@ -210,7 +209,7 @@ export class AuthController {
     @HttpCode(204)
     async passwordRecovery(@Body() { email, recaptchaValue }: emailDto) {
         const recoveryCode = await this.commandBus.execute(
-            new AddRecoveryCodeAndEmailCommand(email, recaptchaValue)
+            new ChangePasswordRecoveryCodeCommand(email, recaptchaValue)
         )
         if (recoveryCode.data === null) return mappingErrorStatus(recoveryCode)
         try {
@@ -225,6 +224,7 @@ export class AuthController {
     }
 
     @Get('/new-password')
+    @SwaggerGetRegistrationConfirmationEndpoint()
     async getNewPasswordGetRequest(
         @Query('code') code: string,
         @Res() res: Response
@@ -248,6 +248,7 @@ export class AuthController {
     }
 
     @Post('/new-password')
+    @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async getNewPassword(
         @Query() { code }: { code: string },

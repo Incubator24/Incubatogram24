@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 export class ProfileTpeDTOSwagger {
-    @ApiProperty({ example: 0 })
-    id: number
-    @ApiProperty({ example: 0 })
-    userId: number
     @ApiProperty({ example: 'string' })
     firstName: string
     @ApiProperty({ example: 'string' })
@@ -18,11 +14,7 @@ export class ProfileTpeDTOSwagger {
     @ApiProperty({ example: 'i am developer' })
     aboutMe: string
     @ApiProperty({ example: '12345' })
-    avatarId: number
-    @ApiProperty({ example: '0189-12-11T21:29:43.000Z' })
-    createdAt: string
-    @ApiProperty({ example: '0189-12-11T21:29:43.000Z' })
-    updatedAt: string
+    avatarId: string
 }
 
 export class UserTypeDTOSwagger {
@@ -30,16 +22,14 @@ export class UserTypeDTOSwagger {
     id: number
     @ApiProperty({ example: 'ad1S_nQS' })
     userName: string
-    @ApiProperty({ example: 'ad1S_nQS' })
-    name: string
     @ApiProperty({ example: 'string' })
     email: string
+    @ApiProperty({ example: 'true' })
+    emailIsConfirm: boolean
     @ApiProperty({ example: '2024-08-30T15:06:13.310Z' })
     createdAt: string
-    @ApiProperty({ example: 0 })
-    avatarId: number
-    @ApiProperty({ example: 'true' })
-    isConfirmEmail: boolean
+    @ApiProperty({ example: '2024-08-30T15:06:13.310Z' })
+    updatedAt: string
     @ApiProperty({ example: ProfileTpeDTOSwagger })
     profile: ProfileTpeDTOSwagger
 }

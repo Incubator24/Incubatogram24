@@ -13,6 +13,8 @@ import {
     UpdatePasswordDto,
 } from '../../../../helpers/types/passwordRecoveryDto'
 import { EmailExpiration, User } from '@prisma/client'
+import { CreateProfileDto } from '../../dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
 
 export abstract class IUserRepository {
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>
@@ -28,6 +30,7 @@ export abstract class IUserRepository {
     abstract findEmailConfirmationByUserId(
         userId: number
     ): Promise<EmailExpiration | null>
+    abstract isConfirmEmail(userId: number): Promise<boolean>
     abstract findUserByGoogleId(googleId: string)
     abstract findUserByGithubId(githubId: string)
     abstract updateGoogleProvider(
@@ -40,6 +43,8 @@ export abstract class IUserRepository {
         githubEmail: string,
         githubId?: string
     )
+    abstract createProfile(userId: number, createProfileDto: CreateProfileDto)
+    abstract updateProfile(changeProfileDto: UpdateProfileDto, userId: number)
     abstract createUser(newUser: CreatedUserDto): Promise<number | null>
     abstract createUserWithGoogleProvider(
         createUserWithGoogleProvider: CreatedUserWithGoogleProviderDto

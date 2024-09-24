@@ -449,33 +449,39 @@ export class UserRepository implements IUserRepository {
     }
 
     async updateProfile(changeProfileDto: UpdateProfileDto, userId: number) {
-        const dataToUpdate: any = {
+        const dataToUpdateProfile: any = {
             dateOfBirth: new Date(changeProfileDto.dateOfBirth),
         }
 
         if (changeProfileDto.firstName) {
-            dataToUpdate.firstName = changeProfileDto.firstName
+            dataToUpdateProfile.firstName = changeProfileDto.firstName
         }
 
         if (changeProfileDto.lastName) {
-            dataToUpdate.lastName = changeProfileDto.lastName
+            dataToUpdateProfile.lastName = changeProfileDto.lastName
         }
 
         if (changeProfileDto.aboutMe) {
-            dataToUpdate.aboutMe = changeProfileDto.aboutMe
+            dataToUpdateProfile.aboutMe = changeProfileDto.aboutMe
         }
         if (changeProfileDto.city) {
-            dataToUpdate.city = changeProfileDto.city
+            dataToUpdateProfile.city = changeProfileDto.city
         }
         const updateProfile = await this.prisma.profile.updateMany({
             where: { id: userId },
-            data: dataToUpdate,
+            data: dataToUpdateProfile,
         })
+
+        const dataToUpdateUser: any = {}
+
+        if (changeProfileDto.userName) {
+            dataToUpdateUser.userName = changeProfileDto.userName
+        }
 
         if (changeProfileDto.userName) {
             await this.prisma.user.update({
                 where: { id: userId },
-                data: changeProfileDto.userName,
+                data: dataToUpdateUser,
             })
         }
 
@@ -523,6 +529,14 @@ export class UserRepository implements IUserRepository {
                 userId: userId,
             },
         })
+    }
+
+    async isConfirmEmail(userId: number): Promise<boolean> {
+        const emailExpiration = (await this.prisma.emailExpiration.findFirst({
+            where: { userId: userId },
+            select: { isConfirmed: true },
+        })) as EmailExpiration
+        return emailExpiration ? emailExpiration.isConfirmed : false
     }
     async findUserByGoogleId(googleId: string) {
         return this.prisma.user.findFirst({

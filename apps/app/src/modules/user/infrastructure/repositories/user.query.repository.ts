@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
+import { ProfileViewModel } from '../../../../helpers/types/types'
 
 @Injectable()
 export class UserQueryRepository {
@@ -45,8 +46,77 @@ export class UserQueryRepository {
                 userName: true,
                 email: true,
                 createdAt: true,
+                Profile: true,
             },
         })
+    }
+
+    // async getProfile(userId: number): Promise<ProfileViewModel> {
+    //     const result = await this.prisma.user.findFirst({
+    //         where: { id: userId },
+    //         select: {
+    //             id: true,
+    //             email: true,
+    //             createdAt: true,
+    //             updatedAt: true,
+    //             Profile: true,
+    //             EmailExpiration: true,
+    //         },
+    //     })
+    //     return {
+    //         userId: result.id,
+    //         email: result.email,
+    //         emailIsConfirm: result.EmailExpiration.isConfirmed,
+    //         createdAt: result.createdAt.toString(),
+    //         updatedAt: result.updatedAt.toString(),
+    //         profile: {
+    //             firstName: result.Profile.firstName,
+    //             lastName: result.Profile.lastName,
+    //             dateOfBirth: result.Profile.dateOfBirth.toString(),
+    //             country: result.Profile.country,
+    //             city: result.Profile.city,
+    //             aboutMe: result.Profile.aboutMe,
+    //             avatarId: result.Profile.avatarId,
+    //         },
+    //     }
+    // }
+
+    async getProfile(userId: number): Promise<ProfileViewModel | null> {
+        const result = await this.prisma.user.findFirst({
+            where: { id: userId },
+            select: {
+                id: true,
+                userName: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                Profile: true,
+                EmailExpiration: true,
+            },
+        })
+        if (result) {
+            return {
+                id: result.id,
+                userName: result.userName,
+                email: result.email,
+                emailIsConfirm: result.EmailExpiration.isConfirmed,
+                createdAt: result.createdAt.toString(),
+                updatedAt: result.updatedAt.toString(),
+                profile: result.Profile
+                    ? {
+                          firstName: result.Profile.firstName,
+                          lastName: result.Profile.lastName,
+                          dateOfBirth: result.Profile.dateOfBirth.toString(),
+                          country: result.Profile.country,
+                          city: result.Profile.city,
+                          aboutMe: result.Profile.aboutMe,
+                          avatarId: result.Profile.avatarId,
+                      }
+                    : null,
+            }
+        } else {
+            return null
+        }
     }
 
     // for test

@@ -4,7 +4,7 @@ import { ProfileTpeDTOSwagger } from '../user/types'
 
 export function GetAllUsersEndpoint() {
     return applyDecorators(
-        ApiTags('Testing'),
+        ApiTags('admin'),
         ApiOperation({ summary: 'Get all users' }),
         ApiResponse({
             status: HttpStatus.OK,

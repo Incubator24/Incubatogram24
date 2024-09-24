@@ -9,6 +9,7 @@ import {
     HttpStatus,
     Injectable,
     Ip,
+    NotFoundException,
     Post,
     Query,
     Req,
@@ -337,6 +338,11 @@ export class AuthController {
         @UserId()
         userId: number
     ) {
-        return await this.userQueryRepository.findUserById(userId)
+        const getProfile = await this.userQueryRepository.getProfile(userId)
+        if (getProfile) {
+            return getProfile
+        } else {
+            throw new NotFoundException()
+        }
     }
 }

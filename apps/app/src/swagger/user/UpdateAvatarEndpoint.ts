@@ -1,8 +1,14 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger'
 
 export function UpdateAvatarEndpoint() {
     return applyDecorators(
+        ApiTags('profile'),
         ApiOperation({ summary: 'update avatar' }),
         ApiBearerAuth('JWT-auth'),
         ApiResponse({

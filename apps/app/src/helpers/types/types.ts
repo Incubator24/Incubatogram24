@@ -1,3 +1,5 @@
+import { EmailExpiration, Profile, User } from '@prisma/client'
+
 export type UserWithEmailViewModel = {
     id: number
     login: string
@@ -45,4 +47,23 @@ export type EmailExpirationRawType = {
     emailExpiration: Date
     isConfirmed: boolean
     userId: number
+}
+
+type ProfileType = {
+    firstName: string
+    lastName: string
+    dateOfBirth: string
+    country: string
+    city: string
+    aboutMe: string
+    avatarId: string
+}
+export type ProfileViewModel = {
+    id: number
+    userName: string
+    email: string
+    emailIsConfirm: boolean
+    createdAt: string
+    updatedAt: string
+    profile: ProfileType | null
 }

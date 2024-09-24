@@ -5,6 +5,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    NotFoundException,
     Param,
     ParseFilePipeBuilder,
     Post,
@@ -14,7 +15,6 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { CommandBus } from '@nestjs/cqrs'
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
@@ -35,10 +35,11 @@ import { UpdateProfileEndpoint } from '../../../swagger/user/UpdateProfileEndpoi
 import { mappingErrorStatus } from '../../../helpers/types/helpersType'
 import Configuration from '../../../config/configuration'
 import { UpdateAvatarEndpoint } from '../../../swagger/user/UpdateAvatarEndpoint'
-import { GetAllUsersEndpoint } from '../../../swagger/for-test/GetAllUsers'
-import { RemoveUserByIdEndpoint } from '../../../swagger/for-test/RemoveUserById'
+import { GetAllUsersEndpoint } from '../../../swagger/superAdmin/GetAllUsers'
+import { RemoveUserByIdEndpoint } from '../../../swagger/superAdmin/RemoveUserById'
+import { GetAvatarEndpoint } from '../../../swagger/user/GetAvatarEndpoint'
+import { DeleteAvatarEndpoint } from '../../../swagger/user/DeleteAvatarEndpoint'
 
-@ApiTags('profile')
 @Controller('profile')
 export class UserController {
     constructor(
@@ -50,7 +51,12 @@ export class UserController {
     @Get(':id')
     @GetProfileEndpoint()
     async getProfile(@Param('id') id: string) {
-        return await this.userQueryRepository.findUserById(+id)
+        const getProfile = await this.userQueryRepository.getProfile(+id)
+        if (getProfile) {
+            return getProfile
+        } else {
+            throw new NotFoundException()
+        }
     }
 
     @Post('settings')
@@ -67,10 +73,11 @@ export class UserController {
         )
         if (createdProfile.data === null)
             return mappingErrorStatus(createdProfile)
-        return createdProfile
+        return await this.userQueryRepository.getProfile(userId)
     }
 
     @Put('settings')
+    @HttpCode(HttpStatus.NO_CONTENT)
     @UpdateProfileEndpoint()
     @UseGuards(JwtAuthGuard)
     async changeProfile(
@@ -88,6 +95,7 @@ export class UserController {
     }
 
     @Get('avatar')
+    @GetAvatarEndpoint()
     @HttpCode(HttpStatus.OK)
     async getAvatar(
         @Query('userId')
@@ -144,6 +152,7 @@ export class UserController {
 
     @UseGuards(JwtAuthGuard)
     @Delete('avatar')
+    @DeleteAvatarEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     @UseInterceptors(FileInterceptor('file'))
     async deleteAvatar(

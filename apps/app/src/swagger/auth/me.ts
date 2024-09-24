@@ -1,6 +1,6 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { UserInfoDTO } from '../../modules/auth/api/dto/UserInfoDto'
+import { UserTypeDTOSwagger } from '../user/types'
 
 export function Me() {
     return applyDecorators(
@@ -12,7 +12,7 @@ export function Me() {
         ApiResponse({
             status: HttpStatus.OK,
             description: 'Success',
-            type: UserInfoDTO,
+            type: UserTypeDTOSwagger,
         }),
         ApiResponse({
             status: HttpStatus.UNAUTHORIZED,

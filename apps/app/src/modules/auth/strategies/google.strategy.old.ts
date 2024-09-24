@@ -25,7 +25,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
             profile,
             'google'
         )
-        console.log('user after validate = ', user)
         done(null, user)
     }
 }

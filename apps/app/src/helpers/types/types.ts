@@ -19,6 +19,26 @@ export type CreatedUserDto = {
     isDeleted: boolean
 }
 
+export type CreatedUserWithGoogleProviderDto = {
+    email: string
+    userName: string
+    createdAt: string
+    updatedAt: string
+    isDeleted: boolean
+    googleId: string
+    googleEmail: string
+}
+
+export type CreatedUserWithGithubProviderDto = {
+    email: string
+    userName: string
+    createdAt: string
+    updatedAt: string
+    isDeleted: boolean
+    githubId: string
+    githubEmail: string
+}
+
 export type EmailExpirationRawType = {
     id: number
     confirmationCode: string

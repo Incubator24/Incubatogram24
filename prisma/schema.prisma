@@ -43,11 +43,14 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @default(now()) @updatedAt
   isDeleted        Boolean           @default(false)
+  githubId         String?
+  githubEmail      String?
+  googleId         String?
+  googleEmail      String?
   device           Device[]
   EmailExpiration  EmailExpiration?
   PasswordRecovery PasswordRecovery?
   Profile          Profile?
-  Providers        Providers[]
 }
 
 model EmailExpiration {
@@ -84,16 +87,16 @@ model Profile {
   // PostImages  PostImages[]
 }
 
-model Providers {
-  id         Int          @id @default(autoincrement())
-  providerId String
-  type       ProviderType
-  email      String?
-  userName   String?
-  userId     Int
-  // owner      User         @relation("UserAccounts", fields: [userId], references: [id])
-  User       User         @relation(fields: [userId], references: [id])
-}
+// model Providers {
+//   id         Int          @id @default(autoincrement())
+//   providerId String
+//   type       ProviderType
+//   email      String?
+//   userName   String?
+//   userId     Int
+//   // owner      User         @relation("UserAccounts", fields: [userId], references: [id])
+//   User       User         @relation(fields: [userId], references: [id])
+// }
 
 // model Post {
 //   id          Int          @id @default(autoincrement())

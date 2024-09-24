@@ -12,6 +12,8 @@ import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import {
     CreatedUserDto,
+    CreatedUserWithGithubProviderDto,
+    CreatedUserWithGoogleProviderDto,
     UserWithEmailViewModel,
 } from '../../../../helpers/types/types'
 import {
@@ -54,28 +56,46 @@ export class UserRepository implements IUserRepository {
     //         avatarId: avatarId,
     //     }
     // }
+    // async findUserById(userId: number): Promise<any | null> {
+    //     const foundUser: any = (await this.prisma.user.findUnique({
+    //         where: {
+    //             id: userId,
+    //         },
+    //         include: {
+    //             Profile: true,
+    //         },
+    //     })) as User
+    //     if (!foundUser) {
+    //         return null
+    //     }
+    //
+    //     const avatarId = foundUser.Profile?.avatarId || null
+    //
+    //     return {
+    //         id: foundUser.id,
+    //         userName: foundUser.userName,
+    //         name: foundUser.userName,
+    //         email: foundUser.email,
+    //         createdAt: foundUser.createdAt,
+    //         avatarId: avatarId,
+    //     }
+    // }
     async findUserById(userId: number): Promise<any | null> {
         const foundUser: any = (await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-            include: {
-                Profile: true,
-            },
         })) as User
         if (!foundUser) {
             return null
         }
-
-        const avatarId = foundUser.Profile?.avatarId || null
-
         return {
             id: foundUser.id,
             userName: foundUser.userName,
             name: foundUser.userName,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            avatarId: avatarId,
+            avatarId: foundUser.avatarId,
         }
     }
 
@@ -92,6 +112,30 @@ export class UserRepository implements IUserRepository {
     async createUser(newUser: CreatedUserDto): Promise<number | null> {
         const createdUser = (await this.prisma.user.create({
             data: newUser,
+        })) as User
+        if (createdUser.id) {
+            return createdUser.id
+        }
+        return null
+    }
+
+    async createUserWithGoogleProvider(
+        createUserWithGoogleProvider: CreatedUserWithGoogleProviderDto
+    ): Promise<number | null> {
+        const createdUser = (await this.prisma.user.create({
+            data: createUserWithGoogleProvider,
+        })) as User
+        if (createdUser.id) {
+            return createdUser.id
+        }
+        return null
+    }
+
+    async createUserWithGithubProvider(
+        createUserWithGithubProvider: CreatedUserWithGithubProviderDto
+    ): Promise<number | null> {
+        const createdUser = (await this.prisma.user.create({
+            data: createUserWithGithubProvider,
         })) as User
         if (createdUser.id) {
             return createdUser.id
@@ -480,6 +524,53 @@ export class UserRepository implements IUserRepository {
             },
         })
     }
+    async findUserByGoogleId(googleId: string) {
+        return this.prisma.user.findFirst({
+            where: {
+                googleId: googleId,
+            },
+        })
+    }
+    async findUserByGithubId(githubId: string) {
+        return this.prisma.user.findFirst({
+            where: {
+                githubId: githubId,
+            },
+        })
+    }
+    async updateGoogleProvider(
+        userId: number,
+        googleEmail: string,
+        googleId?: string
+    ) {
+        const data: any = { googleEmail: googleEmail }
+        if (googleId) {
+            data.googleId = googleId
+        }
+        return this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: data,
+        })
+    }
+
+    async updateGithubProvider(
+        userId: number,
+        githubEmail: string,
+        githubId?: string
+    ) {
+        const data: any = { githubEmail: githubEmail }
+        if (githubId) {
+            data.githubId = githubId
+        }
+        return this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: data,
+        })
+    }
     async findUserIdByUserId(userId: string): Promise<number | null> {
         const id = Number(userId)
         if (isNaN(id)) return null
@@ -490,7 +581,6 @@ export class UserRepository implements IUserRepository {
         })) as User
         return foundUserId ? foundUserId.id : null
     }
-
     async deleteUserByUserId(userId: number) {
         const foundUser = await this.prisma.user.findUnique({
             where: { id: userId },

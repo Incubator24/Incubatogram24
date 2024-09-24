@@ -21,6 +21,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
         profile: any,
         done: (error: any, user: any) => void
     ) {
+        console.log('github = ', profile)
         try {
             const user = await this.authService.validateOAuthLogin(
                 profile,

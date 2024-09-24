@@ -1,5 +1,7 @@
 import {
     CreatedUserDto,
+    CreatedUserWithGithubProviderDto,
+    CreatedUserWithGoogleProviderDto,
     EmailExpirationRawType,
 } from '../../../../helpers/types/types'
 import {
@@ -19,13 +21,32 @@ export abstract class IUserRepository {
         email: string
     ): Promise<any>
     abstract findUserByEmail(email: string): Promise<User | null>
+    abstract findUserById(userId: number): Promise<User | null>
     abstract findUserByEmailCode(
         code: string
     ): Promise<EmailExpirationRawType | null>
     abstract findEmailConfirmationByUserId(
         userId: number
     ): Promise<EmailExpiration | null>
+    abstract findUserByGoogleId(googleId: string)
+    abstract findUserByGithubId(githubId: string)
+    abstract updateGoogleProvider(
+        userId: number,
+        googleEmail: string,
+        googleId?: string
+    )
+    abstract updateGithubProvider(
+        userId: number,
+        githubEmail: string,
+        githubId?: string
+    )
     abstract createUser(newUser: CreatedUserDto): Promise<number | null>
+    abstract createUserWithGoogleProvider(
+        createUserWithGoogleProvider: CreatedUserWithGoogleProviderDto
+    ): Promise<number | null>
+    abstract createUserWithGithubProvider(
+        createUserWithGithubProvider: CreatedUserWithGithubProviderDto
+    ): Promise<number | null>
     abstract createEmailExpiration(
         emailConfirmDto: EmailConfirmationType,
         userId: number

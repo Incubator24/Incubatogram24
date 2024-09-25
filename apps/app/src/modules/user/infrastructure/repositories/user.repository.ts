@@ -160,7 +160,7 @@ export class UserRepository implements IUserRepository {
         const updateAvatarUrlForCurrentUser = (await this.prisma.profile.update(
             {
                 where: {
-                    id: userId,
+                    userId: userId,
                 },
                 data: {
                     avatarId: url,
@@ -175,7 +175,7 @@ export class UserRepository implements IUserRepository {
     async deleteAvatarId(userId: number) {
         const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
             where: {
-                id: userId,
+                userId: userId,
             },
             data: {
                 avatarId: null,

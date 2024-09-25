@@ -93,6 +93,7 @@ export class AuthController {
         @Ip() ip: string,
         @UserId() userId: number
     ) {
+        console.log('userId = ', userId)
         userAgent = userAgent ?? 'unknow'
         const tokensInfo = await this.commandBus.execute(
             new AddDeviceInfoToDBCommand(userId, userAgent, ip)

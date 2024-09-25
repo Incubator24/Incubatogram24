@@ -7,11 +7,13 @@ import {
     User,
 } from '@prisma/client'
 import { add } from 'date-fns'
-import { CreateProfileDto } from '../../dto/CreateProfileDto'
-import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import {
     CreatedUserDto,
+    CreatedUserWithGithubProviderDto,
+    CreatedUserWithGoogleProviderDto,
     UserWithEmailViewModel,
 } from '../../../../helpers/types/types'
 import {
@@ -54,29 +56,52 @@ export class UserRepository implements IUserRepository {
     //         avatarId: avatarId,
     //     }
     // }
+    // async findUserById(userId: number): Promise<any | null> {
+    //     const foundUser: any = (await this.prisma.user.findUnique({
+    //         where: {
+    //             id: userId,
+    //         },
+    //         include: {
+    //             Profile: true,
+    //         },
+    //     })) as User
+    //     if (!foundUser) {
+    //         return null
+    //     }
+    //
+    //     const avatarId = foundUser.Profile?.avatarId || null
+    //
+    //     return {
+    //         id: foundUser.id,
+    //         userName: foundUser.userName,
+    //         name: foundUser.userName,
+    //         email: foundUser.email,
+    //         createdAt: foundUser.createdAt,
+    //         avatarId: avatarId,
+    //     }
+    // }
     async findUserById(userId: number): Promise<any | null> {
         const foundUser: any = (await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-            include: {
-                Profile: true,
-            },
         })) as User
         if (!foundUser) {
             return null
         }
-
-        const avatarId = foundUser.Profile?.avatarId || null
-
         return {
             id: foundUser.id,
             userName: foundUser.userName,
             name: foundUser.userName,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            avatarId: avatarId,
+            avatarId: foundUser.avatarId,
         }
+    }
+    async foundProfileFromUserId(userId: number): Promise<Profile | null> {
+        return this.prisma.profile.findFirst({
+            where: { userId: userId },
+        })
     }
 
     // async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {
@@ -92,6 +117,30 @@ export class UserRepository implements IUserRepository {
     async createUser(newUser: CreatedUserDto): Promise<number | null> {
         const createdUser = (await this.prisma.user.create({
             data: newUser,
+        })) as User
+        if (createdUser.id) {
+            return createdUser.id
+        }
+        return null
+    }
+
+    async createUserWithGoogleProvider(
+        createUserWithGoogleProvider: CreatedUserWithGoogleProviderDto
+    ): Promise<number | null> {
+        const createdUser = (await this.prisma.user.create({
+            data: createUserWithGoogleProvider,
+        })) as User
+        if (createdUser.id) {
+            return createdUser.id
+        }
+        return null
+    }
+
+    async createUserWithGithubProvider(
+        createUserWithGithubProvider: CreatedUserWithGithubProviderDto
+    ): Promise<number | null> {
+        const createdUser = (await this.prisma.user.create({
+            data: createUserWithGithubProvider,
         })) as User
         if (createdUser.id) {
             return createdUser.id
@@ -405,33 +454,39 @@ export class UserRepository implements IUserRepository {
     }
 
     async updateProfile(changeProfileDto: UpdateProfileDto, userId: number) {
-        const dataToUpdate: any = {
+        const dataToUpdateProfile: any = {
             dateOfBirth: new Date(changeProfileDto.dateOfBirth),
         }
 
         if (changeProfileDto.firstName) {
-            dataToUpdate.firstName = changeProfileDto.firstName
+            dataToUpdateProfile.firstName = changeProfileDto.firstName
         }
 
         if (changeProfileDto.lastName) {
-            dataToUpdate.lastName = changeProfileDto.lastName
+            dataToUpdateProfile.lastName = changeProfileDto.lastName
         }
 
         if (changeProfileDto.aboutMe) {
-            dataToUpdate.aboutMe = changeProfileDto.aboutMe
+            dataToUpdateProfile.aboutMe = changeProfileDto.aboutMe
         }
         if (changeProfileDto.city) {
-            dataToUpdate.city = changeProfileDto.city
+            dataToUpdateProfile.city = changeProfileDto.city
         }
         const updateProfile = await this.prisma.profile.updateMany({
             where: { id: userId },
-            data: dataToUpdate,
+            data: dataToUpdateProfile,
         })
+
+        const dataToUpdateUser: any = {}
+
+        if (changeProfileDto.userName) {
+            dataToUpdateUser.userName = changeProfileDto.userName
+        }
 
         if (changeProfileDto.userName) {
             await this.prisma.user.update({
                 where: { id: userId },
-                data: changeProfileDto.userName,
+                data: dataToUpdateUser,
             })
         }
 
@@ -480,6 +535,61 @@ export class UserRepository implements IUserRepository {
             },
         })
     }
+
+    async isConfirmEmail(userId: number): Promise<boolean> {
+        const emailExpiration = (await this.prisma.emailExpiration.findFirst({
+            where: { userId: userId },
+            select: { isConfirmed: true },
+        })) as EmailExpiration
+        return emailExpiration ? emailExpiration.isConfirmed : false
+    }
+    async findUserByGoogleId(googleId: string) {
+        return this.prisma.user.findFirst({
+            where: {
+                googleId: googleId,
+            },
+        })
+    }
+    async findUserByGithubId(githubId: string) {
+        return this.prisma.user.findFirst({
+            where: {
+                githubId: githubId,
+            },
+        })
+    }
+    async updateGoogleProvider(
+        userId: number,
+        googleEmail: string,
+        googleId?: string
+    ) {
+        const data: any = { googleEmail: googleEmail }
+        if (googleId) {
+            data.googleId = googleId
+        }
+        return this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: data,
+        })
+    }
+
+    async updateGithubProvider(
+        userId: number,
+        githubEmail: string,
+        githubId?: string
+    ) {
+        const data: any = { githubEmail: githubEmail }
+        if (githubId) {
+            data.githubId = githubId
+        }
+        return this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: data,
+        })
+    }
     async findUserIdByUserId(userId: string): Promise<number | null> {
         const id = Number(userId)
         if (isNaN(id)) return null
@@ -490,7 +600,6 @@ export class UserRepository implements IUserRepository {
         })) as User
         return foundUserId ? foundUserId.id : null
     }
-
     async deleteUserByUserId(userId: number) {
         const foundUser = await this.prisma.user.findUnique({
             where: { id: userId },

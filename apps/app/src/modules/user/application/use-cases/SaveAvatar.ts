@@ -29,6 +29,7 @@ export class SaveAvatar implements ICommandHandler<SaveAvatarUseCaseCommand> {
             command.file.mimetype,
             command.file.buffer
         )
+        console.log(result)
         if (!result) {
             return {
                 data: null,

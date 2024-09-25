@@ -36,22 +36,50 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 errorsMessages: [],
             }
 
+            // const responseBody: any = exception.getResponse()
+            //
+            // responseBody.message.forEach((m) =>
+            //     errorResponse.errorsMessages.push(m)
+            // )
+            // response.status(status).json(errorResponse)
+
             const responseBody: any = exception.getResponse()
 
-            responseBody.message.forEach((m) =>
-                errorResponse.errorsMessages.push(m)
-            )
+            // Проверяем, является ли message массивом
+            if (Array.isArray(responseBody.message)) {
+                responseBody.message.forEach((m) =>
+                    errorResponse.errorsMessages.push(m)
+                )
+            } else if (typeof responseBody.message === 'string') {
+                // Если message - строка, добавляем её в массив
+                errorResponse.errorsMessages.push(responseBody.message)
+            }
+
             response.status(status).json(errorResponse)
         } else if (status === 404) {
             const errorResponse: any = {
                 errorsMessages: [],
             }
 
+            // const responseBody: any = exception.getResponse()
+            //
+            // responseBody.message.forEach((m) =>
+            //     errorResponse.errorsMessages.push(m)
+            // )
+            // response.status(status).json(errorResponse)
+
             const responseBody: any = exception.getResponse()
 
-            responseBody.message.forEach((m) =>
-                errorResponse.errorsMessages.push(m)
-            )
+            // Проверяем, является ли message массивом
+            if (Array.isArray(responseBody.message)) {
+                responseBody.message.forEach((m) =>
+                    errorResponse.errorsMessages.push(m)
+                )
+            } else if (typeof responseBody.message === 'string') {
+                // Если message - строка, добавляем её в массив
+                errorResponse.errorsMessages.push(responseBody.message)
+            }
+
             response.status(status).json(errorResponse)
         } else {
             response.status(status).json({

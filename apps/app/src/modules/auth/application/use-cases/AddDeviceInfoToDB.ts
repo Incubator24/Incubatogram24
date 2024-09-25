@@ -38,11 +38,9 @@ export class AddDeviceInfoToDB
         const refreshToken = await this.commandBus.execute(
             new CreateRefreshJWTCommand(command.userId, currentDeviceId)
         )
-
         const getInfoFromRefreshToken = await this.commandBus.execute(
             new GetTokenInfoByRefreshTokenCommand(refreshToken.refreshToken)
         )
-
         if (getInfoFromRefreshToken.data === null) {
             return {
                 data: null,
@@ -60,7 +58,6 @@ export class AddDeviceInfoToDB
         }
         const isCreated =
             await this.authRepository.createOrUpdateRefreshToken(result)
-
         if (!isCreated) {
             return {
                 data: null,

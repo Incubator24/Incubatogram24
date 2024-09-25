@@ -5,6 +5,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    NotFoundException,
     Param,
     ParseFilePipeBuilder,
     Post,
@@ -14,43 +15,49 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { CommandBus } from '@nestjs/cqrs'
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { UserId } from '../../auth/api/decorators/user.decorator'
-import { DeleteAvatarUseCaseCommand } from './use-cases/DeleteAvatar'
-import { SaveAvatarUseCaseCommand } from './use-cases/SaveAvatar'
+import { DeleteAvatarUseCaseCommand } from '../application/use-cases/DeleteAvatar'
+import { SaveAvatarUseCaseCommand } from '../application/use-cases/SaveAvatar'
 
 import { UserQueryRepository } from '../infrastructure/repositories/user.query.repository'
-import { CreateProfileDto } from '../dto/CreateProfileDto'
-import { UpdateProfileCommand } from './use-cases/UpdateProfile'
+import { CreateProfileDto } from './dto/CreateProfileDto'
+import { UpdateProfileCommand } from '../application/use-cases/UpdateProfile'
 import { UserRepository } from '../infrastructure/repositories/user.repository'
-import { UpdateProfileDto } from '../dto/UpdateProfileDto'
-import { CreateProfileCommand } from './use-cases/CreateProfile'
-import { RemoveUserByIdCommand } from './use-cases/RemoveUserById'
+import { UpdateProfileDto } from './dto/UpdateProfileDto'
+import { CreateProfileCommand } from '../application/use-cases/CreateProfile'
+import { RemoveUserByIdCommand } from '../application/use-cases/RemoveUserById'
 import { GetProfileEndpoint } from '../../../swagger/user/GetProfileEndpoint'
 import { CreateProfileEndpoint } from '../../../swagger/user/CreateProfileEndpoint'
 import { UpdateProfileEndpoint } from '../../../swagger/user/UpdateProfileEndpoint'
 import { mappingErrorStatus } from '../../../helpers/types/helpersType'
 import Configuration from '../../../config/configuration'
 import { UpdateAvatarEndpoint } from '../../../swagger/user/UpdateAvatarEndpoint'
-import { GetAllUsersEndpoint } from '../../../swagger/for-test/GetAllUsers'
-import { RemoveUserByIdEndpoint } from '../../../swagger/for-test/RemoveUserById'
+import { GetAllUsersEndpoint } from '../../../swagger/superAdmin/GetAllUsers'
+import { RemoveUserByIdEndpoint } from '../../../swagger/superAdmin/RemoveUserById'
+import { GetAvatarEndpoint } from '../../../swagger/user/GetAvatarEndpoint'
+import { DeleteAvatarEndpoint } from '../../../swagger/user/DeleteAvatarEndpoint'
+import { IUserRepository } from '../infrastructure/interfaces/user.repository.interface'
 
-@ApiTags('profile')
 @Controller('profile')
 export class UserController {
     constructor(
         private readonly commandBus: CommandBus,
-        private readonly userRepository: UserRepository,
+        private readonly userRepository: IUserRepository,
         private readonly userQueryRepository: UserQueryRepository
     ) {}
 
     @Get(':id')
     @GetProfileEndpoint()
     async getProfile(@Param('id') id: string) {
-        return await this.userQueryRepository.findUserById(+id)
+        const getProfile = await this.userQueryRepository.getProfile(+id)
+        if (getProfile) {
+            return getProfile
+        } else {
+            throw new NotFoundException()
+        }
     }
 
     @Post('settings')
@@ -67,10 +74,11 @@ export class UserController {
         )
         if (createdProfile.data === null)
             return mappingErrorStatus(createdProfile)
-        return createdProfile
+        return await this.userQueryRepository.getProfile(userId)
     }
 
     @Put('settings')
+    @HttpCode(HttpStatus.NO_CONTENT)
     @UpdateProfileEndpoint()
     @UseGuards(JwtAuthGuard)
     async changeProfile(
@@ -87,27 +95,28 @@ export class UserController {
         return updateProfile
     }
 
-    @Get('avatar')
+    @Get('avatar/:userId')
+    @GetAvatarEndpoint()
     @HttpCode(HttpStatus.OK)
-    async getAvatar(
-        @Query('userId')
-        userId: number
-    ) {
-        const userInfo = await this.userRepository.findUserById(userId)
-        //fix this
-        if (userInfo.avatarId === null) {
+    async getAvatar(@Param('userId') userId: number) {
+        console.log('1')
+        const foundProfileFromUserId =
+            await this.userRepository.foundProfileFromUserId(userId)
+        console.log('foundProfileFromUserId = ', foundProfileFromUserId)
+        if (foundProfileFromUserId.avatarId === null) {
             return 'This user hasn`t avatar'
         }
 
         // res.redirect(
         //     Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET +
-        //         userInfo.avatarId
+        //         foundProfileFromUserId.avatarId
         // )
         //change redirect
         return {
             url:
                 Configuration.getConfiguration()
-                    .YANDEX_S3_ENDPOINT_WITH_BUCKET + userInfo.avatarId,
+                    .YANDEX_S3_ENDPOINT_WITH_BUCKET +
+                foundProfileFromUserId.avatarId,
         }
     }
 
@@ -144,6 +153,7 @@ export class UserController {
 
     @UseGuards(JwtAuthGuard)
     @Delete('avatar')
+    @DeleteAvatarEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     @UseInterceptors(FileInterceptor('file'))
     async deleteAvatar(

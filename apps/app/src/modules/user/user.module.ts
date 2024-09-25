@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { CqrsModule } from '@nestjs/cqrs'
-import { UserController } from './application/user.controller'
+import { UserController } from './api/user.controller'
 import { UserQueryRepository } from './infrastructure/repositories/user.query.repository'
 import { GetUserIdByIdUseCase } from './application/use-cases/GetUserIdByUserId'
 import { UserRepository } from './infrastructure/repositories/user.repository'

@@ -5,6 +5,7 @@ import { UserRepository } from '../../../../user/infrastructure/repositories/use
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { ResultObject } from '../../../../../helpers/types/helpersType'
 import Configuration from '../../../../../config/configuration'
+import { IUserRepository } from '../../../../user/infrastructure/interfaces/user.repository.interface'
 
 @Injectable()
 export class GetTokenInfoByRefreshTokenCommand {
@@ -15,7 +16,7 @@ export class GetTokenInfoByRefreshTokenCommand {
 export class GetTokenInfoByRefreshToken
     implements ICommandHandler<GetTokenInfoByRefreshTokenCommand>
 {
-    constructor(private usersQueryRepository: UserRepository) {}
+    constructor(private usersRepository: IUserRepository) {}
 
     async execute(
         command: GetTokenInfoByRefreshTokenCommand
@@ -38,8 +39,7 @@ export class GetTokenInfoByRefreshToken
                 message: 'something wrong with refresh token',
             }
         }
-
-        const currentUser = await this.usersQueryRepository.findUserById(
+        const currentUser = await this.usersRepository.findUserById(
             result.userId
         )
         if (!currentUser) {

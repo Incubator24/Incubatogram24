@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 export function RemoveAllDataEndpoint() {
     return applyDecorators(
-        ApiTags('Testing'),
+        ApiTags('admin'),
         ApiOperation({
             summary:
                 'Clear database: delete all data from all tables/collections',

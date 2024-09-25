@@ -1,5 +1,7 @@
 import {
     CreatedUserDto,
+    CreatedUserWithGithubProviderDto,
+    CreatedUserWithGoogleProviderDto,
     EmailExpirationRawType,
 } from '../../../../helpers/types/types'
 import {
@@ -10,7 +12,9 @@ import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
 } from '../../../../helpers/types/passwordRecoveryDto'
-import { EmailExpiration, User } from '@prisma/client'
+import { EmailExpiration, Profile, User } from '@prisma/client'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 
 export abstract class IUserRepository {
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>
@@ -19,13 +23,36 @@ export abstract class IUserRepository {
         email: string
     ): Promise<any>
     abstract findUserByEmail(email: string): Promise<User | null>
+    abstract findUserById(userId: number): Promise<User | null>
     abstract findUserByEmailCode(
         code: string
     ): Promise<EmailExpirationRawType | null>
     abstract findEmailConfirmationByUserId(
         userId: number
     ): Promise<EmailExpiration | null>
+    abstract foundProfileFromUserId(userId: number): Promise<Profile | null>
+    abstract isConfirmEmail(userId: number): Promise<boolean>
+    abstract findUserByGoogleId(googleId: string)
+    abstract findUserByGithubId(githubId: string)
+    abstract updateGoogleProvider(
+        userId: number,
+        googleEmail: string,
+        googleId?: string
+    )
+    abstract updateGithubProvider(
+        userId: number,
+        githubEmail: string,
+        githubId?: string
+    )
+    abstract createProfile(userId: number, createProfileDto: CreateProfileDto)
+    abstract updateProfile(changeProfileDto: UpdateProfileDto, userId: number)
     abstract createUser(newUser: CreatedUserDto): Promise<number | null>
+    abstract createUserWithGoogleProvider(
+        createUserWithGoogleProvider: CreatedUserWithGoogleProviderDto
+    ): Promise<number | null>
+    abstract createUserWithGithubProvider(
+        createUserWithGithubProvider: CreatedUserWithGithubProviderDto
+    ): Promise<number | null>
     abstract createEmailExpiration(
         emailConfirmDto: EmailConfirmationType,
         userId: number
@@ -46,5 +73,6 @@ export abstract class IUserRepository {
         userId: number,
         updatePasswordDto: UpdatePasswordDto
     )
+    abstract deleteAvatarId(userId: number)
     abstract deleteUserByUserId(userId: number)
 }

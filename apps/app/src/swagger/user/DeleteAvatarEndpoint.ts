@@ -6,18 +6,14 @@ import {
     ApiTags,
 } from '@nestjs/swagger'
 
-export function UpdateProfileEndpoint() {
+export function DeleteAvatarEndpoint() {
     return applyDecorators(
         ApiTags('profile'),
-        ApiOperation({ summary: 'Update current profile' }),
+        ApiOperation({ summary: 'Delete avatar' }),
         ApiBearerAuth('JWT-auth'),
         ApiResponse({
             status: HttpStatus.NO_CONTENT,
             description: 'No Content',
-        }),
-        ApiResponse({
-            status: HttpStatus.UNAUTHORIZED,
-            description: 'Unauthorized',
         })
     )
 }

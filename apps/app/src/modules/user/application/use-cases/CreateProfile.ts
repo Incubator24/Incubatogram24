@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserRepository } from '../../infrastructure/repositories/user.repository'
-import { CreateProfileDto } from '../../dto/CreateProfileDto'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
 import { HttpStatus } from '@nestjs/common'
 import { UserWithEmailViewModel } from '../../../../helpers/types/types'
 import { isOlderThan13 } from '../../../../helpers/functions'

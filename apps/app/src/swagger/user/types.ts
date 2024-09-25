@@ -33,6 +33,10 @@ export class UserTypeDTOSwagger {
     @ApiProperty({ example: ProfileTpeDTOSwagger })
     profile: ProfileTpeDTOSwagger
 }
+export class UrlAvatarSwagger {
+    @ApiProperty({ example: 'string' })
+    url: string
+}
 
 export class UpdateProfileTpeDTOSwagger {
     @ApiProperty({ example: 1 })

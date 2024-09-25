@@ -9,7 +9,11 @@ import {
 export function DeleteAvatarEndpoint() {
     return applyDecorators(
         ApiTags('profile'),
-        ApiOperation({ summary: 'delete avatar' }),
-        ApiBearerAuth('JWT-auth')
+        ApiOperation({ summary: 'Delete avatar' }),
+        ApiBearerAuth('JWT-auth'),
+        ApiResponse({
+            status: HttpStatus.NO_CONTENT,
+            description: 'No Content',
+        })
     )
 }

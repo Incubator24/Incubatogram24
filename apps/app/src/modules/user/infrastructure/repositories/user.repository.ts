@@ -7,8 +7,8 @@ import {
     User,
 } from '@prisma/client'
 import { add } from 'date-fns'
-import { CreateProfileDto } from '../../dto/CreateProfileDto'
-import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import {
     CreatedUserDto,
@@ -97,6 +97,11 @@ export class UserRepository implements IUserRepository {
             createdAt: foundUser.createdAt,
             avatarId: foundUser.avatarId,
         }
+    }
+    async foundProfileFromUserId(userId: number): Promise<Profile | null> {
+        return this.prisma.profile.findFirst({
+            where: { userId: userId },
+        })
     }
 
     // async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {

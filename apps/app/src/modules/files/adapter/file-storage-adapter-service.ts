@@ -47,11 +47,10 @@ export class S3StorageAdapter {
         }
 
         const command = new PutObjectCommand(bucketParams)
-
         try {
             const uploadResult: PutObjectCommandOutput =
                 await this.s3Client.send(command)
-
+            console.log('uploadResult = ', uploadResult)
             return {
                 url: key,
                 fileId: uploadResult.ETag,
@@ -63,7 +62,8 @@ export class S3StorageAdapter {
     }
 
     async deleteAvatar(userId: number) {
-        const currentUserInfo = await this.userRepository.findUserById(userId)
+        const currentUserInfo =
+            await this.userRepository.foundProfileFromUserId(userId)
         if (!currentUserInfo) {
             return false
         }

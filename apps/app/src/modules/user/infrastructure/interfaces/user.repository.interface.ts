@@ -12,9 +12,9 @@ import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
 } from '../../../../helpers/types/passwordRecoveryDto'
-import { EmailExpiration, User } from '@prisma/client'
-import { CreateProfileDto } from '../../dto/CreateProfileDto'
-import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
+import { EmailExpiration, Profile, User } from '@prisma/client'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 
 export abstract class IUserRepository {
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>
@@ -30,6 +30,7 @@ export abstract class IUserRepository {
     abstract findEmailConfirmationByUserId(
         userId: number
     ): Promise<EmailExpiration | null>
+    abstract foundProfileFromUserId(userId: number): Promise<Profile | null>
     abstract isConfirmEmail(userId: number): Promise<boolean>
     abstract findUserByGoogleId(googleId: string)
     abstract findUserByGithubId(githubId: string)
@@ -72,5 +73,6 @@ export abstract class IUserRepository {
         userId: number,
         updatePasswordDto: UpdatePasswordDto
     )
+    abstract deleteAvatarId(userId: number)
     abstract deleteUserByUserId(userId: number)
 }

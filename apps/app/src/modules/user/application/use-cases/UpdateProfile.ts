@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserRepository } from '../../infrastructure/repositories/user.repository'
 import { HttpStatus } from '@nestjs/common'
-import { UpdateProfileDto } from '../../dto/UpdateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import { UserWithEmailViewModel } from '../../../../helpers/types/types'
 import { isOlderThan13 } from '../../../../helpers/functions'
 import { IUserRepository } from '../../infrastructure/interfaces/user.repository.interface'

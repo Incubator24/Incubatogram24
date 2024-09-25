@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { UserRepository } from '../../infrastructure/repositories/user.repository'
 import { ResultObject } from '../../../../helpers/types/helpersType'
 import { S3StorageAdapter } from '../../../files/adapter/file-storage-adapter-service'
+import { IUserRepository } from '../../infrastructure/interfaces/user.repository.interface'
 
 @Injectable()
 export class DeleteAvatarUseCaseCommand {
@@ -16,16 +16,15 @@ export class DeleteAvatar
 {
     constructor(
         private fileStorage: S3StorageAdapter,
-        public userRepository: UserRepository
+        public userRepository: IUserRepository
     ) {}
 
     async execute(
         command: DeleteAvatarUseCaseCommand
     ): Promise<ResultObject<boolean>> {
-        const currentUser = await this.userRepository.findUserById(
-            command.userId
-        )
-        if (currentUser.avatarId === null) {
+        const foundUserProfile =
+            await this.userRepository.foundProfileFromUserId(command.userId)
+        if (foundUserProfile.avatarId === null) {
             return {
                 data: false,
                 resultCode: HttpStatus.BAD_REQUEST,

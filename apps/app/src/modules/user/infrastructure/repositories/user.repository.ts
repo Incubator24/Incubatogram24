@@ -157,6 +157,9 @@ export class UserRepository implements IUserRepository {
     }
 
     async updateAvatarId(userId: number, url: string) {
+        console.log('userId = ', userId)
+        const foundProfiles = await this.prisma.profile.findMany()
+        console.log('foundProfiles = ', foundProfiles)
         const updateAvatarUrlForCurrentUser = (await this.prisma.profile.update(
             {
                 where: {

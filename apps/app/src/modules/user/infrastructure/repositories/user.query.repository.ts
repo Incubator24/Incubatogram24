@@ -121,11 +121,40 @@ export class UserQueryRepository {
 
     // for test
     async getAllUsers() {
-        return this.prisma.user.findMany({
-            include: {
+        const result = await this.prisma.user.findMany({
+            select: {
+                id: true,
+                userName: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
                 Profile: true,
                 EmailExpiration: true,
             },
         })
+
+        if (result) {
+            return result.map((r) => ({
+                id: r.id,
+                userName: r.userName,
+                email: r.email,
+                emailIsConfirm: r.EmailExpiration.isConfirmed,
+                createdAt: r.createdAt.toString(),
+                updatedAt: r.updatedAt.toString(),
+                profile: r.Profile
+                    ? {
+                          firstName: r.Profile.firstName,
+                          lastName: r.Profile.lastName,
+                          dateOfBirth: r.Profile.dateOfBirth.toString(),
+                          country: r.Profile.country,
+                          city: r.Profile.city,
+                          aboutMe: r.Profile.aboutMe,
+                          avatarId: r.Profile.avatarId,
+                      }
+                    : null,
+            }))
+        }
+
+        return []
     }
 }

@@ -2,11 +2,9 @@ import { Injectable } from '@nestjs/common'
 import {
     EmailExpiration,
     PasswordRecovery,
-    Prisma,
     Profile,
     User,
 } from '@prisma/client'
-import { add } from 'date-fns'
 import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
 import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
@@ -14,7 +12,6 @@ import {
     CreatedUserDto,
     CreatedUserWithGithubProviderDto,
     CreatedUserWithGoogleProviderDto,
-    UserWithEmailViewModel,
 } from '../../../../helpers/types/types'
 import {
     EmailConfirmationType,

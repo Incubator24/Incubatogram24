@@ -1,3 +1,7 @@
+import { add } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
+import { CreatedEmailDto, CreatedPassDto } from './types/types'
+
 export const isOlderThan13 = (dateOfBirthString: string): boolean => {
     const dateOfBirth = new Date(dateOfBirthString)
     const today = new Date()
@@ -10,4 +14,25 @@ export const isOlderThan13 = (dateOfBirthString: string): boolean => {
     console.log(ageInYears)
 
     return ageInYears > 13
+}
+
+export function createEmailDto(isConfirmed: boolean): CreatedEmailDto {
+    return {
+        confirmationCode: uuidv4(),
+        emailExpiration: add(new Date(), {
+            hours: 24,
+            minutes: 3,
+        }),
+        isConfirmed: isConfirmed,
+    }
+}
+
+export function createPassDto(): CreatedPassDto {
+    return {
+        recoveryCode: uuidv4(),
+        expirationAt: add(new Date(), {
+            hours: 24,
+            minutes: 3,
+        }),
+    }
 }

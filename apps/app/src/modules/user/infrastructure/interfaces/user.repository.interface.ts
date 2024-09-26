@@ -55,7 +55,8 @@ export abstract class IUserRepository {
     ): Promise<number | null>
     abstract createEmailExpiration(
         emailConfirmDto: EmailConfirmationType,
-        userId: number
+        userId: number,
+        confirm?: boolean
     ): Promise<string | null>
     abstract createRecoveryCode(
         passRecoveryDto: PasswordRecoveryDto,

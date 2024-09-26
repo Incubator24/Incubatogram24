@@ -1,4 +1,5 @@
 import { EmailExpiration, Profile, User } from '@prisma/client'
+import { add } from 'date-fns'
 
 export type UserWithEmailViewModel = {
     id: number
@@ -66,4 +67,15 @@ export type ProfileViewModel = {
     createdAt: string
     updatedAt: string
     profile: ProfileType | null
+}
+
+export type CreatedEmailDto = {
+    confirmationCode: string
+    emailExpiration: Date
+    isConfirmed: boolean
+}
+
+export type CreatedPassDto = {
+    recoveryCode: string
+    expirationAt: Date
 }

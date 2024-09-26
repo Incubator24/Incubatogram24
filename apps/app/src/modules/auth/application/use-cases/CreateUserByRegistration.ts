@@ -10,8 +10,12 @@ import { ResultObject } from '../../../../helpers/types/helpersType'
 import Configuration from '../../../../config/configuration'
 import { EmailConfirmationType } from '../../../../helpers/types/emailConfirmationType'
 import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
-import { CreatedUserDto } from '../../../../helpers/types/types'
+import {
+    CreatedEmailDto,
+    CreatedUserDto,
+} from '../../../../helpers/types/types'
 import { PasswordRecoveryDto } from '../../../../helpers/types/passwordRecoveryDto'
+import { createEmailDto, createPassDto } from '../../../../helpers/functions'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {
@@ -116,26 +120,13 @@ export class CreateUserByRegistration
             }
         }
         // создаем объект для восстановления пароля
-        const passRecoveryDto: PasswordRecoveryDto = {
-            recoveryCode: uuidv4(),
-            expirationAt: add(new Date(), {
-                hours: 24,
-                minutes: 3,
-            }),
-        }
+        const passRecoveryDto: PasswordRecoveryDto = createPassDto()
         await this.userRepository.createRecoveryCode(
             passRecoveryDto,
             createdUserId
         )
         // создаем объект для отправки кода на мыло
-        const emailConfirmationInfo: EmailConfirmationType = {
-            confirmationCode: uuidv4(),
-            emailExpiration: add(new Date(), {
-                hours: 24,
-                minutes: 3,
-            }),
-            isConfirmed: false,
-        }
+        const emailConfirmationInfo: CreatedEmailDto = createEmailDto(false)
 
         const createdEmailConfirmationCode =
             await this.userRepository.createEmailExpiration(

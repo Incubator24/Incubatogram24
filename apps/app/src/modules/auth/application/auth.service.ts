@@ -5,9 +5,12 @@ import Configuration from '../../../config/configuration'
 import { UsersService } from '../../user/application/user.service'
 import { IUserRepository } from '../../user/infrastructure/interfaces/user.repository.interface'
 import {
+    CreatedEmailDto,
     CreatedUserWithGithubProviderDto,
     CreatedUserWithGoogleProviderDto,
 } from '../../../helpers/types/types'
+import { PasswordRecoveryDto } from '../../../helpers/types/passwordRecoveryDto'
+import { createEmailDto, createPassDto } from '../../../helpers/functions'
 
 @Injectable()
 export class AuthService {
@@ -71,6 +74,20 @@ export class AuthService {
                     await this.userRepository.createUserWithGoogleProvider(
                         createUserWithGoogleProvider
                     )
+                // создаем объект для восстановления пароля
+                const passRecoveryDto: PasswordRecoveryDto = createPassDto()
+                await this.userRepository.createRecoveryCode(
+                    passRecoveryDto,
+                    createdUserId
+                )
+                // создаем объект для отправки кода на мыло
+                const emailConfirmationInfo: CreatedEmailDto =
+                    createEmailDto(true)
+
+                await this.userRepository.createEmailExpiration(
+                    emailConfirmationInfo,
+                    createdUserId
+                )
                 return { id: createdUserId }
             }
         } else {
@@ -100,6 +117,20 @@ export class AuthService {
                     await this.userRepository.createUserWithGithubProvider(
                         createUserWithGithubProvider
                     )
+                // создаем объект для восстановления пароля
+                const passRecoveryDto: PasswordRecoveryDto = createPassDto()
+                await this.userRepository.createRecoveryCode(
+                    passRecoveryDto,
+                    createdUserId
+                )
+                // создаем объект для отправки кода на мыло
+                const emailConfirmationInfo: CreatedEmailDto =
+                    createEmailDto(true)
+
+                await this.userRepository.createEmailExpiration(
+                    emailConfirmationInfo,
+                    createdUserId
+                )
                 return { id: createdUserId }
             }
         }

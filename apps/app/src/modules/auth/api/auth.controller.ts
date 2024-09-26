@@ -292,9 +292,12 @@ export class AuthController {
 
         //передать инфу в access tokena, credencial отправить тоже  query ( url)  //res.redirect('https://incubatogram.org/auth/sign-up/congratulations')
 
+        // res.redirect(
+        //     Configuration.getConfiguration().FRONT_URL +
+        //         `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+        // )
         res.redirect(
-            Configuration.getConfiguration().FRONT_URL +
-                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+            `http://localhost:3000?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
         )
         return { accessToken: tokensInfo.data.accessToken }
     }
@@ -325,9 +328,13 @@ export class AuthController {
             httpOnly: true,
             secure: true,
         }).header('accessToken', tokensInfo.data.accessToken)
+        // res.redirect(
+        //     Configuration.getConfiguration().FRONT_URL +
+        //         `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+        // )
+        // return { accessToken: tokensInfo.data.accessToken }
         res.redirect(
-            Configuration.getConfiguration().FRONT_URL +
-                `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+            `http://localhost:3000?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
         )
         return { accessToken: tokensInfo.data.accessToken }
     }

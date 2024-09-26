@@ -13,7 +13,12 @@ export const appSettings = (app: INestApplication) => {
     //     origin: 'http://localhost:3000',
     //     credentials: true,
     // })
-    const allowedOrigins = ['http://localhost:3000', 'https://incubatogram.org']
+    const allowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:5000',
+        'https://incubatogram.org',
+        'https://app.incubatogram.org/api/v1',
+    ]
 
     app.enableCors({
         origin: (origin, callback) => {

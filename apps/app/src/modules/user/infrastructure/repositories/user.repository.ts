@@ -29,54 +29,6 @@ type GetFullInfoModelType = { user: User; emailExpiration: EmailExpiration }
 export class UserRepository implements IUserRepository {
     constructor(private prisma: PrismaService) {}
 
-    // async findUserById(userId: number): Promise<any | null> {
-    //     const foundUser = await this.prisma.user.findUnique({
-    //         where: {
-    //             id: userId,
-    //         },
-    //         include: {
-    //             Profile: true,
-    //         },
-    //     })
-    //     if (!foundUser) {
-    //         return null
-    //     }
-    //
-    //     const avatarId = foundUser.Profile?.avatarId || null
-    //
-    //     return {
-    //         id: foundUser.id,
-    //         userName: foundUser.userName,
-    //         name: foundUser.userName,
-    //         email: foundUser.email,
-    //         createdAt: foundUser.createdAt,
-    //         avatarId: avatarId,
-    //     }
-    // }
-    // async findUserById(userId: number): Promise<any | null> {
-    //     const foundUser: any = (await this.prisma.user.findUnique({
-    //         where: {
-    //             id: userId,
-    //         },
-    //         include: {
-    //             Profile: true,
-    //         },
-    //     })) as User
-    //     if (!foundUser) {
-    //         return null
-    //     }
-    //
-    //     const avatarId = foundUser.Profile?.avatarId || null
-    //
-    //     return {
-    //         id: foundUser.id,
-    //         userName: foundUser.userName,
-    //         name: foundUser.userName,
-    //         email: foundUser.email,
-    //         createdAt: foundUser.createdAt,
-    //         avatarId: avatarId,
-    //     }
-    // }
     async findUserById(userId: number): Promise<any | null> {
         const foundUser: any = (await this.prisma.user.findUnique({
             where: {
@@ -100,16 +52,6 @@ export class UserRepository implements IUserRepository {
             where: { userId: userId },
         })
     }
-
-    // async createUser(newUser: Prisma.UserCreateInput): Promise<number | null> {
-    //     const createdUser = await this.prisma.user.create({
-    //         data: newUser,
-    //     })
-    //     if (createdUser.id) {
-    //         return createdUser.id
-    //     }
-    //     return null
-    // }
 
     async createUser(newUser: CreatedUserDto): Promise<number | null> {
         const createdUser = (await this.prisma.user.create({
@@ -179,17 +121,22 @@ export class UserRepository implements IUserRepository {
     }
 
     async deleteAvatarId(userId: number) {
-        const updateAvatarUrlForCurrentUser = await this.prisma.profile.update({
-            where: {
-                userId: userId,
-            },
-            data: {
-                avatarId: null,
-            },
-        })
-        return updateAvatarUrlForCurrentUser
-            ? updateAvatarUrlForCurrentUser.avatarId === null
-            : false
+        try {
+            const updateAvatarUrlForCurrentUser =
+                await this.prisma.profile.update({
+                    where: {
+                        userId: userId,
+                    },
+                    data: {
+                        avatarId: null,
+                    },
+                })
+            return updateAvatarUrlForCurrentUser
+                ? updateAvatarUrlForCurrentUser.avatarId === null
+                : false
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     async findUserByEmail(email: string): Promise<User | null> {
@@ -241,27 +188,6 @@ export class UserRepository implements IUserRepository {
         return null
     }
 
-    // async findUserByLoginOrEmailWithEmailInfo(
-    //     userName: string,
-    //     email: string
-    // ): Promise<any> {
-    //     return this.prisma.user.findFirst({
-    //         where: {
-    //             OR: [{ email: email }, { userName: userName }],
-    //         },
-    //         include: {
-    //             emailConfirmationUser: {
-    //                 select: {
-    //                     id: true,
-    //                     confirmationCode: true,
-    //                     emailExpiration: true,
-    //                     isConfirmed: true,
-    //                 },
-    //             },
-    //         },
-    //     })
-    // }
-
     async findUserByLoginOrEmailWithEmailInfo(
         userName: string,
         email: string
@@ -283,67 +209,10 @@ export class UserRepository implements IUserRepository {
         })
     }
 
-    // async findFullInfoUserAndEmailInfoById(
-    //     userId: number
-    // ): Promise<UserWithEmailViewModel | null> {
-    //     const id = Number(userId)
-    //     if (isNaN(id)) return null
-    //     const fullInfo = (await this.prisma.emailExpiration.findFirst({
-    //         include: {
-    //             user: true,
-    //             confirmationCode: true,
-    //             emailExpiration: true,
-    //             isConfirmed: true,
-    //         },
-    //
-    //         where: {
-    //             userId: id,
-    //         },
-    //     })) as GetFullInfoModelType
-    //     console.log('fullInfo = ', fullInfo)
-    //     if (fullInfo && fullInfo.user) {
-    //         return {
-    //             id: fullInfo.user.id,
-    //             login: fullInfo.user.userName,
-    //             email: fullInfo.user.email,
-    //             createdAt: fullInfo.user.createdAt,
-    //             passwordHash: fullInfo.user.passwordHash,
-    //             passwordSalt: fullInfo.user.passwordSalt,
-    //             confirmationCode: fullInfo.confirmationCode,
-    //             emailExpiration: fullInfo.emailExpiration,
-    //             isConfirmed: fullInfo.isConfirmed,
-    //         }
-    //     }
-    //
-    //     return null
-    // }
-
-    // async sendEmailConfirmation(
-    //     emailConfirmationInfo: emailConfirmationType
-    // ): Promise<any | null> {
-    //     const sentEmailConfirmation =
-    //         await this.prisma.emailConfirmationUser.create({
-    //             data: {
-    //                 userId: emailConfirmationInfo.userId,
-    //                 confirmationCode: emailConfirmationInfo.confirmationCode,
-    //                 emailExpiration: emailConfirmationInfo.emailExpiration,
-    //                 isConfirmed: emailConfirmationInfo.isConfirmed,
-    //             },
-    //         })
-    //
-    //     if (sentEmailConfirmation) {
-    //         return this.prisma.emailConfirmationUser.findFirst({
-    //             where: {
-    //                 id: sentEmailConfirmation.id,
-    //             },
-    //         })
-    //     }
-    //     return null
-    // }
-
     async createEmailExpiration(
         emailConfirmDto: EmailConfirmationType,
-        userId: number
+        userId: number,
+        confirm?: boolean
     ): Promise<string | null> {
         const createdEmailExp = (await this.prisma.emailExpiration.create({
             data: {
@@ -352,7 +221,7 @@ export class UserRepository implements IUserRepository {
                 },
                 confirmationCode: emailConfirmDto.confirmationCode,
                 emailExpiration: emailConfirmDto.emailExpiration,
-                isConfirmed: emailConfirmDto.isConfirmed,
+                isConfirmed: confirm ? confirm : emailConfirmDto.isConfirmed,
             },
         })) as EmailExpiration
         if (createdEmailExp) {
@@ -381,25 +250,6 @@ export class UserRepository implements IUserRepository {
             return null
         }
     }
-    // async updateConfirmationCode(
-    //     userId: number,
-    //     code: string
-    // ): Promise<boolean> {
-    //     const emailConfirmation = add(new Date(), {
-    //         hours: 2,
-    //         minutes: 3,
-    //     }).toISOString()
-    //     const updatedConfirmationCode =
-    //         await this.prisma.emailExpiration.updateMany({
-    //             where: { userId: userId },
-    //             data: {
-    //                 confirmationCode: code,
-    //                 emailExpiration: emailConfirmation,
-    //             },
-    //         })
-    //
-    //     return updatedConfirmationCode.count > 0
-    // }
 
     async updateEmailConfirmationCode(
         id: number,

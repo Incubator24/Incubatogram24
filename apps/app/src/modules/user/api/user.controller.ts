@@ -99,13 +99,12 @@ export class UserController {
     @GetAvatarEndpoint()
     @HttpCode(HttpStatus.OK)
     async getAvatar(@Param('userId') userId: number) {
-        console.log('1')
         const foundProfileFromUserId =
             await this.userRepository.foundProfileFromUserId(userId)
-        console.log('foundProfileFromUserId = ', foundProfileFromUserId)
-        if (foundProfileFromUserId.avatarId === null) {
+        if (!foundProfileFromUserId) {
             return 'This user hasn`t avatar'
-        }
+        } else if (foundProfileFromUserId.avatarId === null)
+            return 'This user hasn`t avatar'
 
         // res.redirect(
         //     Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET +

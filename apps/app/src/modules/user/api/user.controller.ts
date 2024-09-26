@@ -101,6 +101,7 @@ export class UserController {
     async getAvatar(@Param('userId') userId: number) {
         const foundProfileFromUserId =
             await this.userRepository.foundProfileFromUserId(userId)
+        console.log('foundProfileFromUserId = ', Date.now())
         if (!foundProfileFromUserId) {
             return 'This user hasn`t avatar'
         } else if (foundProfileFromUserId.avatarId === null)
@@ -141,6 +142,7 @@ export class UserController {
         @UserId()
         userId: number
     ) {
+        console.log('userId1 = ', userId)
         const uploadedAvatar = await this.commandBus.execute(
             new SaveAvatarUseCaseCommand(userId, file)
         )

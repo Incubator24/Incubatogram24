@@ -38,7 +38,7 @@ export class S3StorageAdapter {
         }
 
         const extension = mimetype.split('/')[1]
-        const key = `content/users/${userId}/avatars/${userId}_avatar.${extension}`
+        const key = `content/users/${userId}/avatars/${Date.now()}${userId}_avatar.${extension}`
         const bucketParams = {
             Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
             Key: key,

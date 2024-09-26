@@ -157,19 +157,25 @@ export class UserRepository implements IUserRepository {
     }
 
     async updateAvatarId(userId: number, url: string) {
-        const updateAvatarUrlForCurrentUser = (await this.prisma.profile.update(
-            {
-                where: {
-                    userId: userId,
-                },
-                data: {
-                    avatarId: url,
-                },
-            }
-        )) as Profile
-        return updateAvatarUrlForCurrentUser
-            ? updateAvatarUrlForCurrentUser.avatarId === url
-            : false
+        const foundAllUsers = await this.prisma.profile.findMany()
+        console.log(foundAllUsers)
+        console.log('userId = ', userId)
+        try {
+            const updateAvatarUrlForCurrentUser =
+                (await this.prisma.profile.update({
+                    where: {
+                        userId: userId,
+                    },
+                    data: {
+                        avatarId: url,
+                    },
+                })) as Profile
+            return updateAvatarUrlForCurrentUser
+                ? updateAvatarUrlForCurrentUser.avatarId === url
+                : false
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     async deleteAvatarId(userId: number) {

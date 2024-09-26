@@ -41,6 +41,15 @@ export class SaveAvatar implements ICommandHandler<SaveAvatarUseCaseCommand> {
 
         const updateAvatarInfoForCurrentUser =
             await this.userRepository.updateAvatarId(command.userId, result.url)
+        console.log(updateAvatarInfoForCurrentUser)
+        if (!updateAvatarInfoForCurrentUser) {
+            return {
+                data: null,
+                resultCode: HttpStatus.BAD_REQUEST,
+                message:
+                    'couldn`t save avatar for current user. Please, try again',
+            }
+        }
 
         return {
             data: updateAvatarInfoForCurrentUser,

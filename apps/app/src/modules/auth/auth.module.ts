@@ -40,6 +40,7 @@ import { PrismaService } from '../../../../../prisma/prisma.service'
 import { UserModule } from '../user/user.module'
 import { IRecoveryCodesRepository } from '../email/infrastructure/interfaces/recoveryCodes.repository.interface'
 import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
+import { GithubService } from './application/githubService'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -93,6 +94,7 @@ const useCases = [ChangeUserConfirmationCode]
         RecaptchaAdapter,
         PrismaService,
         UsersService,
+        GithubService,
         ...repositories,
         ...useCases,
     ],

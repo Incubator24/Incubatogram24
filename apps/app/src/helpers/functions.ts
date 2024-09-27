@@ -19,9 +19,12 @@ export const isOlderThan13 = (dateOfBirthString: string): boolean => {
 export function createEmailDto(isConfirmed: boolean): CreatedEmailDto {
     return {
         confirmationCode: uuidv4(),
+        // emailExpiration: add(new Date(), {
+        //     hours: 24,
+        //     minutes: 3,
+        // }),
         emailExpiration: add(new Date(), {
-            hours: 24,
-            minutes: 3,
+            minutes: 5,
         }),
         isConfirmed: isConfirmed,
     }

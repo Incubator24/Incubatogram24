@@ -59,6 +59,7 @@ import { SwaggerPostGithubEndpoint } from '../../../swagger/Internal/swaggerPost
 import { githubEndpoint } from '../../../swagger/auth/githubEndpoint'
 import { SwaggerPostGoogleEndpoint } from '../../../swagger/Internal/swaggerPostGoogleEndpoint'
 import { GoogleEndpoint } from '../../../swagger/auth/googleEndpoint'
+import { GithubService } from '../application/githubService'
 
 @Injectable()
 @Controller('auth')
@@ -68,7 +69,8 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly emailService: EmailService,
         private readonly userRepository: UserRepository,
-        private readonly userQueryRepository: UserQueryRepository
+        private readonly userQueryRepository: UserQueryRepository,
+        private readonly githubService: GithubService
     ) {}
 
     @Post('registration')
@@ -264,42 +266,52 @@ export class AuthController {
         return true
     }
 
-    @Get('github')
-    @githubEndpoint()
-    @UseGuards(AuthGuard('github'))
-    async githubAuth() {}
+    // @Get('github')
+    // @githubEndpoint()
+    // @UseGuards(AuthGuard('github'))
+    // async githubAuth() {}
+    //
+    // @Get('github-success')
+    // @SwaggerPostGithubEndpoint()
+    // @UseGuards(AuthGuard('github'))
+    // async githubAuthCallback(
+    //     @Req() req,
+    //     @Res({ passthrough: true }) res: Response,
+    //     @Headers('User-Agent') userAgent: string | 'unknow',
+    //     @Ip() ip: string
+    // ) {
+    //     userAgent = userAgent ?? 'unknow'
+    //     const tokensInfo = await this.commandBus.execute(
+    //         new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+    //     )
+    //     if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+    //     const currentUser = await this.userRepository.findUserById(req.user.id)
+    //
+    //     res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+    //         httpOnly: true,
+    //         secure: true,
+    //     }).header('accessToken', tokensInfo.data.accessToken)
+    //
+    //     //передать инфу в access tokena, credencial отправить тоже  query ( url)  //res.redirect('https://incubatogram.org/auth/sign-up/congratulations')
+    //
+    //     res.redirect(
+    //         Configuration.getConfiguration().FRONT_URL +
+    //             `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+    //     )
+    //     // res.redirect(
+    //     //     `http://localhost:3000?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+    //     // )
+    //     return { accessToken: tokensInfo.data.accessToken }
+    // }
+    // github.controller.ts
 
-    @Get('github-success')
-    @SwaggerPostGithubEndpoint()
-    @UseGuards(AuthGuard('github'))
-    async githubAuthCallback(
-        @Req() req,
-        @Res({ passthrough: true }) res: Response,
-        @Headers('User-Agent') userAgent: string | 'unknow',
-        @Ip() ip: string
-    ) {
-        userAgent = userAgent ?? 'unknow'
-        const tokensInfo = await this.commandBus.execute(
-            new AddDeviceInfoToDBCommand(req.user.id, userAgent, ip)
+    @Post('auth/github')
+    async github(@Body() body: { code: string }) {
+        const accessToken = await this.githubService.validate(body.code)
+        const user = await this.githubService.getGithubUserByToken(
+            accessToken.access_token
         )
-        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
-        const currentUser = await this.userRepository.findUserById(req.user.id)
-
-        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
-            httpOnly: true,
-            secure: true,
-        }).header('accessToken', tokensInfo.data.accessToken)
-
-        //передать инфу в access tokena, credencial отправить тоже  query ( url)  //res.redirect('https://incubatogram.org/auth/sign-up/congratulations')
-
-        res.redirect(
-            Configuration.getConfiguration().FRONT_URL +
-                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
-        )
-        // res.redirect(
-        //     `http://localhost:3000?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
-        // )
-        return { accessToken: tokensInfo.data.accessToken }
+        return user
     }
 
     @Get('google')

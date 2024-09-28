@@ -305,7 +305,7 @@ export class AuthController {
     // }
     // github.controller.ts
 
-    @Post('auth/github')
+    @Post('github')
     async github(@Body() body: { code: string }) {
         const accessToken = await this.githubService.validate(body.code)
         const user = await this.githubService.getGithubUserByToken(

@@ -105,6 +105,7 @@ export class AuthController {
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
+            sameSite: 'none',
         }).header('accessToken', tokensInfo.data.accessToken)
         return new ResponseAccessTokenViewDTO({
             accessToken: tokensInfo.data.accessToken,
@@ -128,6 +129,7 @@ export class AuthController {
         res.cookie('refreshToken', tokens.data.refreshToken, {
             httpOnly: true,
             secure: true,
+            sameSite: 'none',
         })
             .header('accessToken', tokens.data.accessToken)
             .status(200)
@@ -339,6 +341,7 @@ export class AuthController {
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
+            sameSite: 'none',
         }).header('accessToken', tokensInfo.data.accessToken)
         res.redirect(
             Configuration.getConfiguration().FRONT_URL +

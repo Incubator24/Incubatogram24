@@ -9,28 +9,6 @@ import * as cookieParser from 'cookie-parser'
 
 export const appSettings = (app: INestApplication) => {
     app.setGlobalPrefix('api/v1')
-    // app.enableCors({
-    //     origin: 'http://localhost:3000',
-    //     credentials: true,
-    // })
-    // const allowedOrigins = [
-    //     'http://localhost:3000',
-    //     'http://localhost:5000',
-    //     'https://incubatogram.org',
-    //     'https://app.incubatogram.org/api/v1',
-    // ]
-
-    // app.enableCors({
-    //     origin: (origin, callback) => {
-    //         // Разрешаем запросы без origin (например, с Postman)
-    //         if (!origin || allowedOrigins.includes(origin)) {
-    //             return callback(null, true)
-    //         }
-    //
-    //         return callback(new Error('Not allowed by CORS'))
-    //     },
-    //     credentials: true,
-    // })
     app.enableCors({
         origin: [
             'http://localhost:3000',

@@ -142,7 +142,6 @@ export class UserController {
         @UserId()
         userId: number
     ) {
-        console.log('userId1 = ', userId)
         const uploadedAvatar = await this.commandBus.execute(
             new SaveAvatarUseCaseCommand(userId, file)
         )

@@ -154,16 +154,17 @@ export class AuthController {
     @Post('/registration-confirmation')
     @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
-    async registrationConfirmation(@Query('code') code: string) {
+    async registrationConfirmation(
+        @Query('code') code: string,
+        @Res() res: Response
+    ) {
         const result = await this.commandBus.execute(
             new ConfirmEmailCommand(code)
         )
         if (!result.data) return mappingErrorStatus(result)
-        return {
-            data: 'ok',
-            message: 'Your email has been confirmed',
-            link: 'https://incubatogram.org/auth/sign-up/congratulations',
-        }
+        return res.redirect(
+            'https://incubatogram.org/auth/sign-up/congratulations'
+        )
     }
 
     @Get('/registration-confirmation')

@@ -83,40 +83,28 @@ model Profile {
   avatarId    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now()) @updatedAt
-  // Post        Post[]
-  // PostImages  PostImages[]
+  Post        Post[]
 }
 
-// model Providers {
-//   id         Int          @id @default(autoincrement())
-//   providerId String
-//   type       ProviderType
-//   email      String?
-//   userName   String?
-//   userId     Int
-//   // owner      User         @relation("UserAccounts", fields: [userId], references: [id])
-//   User       User         @relation(fields: [userId], references: [id])
-// }
+model Post {
+  id          Int         @id @default(autoincrement())
+  description String? // Описание поста
+  isDraft     Boolean     @default(false) // Черновик или опубликованная запись
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  profile     Profile     @relation(fields: [profileId], references: [id])
+  profileId   Int
+  images      PostImage[] // Связь с изображениями поста
+}
 
-// model Post {
-//   id          Int          @id @default(autoincrement())
-//   description String?
-//   isDeleted   Boolean      @default(false)
-//   author      Profile      @relation(references: [id], fields: [authorId])
-//   authorId    Int
-//   createdAt   DateTime     @default(now())
-//   updatedAt   DateTime     @default(now()) @updatedAt
-//   PostImages  PostImages[]
-// }
-
-// model PostImages {
-//   id       Int     @id @default(autoincrement())
-//   imageId  String
-//   post     Post    @relation(fields: [postId], references: [id])
-//   postId   Int
-//   author   Profile @relation(references: [id], fields: [authorId])
-//   authorId Int
-// }
+model PostImage {
+  id     Int    @id @default(autoincrement())
+  url    String // URL загруженного изображения
+  post   Post   @relation(fields: [postId], references: [id])
+  fileId String
+  postId Int
+  order  Int? // Порядок изображений (если несколько)
+}
 
 model LoginAttempt {
   id       Int      @id @default(autoincrement())
@@ -124,12 +112,6 @@ model LoginAttempt {
   url      String
   date     DateTime @default(now())
 }
-
-// model RecoveryCodes {
-//   id           Int    @id @default(autoincrement())
-//   email        String
-//   recoveryCode String
-// }
 
 model TokensBlackList {
   id    Int    @id @default(autoincrement())

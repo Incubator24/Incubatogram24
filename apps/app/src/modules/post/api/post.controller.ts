@@ -18,10 +18,14 @@ import { PostsService } from '../application/post.service'
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { CommandBus } from '@nestjs/cqrs'
 import { UserId } from '../../auth/api/decorators/user.decorator'
+import { SavePostImageCommand } from '../application/use-cases/SaveImage'
 
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postsService: PostsService) {}
+    constructor(
+        private readonly postsService: PostsService,
+        private readonly commandBus: CommandBus
+    ) {}
 
     @UseGuards(JwtAuthGuard)
     // @Post('upload')
@@ -80,7 +84,11 @@ export class PostsController {
         )
         file: Express.Multer.File,
         @UserId() userId: number
-    ) {}
+    ) {
+        const uploadImage = await this.commandBus.execute(
+            new SavePostImageCommand(userId, file)
+        )
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post()

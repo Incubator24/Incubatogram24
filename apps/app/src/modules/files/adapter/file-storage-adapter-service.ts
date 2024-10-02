@@ -25,11 +25,12 @@ export class S3StorageAdapter {
         })
     }
 
-    async saveAvatar(
+    async saveImage(
         userId: number,
         originalName: string,
         mimetype: string,
-        buffer: Buffer
+        buffer: Buffer,
+        type: string
     ) {
         if (!['image/png', 'image/jpeg'].includes(mimetype)) {
             throw new Error(
@@ -38,7 +39,7 @@ export class S3StorageAdapter {
         }
 
         const extension = mimetype.split('/')[1]
-        const key = `content/users/${userId}/avatars/${Date.now()}${userId}_avatar.${extension}`
+        const key = `content/users/${userId}/${type}/${Date.now()}${userId}_image.${extension}`
         const bucketParams = {
             Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
             Key: key,

@@ -23,11 +23,12 @@ export class SaveAvatar implements ICommandHandler<SaveAvatarUseCaseCommand> {
     async execute(
         command: SaveAvatarUseCaseCommand
     ): Promise<ResultObject<boolean>> {
-        const result = await this.fileStorage.saveAvatar(
+        const result = await this.fileStorage.saveImage(
             command.userId,
             command.file.originalname,
             command.file.mimetype,
-            command.file.buffer
+            command.file.buffer,
+            'avatars'
         )
         console.log('result file = ', result)
         if (!result) {

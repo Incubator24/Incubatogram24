@@ -41,6 +41,7 @@ import { UserModule } from '../user/user.module'
 import { IRecoveryCodesRepository } from '../email/infrastructure/interfaces/recoveryCodes.repository.interface'
 import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
 import { GithubService } from './application/githubService'
+import { PostModule } from '../post/post.module'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,

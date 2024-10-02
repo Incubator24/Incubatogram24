@@ -16,7 +16,7 @@ export const appSettings = (app: INestApplication) => {
             'https://incubatogram.org',
             'https://app.incubatogram.org/api/v1',
         ],
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         credentials: true,
     })
     app.use(cookieParser())

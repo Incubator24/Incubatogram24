@@ -15,6 +15,8 @@ export const appSettings = (app: INestApplication) => {
             'http://localhost:5000',
             'https://incubatogram.org',
             'https://app.incubatogram.org/api/v1',
+            'https://github.com/',
+            'https://www.google.com/',
         ],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         credentials: true,

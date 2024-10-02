@@ -14,7 +14,6 @@ import { RemoveUserById } from './application/use-cases/RemoveUserById'
 import { PrismaService } from '../../../../../prisma/prisma.service'
 import { S3StorageAdapter } from '../files/adapter/file-storage-adapter-service'
 import { IUserRepository } from './infrastructure/interfaces/user.repository.interface'
-import { PostModule } from '../post/post.module'
 
 const useCases = [
     GetUserIdByIdUseCase,
@@ -29,7 +28,7 @@ const useCases = [
 const repositories = [{ provide: IUserRepository, useClass: UserRepository }]
 
 @Module({
-    imports: [CqrsModule, PostModule],
+    imports: [CqrsModule],
     controllers: [UserController],
     providers: [
         UserQueryRepository,

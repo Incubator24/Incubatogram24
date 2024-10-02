@@ -179,10 +179,9 @@ export class AuthController {
                 `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${code}`
             )
             if (result.status === 204 || (result.data && result.data !== '')) {
-                res.send({
-                    message: 'Your email has been confirmed',
-                    link: 'https://incubatogram.org/auth/sign-up/congratulations',
-                })
+                return res.redirect(
+                    'https://incubatogram.org/auth/sign-up/congratulations'
+                )
             } else {
                 res.status(500).send('Error confirming registration')
             }

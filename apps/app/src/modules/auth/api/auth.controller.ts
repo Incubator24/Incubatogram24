@@ -151,11 +151,25 @@ export class AuthController {
 
         res.clearCookie('refreshToken')
     }
+    //
+    // @Post('/registration-confirmation')
+    // @SwaggerPostRegistrationConfirmationEndpoint()
+    // @HttpCode(204)
+    // async registrationConfirmation(@Body() code: string, @Res() res: Response) {
+    //     console.log('code = ', code)
+    //     const result = await this.commandBus.execute(
+    //         new ConfirmEmailCommand(code)
+    //     )
+    //     console.log('result2 = ', result)
+    //     if (!result.data) return mappingErrorStatus(result)
+    //     return res.redirect(
+    //         'https://incubatogram.org/auth/sign-up/congratulations'
+    //     )
+    // }
 
-    @Post('/registration-confirmation')
-    @SwaggerPostRegistrationConfirmationEndpoint()
-    @HttpCode(204)
-    async registrationConfirmation(
+    @Get('/registration-confirmation')
+    @SwaggerGetRegistrationConfirmationEndpoint()
+    async getRegistrationConfirmation(
         @Query('code') code: string,
         @Res() res: Response
     ) {
@@ -166,29 +180,6 @@ export class AuthController {
         return res.redirect(
             'https://incubatogram.org/auth/sign-up/congratulations'
         )
-    }
-
-    @Get('/registration-confirmation')
-    @SwaggerGetRegistrationConfirmationEndpoint()
-    async getRegistrationConfirmation(
-        @Query('code') code: string,
-        @Res() res: Response
-    ) {
-        try {
-            const result = await axios.post(
-                `https://app.incubatogram.org/api/v1/auth/registration-confirmation?code=${code}`
-            )
-            if (result.status === 204 || (result.data && result.data !== '')) {
-                return res.redirect(
-                    'https://incubatogram.org/auth/sign-up/congratulations'
-                )
-            } else {
-                res.status(500).send('Error confirming registration')
-            }
-        } catch (error) {
-            console.error('Error confirming registration:', error)
-            res.status(500).send('Error confirming registration')
-        }
     }
 
     @Post('/registration-email-resending')

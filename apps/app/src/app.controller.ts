@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Body, Controller, Get, Patch } from '@nestjs/common'
 import { AppService } from './app.service'
 import { SwaggerDefaultEndpoint } from './swagger/Internal/swaggerDefaultEndpoint'
 
@@ -10,5 +10,10 @@ export class AppController {
     @SwaggerDefaultEndpoint()
     getHello(): string {
         return this.appService.getHello()
+    }
+
+    @Patch('/patch')
+    async patchRec(@Body() body: string) {
+        return body
     }
 }

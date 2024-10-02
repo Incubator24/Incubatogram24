@@ -10,6 +10,7 @@ import {
     Injectable,
     Ip,
     NotFoundException,
+    Patch,
     Post,
     Query,
     Req,

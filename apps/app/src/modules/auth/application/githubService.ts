@@ -49,6 +49,7 @@ export class GithubService {
         )
 
         return {
+            user: user,
             avatar_url: user.avatar_url,
             name: user.name,
             email,

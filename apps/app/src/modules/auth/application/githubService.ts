@@ -7,10 +7,11 @@ import Configuration from '../../../config/configuration'
 export class GithubService {
     async validate(code: string) {
         const requestData = {
-            code: '4dd4a47fb2787c9408b2',
+            code: code,
             client_id: Configuration.getConfiguration().GITHUB_CLIENT_ID,
             client_secret:
                 Configuration.getConfiguration().GITHUB_CLIENT_SECRET,
+            redirect_url: Configuration.getConfiguration().GITHUB_CALLBACK_URL,
         }
         console.log(
             'code = ',

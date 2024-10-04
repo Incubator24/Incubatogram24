@@ -87,11 +87,6 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: GITHUB_CLIENT_ID
-             - name: GITHUB_CLIENT_SECRET
-               valueFrom:
-                 secretKeyRef:
-                   name: app-mono-repo-production-config-secret
-                   key: GITHUB_CLIENT_SECRET
              - name: GITHUB_CALLBACK_URL
                valueFrom:
                  secretKeyRef:
@@ -147,6 +142,11 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: YANDEX_S3_ENDPOINT_WITH_BUCKET
+             - name: GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GITHUB_CLIENT_SECRET
              - name: CITY
                valueFrom:
                  secretKeyRef:

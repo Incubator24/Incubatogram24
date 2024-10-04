@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
-import { v1 as uuidv1 } from 'uuid'
 import Configuration from '../../../config/configuration'
 import { UsersService } from '../../user/application/user.service'
 import { IUserRepository } from '../../user/infrastructure/interfaces/user.repository.interface'
@@ -45,9 +44,9 @@ export class AuthService {
     // }
 
     async validateOAuthLogin(profile: any, provider: string): Promise<any> {
-        const email = profile.emails[0].value
-        const foundUser = await this.userRepository.findUserByEmail(email)
         if (provider === 'google') {
+            const email = profile.emails[0].value
+            const foundUser = await this.userRepository.findUserByEmail(email)
             if (foundUser) {
                 if (foundUser.googleId) {
                     return { id: foundUser.id }
@@ -91,13 +90,16 @@ export class AuthService {
                 return { id: createdUserId }
             }
         } else {
+            const foundUser = await this.userRepository.findUserByEmail(
+                profile.email
+            )
             if (foundUser) {
                 if (foundUser.githubId) {
                     return { id: foundUser.id }
                 } else {
                     await this.userRepository.updateGithubProvider(
                         foundUser.id,
-                        email,
+                        profile.email,
                         foundUser.githubId
                     )
                     return { id: foundUser.id }
@@ -105,13 +107,13 @@ export class AuthService {
             } else {
                 const createUserWithGithubProvider: CreatedUserWithGithubProviderDto =
                     {
-                        email: email,
+                        email: profile.email,
                         userName: await this.usersService.makeUniqueUserName(),
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         isDeleted: false,
                         githubId: profile.id,
-                        githubEmail: email,
+                        githubEmail: profile.email,
                     }
                 const createdUserId =
                     await this.userRepository.createUserWithGithubProvider(

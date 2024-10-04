@@ -20,6 +20,7 @@ export class GithubService {
                 headers: { Accept: 'application/json' },
             }
         )
+        console.log('resp = ', resp)
 
         if ('error' in resp.data) {
             console.error('-> error', resp.data)
@@ -33,12 +34,12 @@ export class GithubService {
         const response = await Promise.all([
             axios.get('https://api.github.com/user', {
                 headers: {
-                    Authorization: `token ${token.access_token}`,
+                    Authorization: `Bearer ${token.access_token}`,
                 },
             }),
             axios.get('https://api.github.com/user/emails', {
                 headers: {
-                    Authorization: `token ${token.access_token}`,
+                    Authorization: `Bearer ${token.access_token}`,
                 },
             }),
         ])
@@ -47,12 +48,16 @@ export class GithubService {
         const { email } = response[1].data.find(
             (emailObj: any) => emailObj.primary
         )
-
+        console.log('user = ', user)
         return {
-            user: user,
-            avatar_url: user.avatar_url,
-            name: user.name,
-            email,
+            id: user.id,
+            email: email,
         }
+        // return {
+        //     user: user,
+        //     avatar_url: user.avatar_url,
+        //     name: user.name,
+        //     email,
+        // }
     }
 }

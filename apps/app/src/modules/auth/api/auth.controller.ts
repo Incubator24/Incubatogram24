@@ -10,7 +10,6 @@ import {
     Injectable,
     Ip,
     NotFoundException,
-    Patch,
     Post,
     Query,
     Req,
@@ -56,8 +55,6 @@ import { Me } from '../../../swagger/auth/me'
 import { AuthInputModel } from './dto/AuthInputModel'
 import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../swagger/Internal/swaggerPostRegistrationConfirmationEndpoint'
 import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../swagger/Internal/swaggerGetRegistrationConfirmationEndpoint'
-import { SwaggerPostGithubEndpoint } from '../../../swagger/Internal/swaggerPostGithubEndpoint'
-import { githubEndpoint } from '../../../swagger/auth/githubEndpoint'
 import { SwaggerPostGoogleEndpoint } from '../../../swagger/Internal/swaggerPostGoogleEndpoint'
 import { GoogleEndpoint } from '../../../swagger/auth/googleEndpoint'
 import { GithubService } from '../application/githubService'
@@ -300,12 +297,37 @@ export class AuthController {
     // github.controller.ts
 
     @Post('github')
-    async github(@Body() body: { code: string }) {
+    async github(
+        @Body() body: { code: string },
+        @Headers('User-Agent') userAgent: string | 'unknow',
+        @Ip() ip: string,
+        @Res({ passthrough: true }) res: Response
+    ) {
         const accessToken = await this.githubService.validate(body.code)
-        const user = await this.githubService.getGithubUserByToken(
-            accessToken.access_token
+        console.log('accessToken = ', accessToken)
+        const user = await this.githubService.getGithubUserByToken(accessToken)
+        console.log('user = ', user)
+        await this.authService.validateOAuthLogin(user, 'github')
+
+        // та же логика что и на google
+
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(user.id, userAgent, ip)
         )
-        return user
+        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
+
+        const currentUser = await this.userRepository.findUserById(user.id)
+
+        res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        }).header('accessToken', tokensInfo.data.accessToken)
+        res.redirect(
+            Configuration.getConfiguration().FRONT_URL +
+                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+        )
+        return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Get('google')

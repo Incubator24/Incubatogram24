@@ -10,7 +10,6 @@ import {
     ParseFilePipeBuilder,
     Post,
     Put,
-    Query,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -25,7 +24,6 @@ import { SaveAvatarUseCaseCommand } from '../application/use-cases/SaveAvatar'
 import { UserQueryRepository } from '../infrastructure/repositories/user.query.repository'
 import { CreateProfileDto } from './dto/CreateProfileDto'
 import { UpdateProfileCommand } from '../application/use-cases/UpdateProfile'
-import { UserRepository } from '../infrastructure/repositories/user.repository'
 import { UpdateProfileDto } from './dto/UpdateProfileDto'
 import { CreateProfileCommand } from '../application/use-cases/CreateProfile'
 import { RemoveUserByIdCommand } from '../application/use-cases/RemoveUserById'
@@ -40,6 +38,7 @@ import { RemoveUserByIdEndpoint } from '../../../swagger/superAdmin/RemoveUserBy
 import { GetAvatarEndpoint } from '../../../swagger/user/GetAvatarEndpoint'
 import { DeleteAvatarEndpoint } from '../../../swagger/user/DeleteAvatarEndpoint'
 import { IUserRepository } from '../infrastructure/interfaces/user.repository.interface'
+import { GetMyProfileEndpoint } from '../../../swagger/user/GetMyProfileEndpoint'
 
 @Controller('profile')
 export class UserController {
@@ -48,6 +47,21 @@ export class UserController {
         private readonly userRepository: IUserRepository,
         private readonly userQueryRepository: UserQueryRepository
     ) {}
+
+    @Get('me')
+    @GetMyProfileEndpoint()
+    @UseGuards(JwtAuthGuard)
+    async getMyProfile(
+        @UserId()
+        userId: number
+    ) {
+        const getProfile = await this.userQueryRepository.getProfile(userId)
+        if (getProfile) {
+            return getProfile
+        } else {
+            throw new NotFoundException()
+        }
+    }
 
     @Get(':id')
     @GetProfileEndpoint()

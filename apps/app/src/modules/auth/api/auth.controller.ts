@@ -318,6 +318,7 @@ export class AuthController {
         if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
 
         const currentUser = await this.userRepository.findUserById(user.id)
+        //
 
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,

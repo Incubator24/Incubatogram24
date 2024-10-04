@@ -38,7 +38,7 @@ export type CreatedUserWithGithubProviderDto = {
     createdAt: string
     updatedAt: string
     isDeleted: boolean
-    githubId: string
+    githubId: number
     githubEmail: string
 }
 

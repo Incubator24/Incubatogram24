@@ -43,7 +43,7 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @default(now()) @updatedAt
   isDeleted        Boolean           @default(false)
-  githubId         String?
+  githubId         Int?
   githubEmail      String?
   googleId         String?
   googleEmail      String?

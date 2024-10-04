@@ -7,27 +7,53 @@ import Configuration from '../../../config/configuration'
 export class GithubService {
     async validate(code: string) {
         const requestData = {
-            code,
+            code: '4dd4a47fb2787c9408b2',
             client_id: Configuration.getConfiguration().GITHUB_CLIENT_ID,
             client_secret:
                 Configuration.getConfiguration().GITHUB_CLIENT_SECRET,
         }
-
-        const resp = await axios.post(
-            'https://github.com/login/oauth/access_token',
-            requestData,
-            {
-                headers: { Accept: 'application/json' },
-            }
+        console.log(
+            'code = ',
+            Configuration.getConfiguration().GITHUB_CLIENT_ID
         )
-        console.log('resp = ', resp)
+        console.log(
+            'clientt = ',
+            Configuration.getConfiguration().GITHUB_CLIENT_SECRET
+        )
+        console.log('code = ', code)
+        try {
+            const resp = await axios.post(
+                'https://github.com/login/oauth/access_token',
+                requestData,
+                {
+                    headers: { Accept: 'application/json' },
+                }
+            )
+            //console.log('resp = ', resp)
 
-        if ('error' in resp.data) {
-            console.error('-> error', resp.data)
-            throw new Error(resp.data.error)
+            if ('error' in resp.data) {
+                console.error('-> error', resp.data)
+                throw new Error(resp.data.error)
+            }
+            return resp.data
+        } catch (e) {
+            console.log(e)
         }
+        // const resp = await axios.post(
+        //     'https://github.com/login/oauth/access_token',
+        //     requestData,
+        //     {
+        //         headers: { Accept: 'application/json' },
+        //     }
+        // )
+        // //console.log('resp = ', resp)
+        //
+        // if ('error' in resp.data) {
+        //     console.error('-> error', resp.data)
+        //     throw new Error(resp.data.error)
+        // }
 
-        return resp.data
+        // return resp.data
     }
 
     async getGithubUserByToken(token: any) {

@@ -403,7 +403,7 @@ export class UserRepository implements IUserRepository {
             },
         })
     }
-    async findUserByGithubId(githubId: string) {
+    async findUserByGithubId(githubId: number) {
         return this.prisma.user.findFirst({
             where: {
                 githubId: githubId,
@@ -430,7 +430,7 @@ export class UserRepository implements IUserRepository {
     async updateGithubProvider(
         userId: number,
         githubEmail: string,
-        githubId?: string
+        githubId?: number
     ) {
         const data: any = { githubEmail: githubEmail }
         if (githubId) {

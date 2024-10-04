@@ -314,6 +314,7 @@ export class AuthController {
         const tokensInfo = await this.commandBus.execute(
             new AddDeviceInfoToDBCommand(user.id, userAgent, ip)
         )
+        console.log('tokensInfo = ', tokensInfo)
         if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
 
         const currentUser = await this.userRepository.findUserById(user.id)

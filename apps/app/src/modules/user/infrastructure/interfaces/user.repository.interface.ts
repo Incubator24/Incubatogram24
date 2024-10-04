@@ -33,7 +33,7 @@ export abstract class IUserRepository {
     abstract foundProfileFromUserId(userId: number): Promise<Profile | null>
     abstract isConfirmEmail(userId: number): Promise<boolean>
     abstract findUserByGoogleId(googleId: string)
-    abstract findUserByGithubId(githubId: string)
+    abstract findUserByGithubId(githubId: number)
     abstract updateGoogleProvider(
         userId: number,
         googleEmail: string,
@@ -42,7 +42,7 @@ export abstract class IUserRepository {
     abstract updateGithubProvider(
         userId: number,
         githubEmail: string,
-        githubId?: string
+        githubId?: number
     )
     abstract createProfile(userId: number, createProfileDto: CreateProfileDto)
     abstract updateProfile(changeProfileDto: UpdateProfileDto, userId: number)

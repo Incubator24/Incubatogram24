@@ -20,6 +20,7 @@ export class CreateProfile implements ICommandHandler<CreateProfileCommand> {
     async execute(command: CreateProfileCommand): Promise<any> {
         const isConfirmEmail: boolean =
             await this.userRepository.isConfirmEmail(command.userId)
+        console.log(isConfirmEmail)
         if (!isConfirmEmail) {
             return {
                 resultCode: HttpStatus.BAD_REQUEST,

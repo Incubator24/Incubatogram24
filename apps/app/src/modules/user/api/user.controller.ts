@@ -101,6 +101,7 @@ export class UserController {
         @Body()
         updateProfileDto: UpdateProfileDto
     ) {
+        console.log(1)
         const updateProfile = await this.commandBus.execute(
             new UpdateProfileCommand(updateProfileDto, userId)
         )
@@ -156,12 +157,14 @@ export class UserController {
         @UserId()
         userId: number
     ) {
+        console.log(1)
         const uploadedAvatar = await this.commandBus.execute(
             new SaveAvatarUseCaseCommand(userId, file)
         )
+        console.log(2)
         if (uploadedAvatar.data === null)
             return mappingErrorStatus(uploadedAvatar)
-
+        console.log(3)
         return 'Avatar success updated'
     }
 

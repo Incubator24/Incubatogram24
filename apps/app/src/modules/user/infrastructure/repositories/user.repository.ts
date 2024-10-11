@@ -310,7 +310,7 @@ export class UserRepository implements IUserRepository {
         const dataToUpdateProfile: any = {
             dateOfBirth: new Date(changeProfileDto.dateOfBirth),
         }
-
+        console.log(changeProfileDto)
         if (changeProfileDto.firstName) {
             dataToUpdateProfile.firstName = changeProfileDto.firstName
         }
@@ -321,12 +321,13 @@ export class UserRepository implements IUserRepository {
 
         if (changeProfileDto.aboutMe) {
             dataToUpdateProfile.aboutMe = changeProfileDto.aboutMe
+            console.log(dataToUpdateProfile.aboutMe)
         }
         if (changeProfileDto.city) {
             dataToUpdateProfile.city = changeProfileDto.city
         }
         const updateProfile = await this.prisma.profile.updateMany({
-            where: { id: userId },
+            where: { userId: userId },
             data: dataToUpdateProfile,
         })
 

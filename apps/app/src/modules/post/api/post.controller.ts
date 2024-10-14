@@ -1,23 +1,21 @@
 import {
-    Controller,
-    Post,
-    Body,
-    UseGuards,
-    UploadedFile,
-    UseInterceptors,
     BadRequestException,
+    Body,
+    Controller,
     HttpCode,
     HttpStatus,
-    ParseFilePipeBuilder,
-    UploadedFiles,
     NotFoundException,
+    ParseFilePipeBuilder,
+    Post,
+    UploadedFiles,
+    UseGuards,
+    UseInterceptors,
 } from '@nestjs/common'
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
+import { FilesInterceptor } from '@nestjs/platform-express'
 import { PostsService } from '../application/post.service'
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { CommandBus } from '@nestjs/cqrs'
 import { UserId } from '../../auth/api/decorators/user.decorator'
-import { SavePostImageCommand } from '../application/use-cases/SaveImage'
 import { CreatePostEndpoint } from '../../../swagger/post/CreatePostEndPoint'
 import { CreatePostInputDto } from './dto/input/CreatePostInputDto'
 
@@ -51,10 +49,6 @@ export class PostsController {
         userId: number,
         @Body() createPostInputDto: CreatePostInputDto
     ) {
-        console.log('files', photos)
-        console.log('createPostInputDto', createPostInputDto)
-        console.log('userId', userId)
-
         const post = await this.postsService.createPost(
             userId,
             createPostInputDto,

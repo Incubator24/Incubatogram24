@@ -6,19 +6,20 @@ import {
     UploadedFile,
     UseInterceptors,
     BadRequestException,
-    Request,
     HttpCode,
     HttpStatus,
     ParseFilePipeBuilder,
+    UploadedFiles,
+    NotFoundException,
 } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { diskStorage } from 'multer'
-import { extname } from 'path'
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { PostsService } from '../application/post.service'
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { CommandBus } from '@nestjs/cqrs'
 import { UserId } from '../../auth/api/decorators/user.decorator'
 import { SavePostImageCommand } from '../application/use-cases/SaveImage'
+import { CreatePostEndpoint } from '../../../swagger/post/CreatePostEndPoint'
+import { CreatePostInputDto } from './dto/input/CreatePostInputDto'
 
 @Controller('posts')
 export class PostsController {
@@ -27,7 +28,57 @@ export class PostsController {
         private readonly commandBus: CommandBus
     ) {}
 
+    @Post()
     @UseGuards(JwtAuthGuard)
+    @CreatePostEndpoint()
+    @HttpCode(HttpStatus.CREATED)
+    @UseInterceptors(FilesInterceptor('files', 10))
+    async createPost(
+        @UploadedFiles(
+            new ParseFilePipeBuilder()
+                .addFileTypeValidator({
+                    fileType: /jpeg|png/,
+                })
+                .addMaxSizeValidator({
+                    maxSize: 20 * 1024 * 1024,
+                })
+                .build({
+                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                })
+        )
+        photos: Express.Multer.File[],
+        @UserId()
+        userId: number,
+        @Body() createPostInputDto: CreatePostInputDto
+    ) {
+        console.log('files', photos)
+        console.log('createPostInputDto', createPostInputDto)
+        console.log('userId', userId)
+
+        const post = await this.postsService.createPost(
+            userId,
+            createPostInputDto,
+            photos
+        )
+        if (!post.data) {
+            switch (post.resultCode) {
+                case HttpStatus.BAD_REQUEST:
+                    throw new BadRequestException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+
+        return post.data
+    }
+
+    // @UseGuards(JwtAuthGuard)
     // @Post('upload')
     // @UseInterceptors(
     //     FileInterceptor('file', {
@@ -65,37 +116,38 @@ export class PostsController {
     //
     //     return { imageUrl, post }
     //}
-    @UseGuards(JwtAuthGuard)
-    @Post('image')
-    @HttpCode(HttpStatus.CREATED)
-    @UseInterceptors(FileInterceptor('file'))
-    async updateAvatar(
-        @UploadedFile(
-            new ParseFilePipeBuilder()
-                .addFileTypeValidator({
-                    fileType: /jpeg|png/, // Допустимые типы файлов: JPEG и PNG
-                })
-                .addMaxSizeValidator({
-                    maxSize: 20 * 1024 * 1024, // Максимальный размер файла: 20 МБ
-                })
-                .build({
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, // HTTP код ошибки: 422
-                })
-        )
-        file: Express.Multer.File,
-        @UserId() userId: number
-    ) {
-        const uploadImage = await this.commandBus.execute(
-            new SavePostImageCommand(userId, file)
-        )
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Post('image')
+    // @CreatePostEndpoint()
+    // @HttpCode(HttpStatus.CREATED)
+    // @UseInterceptors(FileInterceptor('file'))
+    // async updateAvatar(
+    //     @UploadedFile(
+    //         new ParseFilePipeBuilder()
+    //             .addFileTypeValidator({
+    //                 fileType: /jpeg|png/, // Допустимые типы файлов: JPEG и PNG
+    //             })
+    //             .addMaxSizeValidator({
+    //                 maxSize: 20 * 1024 * 1024, // Максимальный размер файла: 20 МБ
+    //             })
+    //             .build({
+    //                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, // HTTP код ошибки: 422
+    //             })
+    //     )
+    //     file: Express.Multer.File,
+    //     @UserId() userId: number
+    // ) {
+    //     const uploadImage = await this.commandBus.execute(
+    //         new SavePostImageCommand(userId, file)
+    //     )
+    // }
 
-    @UseGuards(JwtAuthGuard)
-    @Post()
-    async publishPost(@Body() body, @Request() req) {
-        const profileId = req.user.profileId
-        const { postId, description } = body
-
-        return this.postsService.publishPost(postId, profileId, description)
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Post()
+    // async publishPost(@Body() body, @Request() req) {
+    //     const profileId = req.user.profileId
+    //     const { postId, description } = body
+    //
+    //     return this.postsService.publishPost(postId, profileId, description)
+    // }
 }

@@ -77,7 +77,7 @@ export class UserController {
     @Post('settings')
     @CreateProfileEndpoint()
     @UseGuards(JwtAuthGuard)
-    async creteProfile(
+    async createProfile(
         @UserId()
         userId: number,
         @Body()

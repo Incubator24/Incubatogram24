@@ -15,6 +15,7 @@ import { CheckCredential } from './modules/auth/application/use-cases/CheckCrede
 import { UsersService } from './modules/user/application/user.service'
 import { UserRepository } from './modules/user/infrastructure/repositories/user.repository'
 import { AuthRepository } from './modules/auth/infrastructure/repositories/auth.repository'
+import { PostModule } from './modules/post/post.module'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -29,6 +30,7 @@ const configModule = ConfigModule.forRoot({
         CqrsModule,
         AuthModule,
         UserModule,
+        PostModule,
         JwtModule,
         RemoveAllModule,
     ],

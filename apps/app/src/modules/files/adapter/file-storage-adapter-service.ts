@@ -62,6 +62,23 @@ export class S3StorageAdapter {
         }
     }
 
+    async deleteImage(imagePath: string) {
+        const bucketParams = {
+            Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
+            Key: imagePath,
+        }
+
+        const command = new DeleteObjectCommand(bucketParams)
+
+        try {
+            const data = await this.s3Client.send(command)
+            return data
+        } catch (exeption) {
+            console.error('Exeption', exeption)
+            throw exeption
+        }
+    }
+
     async deleteAvatar(userId: number) {
         const currentUserInfo =
             await this.userRepository.foundProfileFromUserId(userId)

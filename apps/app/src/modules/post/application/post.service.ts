@@ -5,16 +5,22 @@ import { S3StorageAdapter } from '../../files/adapter/file-storage-adapter-servi
 import { Post, Profile } from '@prisma/client'
 import { ResultObject } from '../../../helpers/types/helpersType'
 import { UserRepository } from '../../user/infrastructure/repositories/user.repository'
+import { UpdatePostInputDto } from '../api/dto/input/UpdatePostInputDto'
+import { PostRepository } from '../infrastructure/repositories/post.repository'
+import { PostQueryRepository } from '../infrastructure/repositories/post.query.repository'
+import { PaginatorDto, PostType } from '../../../helpers/types/types'
 
 @Injectable()
 export class PostsService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly userRepository: UserRepository,
+        private readonly postRepository: PostRepository,
+        private readonly postQueryRepository: PostQueryRepository,
         private fileStorage: S3StorageAdapter
     ) {}
 
-    // Создание черновика поста с изображением
+    // Создание поста с изображениями
     async createPost(
         userId: number,
         createPostInputDto: CreatePostInputDto,
@@ -22,7 +28,7 @@ export class PostsService {
     ): Promise<ResultObject<Post>> {
         const profile: Profile | null =
             await this.userRepository.foundProfileFromUserId(userId)
-        //todo проверить существует ли профиль
+        //проверить существует ли профиль
         if (!profile) {
             return {
                 data: null,
@@ -56,6 +62,7 @@ export class PostsService {
                 }
             }
 
+            //это надо вынести в post repository
             //создание в бд поста, и фотографий поста
             let post: Post
             await this.prisma.$transaction(async (tx) => {
@@ -68,14 +75,17 @@ export class PostsService {
                     },
                 })
 
+                let index = 1
                 for (const path of photosPaths) {
                     await tx.postImage.create({
                         data: {
                             postId: post.id,
                             url: path.url,
                             fileId: path.fileId,
+                            order: index,
                         },
                     })
+                    index++
                 }
             })
             return {
@@ -105,53 +115,139 @@ export class PostsService {
                 field: 'post',
             }
         }
-
-        // const post = await this.prisma.post.create({
-        //     data: {
-        //         profileId,
-        //         isDraft: true,
-        //         images: {
-        //             create: { url: imageUrl }, // Сохраняем изображение
-        //         },
-        //     },
-        //     include: { images: true },
-        // })
-        //
-        // return post
     }
 
-    // Публикация поста
-    // async publishPost(postId: number, profileId: number, description: string) {
-    // const post = await this.prisma.post.update({
-    //     where: { id: postId, profileId },
-    //     data: {
-    //         description,
-    //         isDraft: false, // Снимаем черновик
-    //     },
-    //     include: { images: true },
-    // })
-    //
-    // return post
-    // }
+    // обновление поста
+    async updatePost(
+        userId: number,
+        postId: string,
+        updatePostInputDto: UpdatePostInputDto
+    ): Promise<ResultObject<PostType>> {
+        const post = await this.postRepository.findPost(postId)
+        //проверить существует ли пост
+        if (!post) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'post was not found',
+                field: 'postId',
+            }
+        }
 
-    // Возвращение черновика поста для редактирования
-    // async getDraftById(postId: number, profileId: number) {
-    // const post = await this.prisma.post.findFirst({
-    //     where: { id: postId, profileId, isDraft: true },
-    //     include: { images: true },
-    // })
-    //
-    // if (!post) {
-    //     throw new NotFoundException('Draft not found')
-    // }
-    //
-    // return post
-    // }
+        //проверить является ли юзер владельцем поста
+        const profile = await this.userRepository.foundProfileFromUserId(userId)
+        if (post.profileId !== profile.id) {
+            return {
+                data: null,
+                resultCode: HttpStatus.FORBIDDEN,
+                message: 'user is not post owner',
+                field: 'userId',
+            }
+        }
 
-    // Удаление черновика
-    // async discardDraft(postId: number, profileId: number) {
-    //     return this.prisma.post.delete({
-    //         where: { id: postId, profileId, isDraft: true },
-    //     })
-    // }
+        const updatedPost: Post = await this.postRepository.updatePost(
+            postId,
+            updatePostInputDto.description
+        )
+        //проверить обновлён ли пост
+        if (!updatedPost) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'post was not updated',
+                field: 'postId',
+            }
+        }
+
+        const mappedPost = await this.postQueryRepository.getPost(postId)
+
+        return {
+            data: mappedPost,
+            resultCode: HttpStatus.NO_CONTENT,
+        }
+    }
+
+    // получения поста, не черновика
+    async getPost(postId: string): Promise<ResultObject<PostType>> {
+        const post = await this.postQueryRepository.getPost(postId)
+        //проверить существует ли пост
+        if (!post) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'post was not found',
+                field: 'postId',
+            }
+        }
+
+        return {
+            data: post,
+            resultCode: HttpStatus.OK,
+        }
+    }
+
+    // удаление поста, не черновика
+    async deletePost(
+        postId: string,
+        userId: number
+    ): Promise<ResultObject<null>> {
+        const post = await this.postRepository.findPost(postId)
+        //проверить существует ли пост
+        if (!post) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'post was not found',
+                field: 'postId',
+            }
+        }
+
+        const profile = await this.userRepository.foundProfileFromUserId(userId)
+        if (post.profileId !== profile.id) {
+            return {
+                data: null,
+                resultCode: HttpStatus.FORBIDDEN,
+                message: 'user is not post owner',
+                field: 'userId',
+            }
+        }
+
+        const deletedPost = await this.postRepository.deletePost(postId)
+        if (!deletedPost) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'post was not deleted',
+                field: 'postId',
+            }
+        }
+
+        return {
+            data: null,
+            resultCode: HttpStatus.NO_CONTENT,
+        }
+    }
+
+    // получение постов с пагинацией поста, не черновиков
+    async getPosts(
+        userId: number,
+        page: number
+    ): Promise<ResultObject<PaginatorDto<PostType[]>>> {
+        const profile = await this.userRepository.foundProfileFromUserId(userId)
+        if (!profile) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'user profile was not found',
+                field: 'userId',
+            }
+        }
+
+        const posts = await this.postQueryRepository.getPosts(profile.id, page)
+
+        return {
+            data: posts,
+            resultCode: HttpStatus.OK,
+        }
+    }
 }

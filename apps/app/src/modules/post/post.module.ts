@@ -8,6 +8,7 @@ import { PrismaService } from '../../../../../prisma/prisma.service'
 import { S3StorageAdapter } from '../files/adapter/file-storage-adapter-service'
 import { UserModule } from '../user/user.module'
 import { PostsService } from './application/post.service'
+import { PostQueryRepository } from './infrastructure/repositories/post.query.repository'
 
 const repositories = [{ provide: IPostRepository, useClass: PostRepository }]
 const useCases = [SavePostImage]
@@ -19,6 +20,7 @@ const useCases = [SavePostImage]
         PrismaService,
         S3StorageAdapter,
         PostRepository,
+        PostQueryRepository,
         PostsService,
         ...repositories,
         ...useCases,

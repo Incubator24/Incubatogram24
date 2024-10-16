@@ -1,5 +1,4 @@
-import { EmailExpiration, Profile, User } from '@prisma/client'
-import { add } from 'date-fns'
+import { ApiProperty } from '@nestjs/swagger'
 
 export type UserWithEmailViewModel = {
     id: number
@@ -78,4 +77,35 @@ export type CreatedEmailDto = {
 export type CreatedPassDto = {
     recoveryCode: string
     expirationAt: Date
+}
+
+export class PostImage {
+    @ApiProperty()
+    id: number
+    @ApiProperty()
+    url: string
+    @ApiProperty()
+    fileId: string
+    @ApiProperty()
+    order: number
+}
+
+export class PostType {
+    @ApiProperty()
+    id: number
+    @ApiProperty()
+    description: string
+    @ApiProperty()
+    isDraft: boolean
+    @ApiProperty({ type: [PostImage] })
+    postImages: PostImage[]
+}
+
+export class PaginatorDto<T> {
+    @ApiProperty()
+    pagesCount: number
+    @ApiProperty()
+    page: number
+    @ApiProperty()
+    items: Array<T>
 }

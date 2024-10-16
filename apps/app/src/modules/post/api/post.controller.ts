@@ -2,11 +2,17 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
+    ForbiddenException,
+    Get,
     HttpCode,
     HttpStatus,
     NotFoundException,
+    Param,
     ParseFilePipeBuilder,
     Post,
+    Put,
+    Query,
     UploadedFiles,
     UseGuards,
     UseInterceptors,
@@ -18,6 +24,12 @@ import { CommandBus } from '@nestjs/cqrs'
 import { UserId } from '../../auth/api/decorators/user.decorator'
 import { CreatePostEndpoint } from '../../../swagger/post/CreatePostEndPoint'
 import { CreatePostInputDto } from './dto/input/CreatePostInputDto'
+import { UpdatePostEndpoint } from '../../../swagger/post/UpdatePostEndPoint'
+import { UpdatePostInputDto } from './dto/input/UpdatePostInputDto'
+import { GetPostEndpoint } from '../../../swagger/post/GetPostEndPoint'
+import { DeletePostEndpoint } from '../../../swagger/post/DeletePostEndPoint'
+import { GetPostsEndpoint } from '../../../swagger/post/GetPostsEndPoint'
+import { GetPostsInputDto } from './dto/input/GetPostsInputDto'
 
 @Controller('posts')
 export class PostsController {
@@ -69,79 +81,109 @@ export class PostsController {
             }
         }
 
+        return { id: post.data.id }
+    }
+
+    @Put(':postId')
+    @UseGuards(JwtAuthGuard)
+    @UpdatePostEndpoint()
+    @HttpCode(HttpStatus.CREATED)
+    async updatePost(
+        @Body() updatePostInputDto: UpdatePostInputDto,
+        @Param('postId') postId: string,
+        @UserId() userId: number
+    ) {
+        const post = await this.postsService.updatePost(
+            userId,
+            postId,
+            updatePostInputDto
+        )
+        if (!post.data) {
+            switch (post.resultCode) {
+                case HttpStatus.BAD_REQUEST:
+                    throw new BadRequestException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+    }
+
+    @Get(':postId')
+    @UseGuards(JwtAuthGuard)
+    @GetPostEndpoint()
+    @HttpCode(HttpStatus.OK)
+    async getPost(@Param('postId') postId: string, @UserId() userId: number) {
+        const post = await this.postsService.getPost(postId)
+        if (!post.data) {
+            switch (post.resultCode) {
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+
         return post.data
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post('upload')
-    // @UseInterceptors(
-    //     FileInterceptor('file', {
-    //         storage: diskStorage({
-    //             destination: './uploads', // Папка для загрузок
-    //             filename: (req, file, callback) => {
-    //                 const uniqueSuffix =
-    //                     Date.now() + '-' + Math.round(Math.random() * 1e9)
-    //                 const ext = extname(file.originalname)
-    //                 callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`)
-    //             },
-    //         }),
-    //         limits: { fileSize: 20 * 1024 * 1024 }, // Лимит 20Мб
-    //         fileFilter: (req, file, callback) => {
-    //             if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
-    //                 callback(null, true)
-    //             } else {
-    //                 callback(
-    //                     new BadRequestException('Unsupported file format'),
-    //                     false
-    //                 )
-    //             }
-    //         },
-    //     })
-    // )
-    // async uploadImage(
-    //     @UploadedFile() file: Express.Multer.File,
-    //     @Request() req
-    // ) {
-    //     const profileId = req.user.profileId
-    //
-    //     // Сохраняем изображение в базу данных (вместе с postId)
-    //     const imageUrl = `/uploads/${file.filename}`
-    //     const post = await this.postsService.createDraft(profileId, imageUrl)
-    //
-    //     return { imageUrl, post }
-    //}
-    // @UseGuards(JwtAuthGuard)
-    // @Post('image')
-    // @CreatePostEndpoint()
-    // @HttpCode(HttpStatus.CREATED)
-    // @UseInterceptors(FileInterceptor('file'))
-    // async updateAvatar(
-    //     @UploadedFile(
-    //         new ParseFilePipeBuilder()
-    //             .addFileTypeValidator({
-    //                 fileType: /jpeg|png/, // Допустимые типы файлов: JPEG и PNG
-    //             })
-    //             .addMaxSizeValidator({
-    //                 maxSize: 20 * 1024 * 1024, // Максимальный размер файла: 20 МБ
-    //             })
-    //             .build({
-    //                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, // HTTP код ошибки: 422
-    //             })
-    //     )
-    //     file: Express.Multer.File,
-    //     @UserId() userId: number
-    // ) {
-    //     const uploadImage = await this.commandBus.execute(
-    //         new SavePostImageCommand(userId, file)
-    //     )
-    // }
+    @Delete(':postId')
+    @UseGuards(JwtAuthGuard)
+    @DeletePostEndpoint()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deletePost(
+        @Param('postId') postId: string,
+        @UserId() userId: number
+    ) {
+        const post = await this.postsService.deletePost(postId, userId)
+        if (!post.data) {
+            switch (post.resultCode) {
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                case HttpStatus.FORBIDDEN:
+                    throw new ForbiddenException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+            }
+        }
+    }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post()
-    // async publishPost(@Body() body, @Request() req) {
-    //     const profileId = req.user.profileId
-    //     const { postId, description } = body
-    //
-    //     return this.postsService.publishPost(postId, profileId, description)
-    // }
+    @Get()
+    @GetPostsEndpoint()
+    @HttpCode(HttpStatus.OK)
+    async getPosts(@Query() getPostsInputDto: GetPostsInputDto) {
+        const posts = await this.postsService.getPosts(
+            getPostsInputDto.userId,
+            getPostsInputDto.page
+        )
+        if (!posts.data) {
+            switch (posts.resultCode) {
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [
+                            { message: posts.message, field: posts.field },
+                        ],
+                    })
+                case HttpStatus.FORBIDDEN:
+                    throw new ForbiddenException({
+                        message: [
+                            { message: posts.message, field: posts.field },
+                        ],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+
+        return posts.data
+    }
 }

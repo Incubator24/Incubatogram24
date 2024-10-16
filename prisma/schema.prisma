@@ -92,6 +92,7 @@ model Post {
   isDraft     Boolean     @default(false) // Черновик или опубликованная запись
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now()) @updatedAt
+  deletedAt   DateTime? // Поле для пометки удалённых записей
   profile     Profile     @relation(fields: [profileId], references: [id])
   profileId   Int
   images      PostImage[] // Связь с изображениями поста

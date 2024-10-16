@@ -4,6 +4,7 @@ import {
     ApiBearerAuth,
     ApiBody,
     ApiConsumes,
+    ApiCreatedResponse,
     ApiOperation,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -11,7 +12,7 @@ import {
 
 export function CreatePostEndpoint() {
     return applyDecorators(
-        ApiTags('post'),
+        ApiTags('posts'),
         ApiOperation({ summary: 'Create new post' }),
         ApiBearerAuth('JWT-auth'),
         ApiConsumes('multipart/form-data'),
@@ -19,9 +20,12 @@ export function CreatePostEndpoint() {
             schema: {
                 type: 'object',
                 properties: {
-                    photos: {
-                        type: 'string',
-                        format: 'binary',
+                    files: {
+                        type: 'array',
+                        items: {
+                            type: 'string',
+                            format: 'binary',
+                        },
                         description: 'JPEG or PNG image file',
                     },
                     description: {
@@ -34,7 +38,19 @@ export function CreatePostEndpoint() {
                         default: false,
                     },
                 },
-                required: ['isDraft', 'file', 'description'],
+                required: ['isDraft', 'files', 'description'],
+            },
+        }),
+        ApiCreatedResponse({
+            status: HttpStatus.CREATED,
+            description: 'Post was created successfully',
+            schema: {
+                type: 'object',
+                properties: {
+                    id: {
+                        type: 'string',
+                    },
+                },
             },
         }),
         ApiUnauthorizedResponse({

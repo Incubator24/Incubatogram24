@@ -21,7 +21,10 @@
     "test:e2e": "jest --config ./apps/app/test/jest-e2e.json",
     "build:app": "nest build app",
     "start:app": "node dist/apps/app/main",
-    "start:dev:app": "nest start app --watch"
+    "start:dev:app": "nest start app --watch",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.445.0",

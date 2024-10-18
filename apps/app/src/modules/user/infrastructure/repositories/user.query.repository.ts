@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import { ProfileViewModel } from '../../../../helpers/types/types'
+import Configuration from '../../../../config/configuration'
 
 @Injectable()
 export class UserQueryRepository {
@@ -110,7 +111,10 @@ export class UserQueryRepository {
                           country: result.Profile.country,
                           city: result.Profile.city,
                           aboutMe: result.Profile.aboutMe,
-                          avatarId: result.Profile.avatarId,
+                          url:
+                              Configuration.getConfiguration()
+                                  .YANDEX_S3_ENDPOINT_WITH_BUCKET +
+                              result.Profile.avatarId,
                       }
                     : null,
             }

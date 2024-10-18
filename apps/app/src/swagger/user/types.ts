@@ -13,8 +13,8 @@ export class ProfileTpeDTOSwagger {
     city: string
     @ApiProperty({ example: 'i am developer' })
     aboutMe: string
-    @ApiProperty({ example: '12345' })
-    avatarId: string
+    @ApiProperty({ example: 'https://somesite.ok' })
+    url: string
 }
 
 export class UserTypeDTOSwagger {
@@ -34,7 +34,7 @@ export class UserTypeDTOSwagger {
     profile: ProfileTpeDTOSwagger
 }
 export class UrlAvatarSwagger {
-    @ApiProperty({ example: 'string' })
+    @ApiProperty({ example: 'https://somesite.ok' })
     url: string
 }
 

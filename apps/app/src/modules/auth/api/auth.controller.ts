@@ -227,7 +227,7 @@ export class AuthController {
     ) {
         try {
             const result = await axios.post(
-                `https://app.incubatogram.org/api/v1/auth/new-password?code=${code}`,
+                `https://app.incubatogram.org/api/v1/auth/create-new-password?code=${code}`,
                 { newPassword: code }
             )
 

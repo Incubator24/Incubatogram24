@@ -218,7 +218,7 @@ export class AuthController {
         }
     }
 
-    @Get('/create-new-password')
+    @Get('/new-password')
     @SwaggerGetRegistrationConfirmationEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
@@ -244,7 +244,7 @@ export class AuthController {
         }
     }
 
-    @Post('/create-new-password')
+    @Post('/new-password')
     @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async getNewPassword(

@@ -42,7 +42,7 @@ export class EmailService {
     }
 
     async sendRecoveryPasswordEmail(recoveryCode: string, email: string) {
-        const url = `https://incubatogram.org/api/v1/auth/create-new-password?code=${recoveryCode}`
+        const url = `https://incubatogram.org/auth/create-new-password?code=${recoveryCode}`
 
         // send mail with defined transport object
         const info = await this.transporter.sendMail({

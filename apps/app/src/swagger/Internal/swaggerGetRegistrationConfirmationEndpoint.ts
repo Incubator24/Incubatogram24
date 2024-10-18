@@ -1,23 +1,9 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 
 export function SwaggerGetRegistrationConfirmationEndpoint() {
     return applyDecorators(
         ApiTags('Internal'),
-        ApiOperation({
-            summary: 'Confirm registration',
-            requestBody: {
-                content: {
-                    'text/plain': {
-                        schema: {
-                            example: {
-                                code: 'string',
-                            },
-                        },
-                    },
-                },
-            },
-        }),
         ApiResponse({
             status: HttpStatus.NO_CONTENT,
             description: 'Email was verified. Account was activated',

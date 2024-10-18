@@ -220,13 +220,15 @@ export class AuthController {
 
     @Get('/new-password')
     @SwaggerGetRegistrationConfirmationEndpoint()
+    @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
         @Query('code') code: string,
         @Res() res: Response
     ) {
         try {
             const result = await axios.post(
-                `https://app.incubatogram.org/api/v1/auth/new-password?code=${code}`
+                `https://app.incubatogram.org/api/v1/auth/new-password?code=${code}`,
+                { newPassword: code }
             )
 
             if (result.status === 204 || (result.data && result.data !== '')) {
@@ -246,7 +248,7 @@ export class AuthController {
     @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async getNewPassword(
-        @Query() { code }: { code: string },
+        @Query('code') code: string,
         @Body() { newPassword }: { newPassword: string }
         // @Body() { newPassword, newRecoveryCode }: newPasswordWithRecoveryCodeDto
     ) {

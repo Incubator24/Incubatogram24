@@ -11,7 +11,7 @@ export function SwaggerPostRegistrationConfirmationEndpoint() {
                     'text/plain': {
                         schema: {
                             example: {
-                                code: 'string',
+                                newPassword: 'string',
                             },
                         },
                     },

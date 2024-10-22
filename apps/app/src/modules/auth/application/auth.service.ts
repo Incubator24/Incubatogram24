@@ -95,14 +95,14 @@ export class AuthService {
             )
             if (foundUser) {
                 if (foundUser.githubId) {
-                    return { id: foundUser.id }
+                    return foundUser.id
                 } else {
                     await this.userRepository.updateGithubProvider(
                         foundUser.id,
                         profile.email,
                         foundUser.githubId
                     )
-                    return { id: foundUser.id }
+                    return foundUser.id
                 }
             } else {
                 const createUserWithGithubProvider: CreatedUserWithGithubProviderDto =
@@ -133,7 +133,7 @@ export class AuthService {
                     emailConfirmationInfo,
                     createdUserId
                 )
-                return { id: createdUserId }
+                return createdUserId
             }
         }
     }

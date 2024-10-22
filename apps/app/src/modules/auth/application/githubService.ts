@@ -13,15 +13,6 @@ export class GithubService {
                 Configuration.getConfiguration().GITHUB_CLIENT_SECRET,
             redirect_url: Configuration.getConfiguration().GITHUB_CALLBACK_URL,
         }
-        console.log(
-            'code = ',
-            Configuration.getConfiguration().GITHUB_CLIENT_ID
-        )
-        console.log(
-            'clientt = ',
-            Configuration.getConfiguration().GITHUB_CLIENT_SECRET
-        )
-        console.log('code = ', code)
         try {
             const resp = await axios.post(
                 'https://github.com/login/oauth/access_token',

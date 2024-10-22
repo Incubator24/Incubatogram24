@@ -8,10 +8,14 @@ export function SwaggerPostRegistrationConfirmationEndpoint() {
             summary: 'Confirm registration',
             requestBody: {
                 content: {
-                    'text/plain': {
+                    'application/json': {
                         schema: {
-                            example: {
-                                code: 'string',
+                            type: 'object',
+                            properties: {
+                                newPassword: {
+                                    type: 'string',
+                                    example: 'string',
+                                },
                             },
                         },
                     },

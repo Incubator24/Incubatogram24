@@ -56,7 +56,7 @@ type ProfileType = {
     country: string
     city: string
     aboutMe: string
-    avatarId: string
+    url: string
 }
 export type ProfileViewModel = {
     id: number

@@ -34,7 +34,7 @@ export class EmailService {
             from: `Incubatogram <incubator2404@gmail.com>`, // sender address
             to: email, // list of receivers
             subject: 'Email Confirmation', // Subject line
-            html: ` <h1>Thank for your registration</h1>
+            html: ` <h1>Thanks for your registration</h1>
         <p>To finish registration please follow the link below:
             <a href="${url}" >complete registration</a>
         </p>`, // html body
@@ -42,7 +42,7 @@ export class EmailService {
     }
 
     async sendRecoveryPasswordEmail(recoveryCode: string, email: string) {
-        const url = `https://app.incubatogram.org/api/v1/auth/new-password?code=${recoveryCode}`
+        const url = `https://incubatogram.org/auth/create-new-password?code=${recoveryCode}`
 
         // send mail with defined transport object
         const info = await this.transporter.sendMail({

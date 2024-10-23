@@ -42,6 +42,7 @@ import { IRecoveryCodesRepository } from '../email/infrastructure/interfaces/rec
 import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
 import { GithubService } from './application/githubService'
 import { PostModule } from '../post/post.module'
+import { ValidatePasswordRecoveryCode } from './application/use-cases/ValidPasswordRecoveryCode'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,
@@ -52,7 +53,7 @@ const repositories = [
     { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
 ]
 
-const useCases = [ChangeUserConfirmationCode]
+const useCases = [ChangeUserConfirmationCode, ValidatePasswordRecoveryCode]
 
 @Module({
     imports: [CqrsModule, UserModule],

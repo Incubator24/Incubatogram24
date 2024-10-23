@@ -23,7 +23,6 @@ export class ConfirmAndChangePassword
 {
     constructor(
         public authService: AuthService,
-        public authRepository: AuthRepository,
         public userRepository: IUserRepository,
         public recoveryCodesRepository: RecoveryCodesRepository
     ) {}
@@ -35,7 +34,6 @@ export class ConfirmAndChangePassword
             await this.recoveryCodesRepository.findDataByRecoveryCode(
                 command.recoveryCode
             )
-        //  await this.authRepository.findEmailByRecoveryCode(command.recoveryCode);
         if (!foundEmailByRecoveryCode) {
             return {
                 data: null,

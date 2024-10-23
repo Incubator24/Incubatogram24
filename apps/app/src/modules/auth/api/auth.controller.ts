@@ -58,6 +58,7 @@ import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../swagger/Int
 import { SwaggerPostGoogleEndpoint } from '../../../swagger/Internal/swaggerPostGoogleEndpoint'
 import { GoogleEndpoint } from '../../../swagger/auth/googleEndpoint'
 import { GithubService } from '../application/githubService'
+import { ValidatePasswordRecoveryCodeCommand } from '../application/use-cases/ValidPasswordRecoveryCode'
 
 @Injectable()
 @Controller('auth')
@@ -218,39 +219,31 @@ export class AuthController {
         }
     }
 
+    // 1 получаем от клиента код и смотрим его валидность
     @Get('/new-password')
     @SwaggerGetRegistrationConfirmationEndpoint()
-    @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
         @Query('code') code: string,
         @Res() res: Response
     ) {
-        try {
-            const result = await axios.post(
-                `https://app.incubatogram.org/api/v1/auth/create-new-password?code=${code}`,
-                { newPassword: code }
-            )
-
-            if (result.status === 204 || (result.data && result.data !== '')) {
-                res.send({
-                    message: 'Your password successfully changed',
-                })
-            } else {
-                res.status(500).send('Error change password')
-            }
-        } catch (error) {
-            console.error('Error confirming registration:', error)
-            res.status(500).send('Error change password')
+        // тут проверим валидный ли код
+        const isValidPasswordRecoveryCode = await this.commandBus.execute(
+            new ValidatePasswordRecoveryCodeCommand(code)
+        )
+        if (isValidPasswordRecoveryCode) {
+            return res.status(HttpStatus.OK).send('Code is valid')
+        } else {
+            return res.status(HttpStatus.BAD_REQUEST).send('Invalid code')
         }
     }
 
+    // 2-й если код валидный, клиент отправляет код и пароль
     @Post('/new-password')
     @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async getNewPassword(
         @Query('code') code: string,
         @Body() { newPassword }: { newPassword: string }
-        // @Body() { newPassword, newRecoveryCode }: newPasswordWithRecoveryCodeDto
     ) {
         const result = await this.commandBus.execute(
             new ConfirmAndChangePasswordCommand(code, newPassword)

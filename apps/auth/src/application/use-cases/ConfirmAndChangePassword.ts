@@ -3,11 +3,11 @@ import { AuthService } from '../auth.service'
 import * as bcrypt from 'bcryptjs'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { RecoveryCodesRepository } from '../../../email/infrastructure/repositories/recoveryCodes.repository'
-import { ResultObject } from '../../../../helpers/types/helpersType'
-import Configuration from '../../../../config/configuration'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
-import { UpdatePasswordDto } from '../../../../helpers/types/passwordRecoveryDto'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import { RecoveryCodesRepository } from '../../../../app/src/modules/email/infrastructure/repositories/recoveryCodes.repository'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
+import Configuration from '../../../../../libs/config/configuration'
+import { UpdatePasswordDto } from '../../../../../libs/helpers/types/passwordRecoveryDto'
 
 @Injectable()
 export class ConfirmAndChangePasswordCommand {

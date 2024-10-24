@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator'
-import { Trim } from '../../../../../helpers/decorators/transform/trim'
 import { Transform } from 'class-transformer'
+import { Trim } from '../../../../../../../../libs/helpers/decorators/transform/trim'
 
 export class CreatePostInputDto {
     @ApiProperty()

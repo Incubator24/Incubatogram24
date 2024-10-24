@@ -1,20 +1,20 @@
+import { EmailExpiration, Profile, User } from '@prisma/client'
+import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
+import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import {
     CreatedUserDto,
     CreatedUserWithGithubProviderDto,
     CreatedUserWithGoogleProviderDto,
     EmailExpirationRawType,
-} from '../../../../helpers/types/types'
+} from '../../../../../../../libs/helpers/types/types'
 import {
     EmailConfirmationType,
     EmailExpirationDto,
-} from '../../../../helpers/types/emailConfirmationType'
+} from '../../../../../../../libs/helpers/types/emailConfirmationType'
 import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
-} from '../../../../helpers/types/passwordRecoveryDto'
-import { EmailExpiration, Profile, User } from '@prisma/client'
-import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
-import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
+} from '../../../../../../../libs/helpers/types/passwordRecoveryDto'
 
 export abstract class IUserRepository {
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>

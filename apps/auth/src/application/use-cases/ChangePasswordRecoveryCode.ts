@@ -1,15 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { v4 as uuidv4 } from 'uuid'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { RecoveryCodesRepository } from '../../../email/infrastructure/repositories/recoveryCodes.repository'
+import { User } from '@prisma/client'
+import { add } from 'date-fns'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
 import {
     RecaptchaAdapter,
     ResultObject,
-} from '../../../../helpers/types/helpersType'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
-import { User } from '@prisma/client'
-import { PasswordRecoveryDto } from '../../../../helpers/types/passwordRecoveryDto'
-import { add } from 'date-fns'
+} from '../../../../../libs/helpers/types/helpersType'
+import { PasswordRecoveryDto } from '../../../../../libs/helpers/types/passwordRecoveryDto'
 
 @Injectable()
 export class ChangePasswordRecoveryCodeCommand {

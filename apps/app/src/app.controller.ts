@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common'
 import { AppService } from './app.service'
-import { SwaggerDefaultEndpoint } from './swagger/Internal/swaggerDefaultEndpoint'
+import { SwaggerDefaultEndpoint } from '../../../libs/swagger/Internal/swaggerDefaultEndpoint'
 
 @Controller()
 export class AppController {

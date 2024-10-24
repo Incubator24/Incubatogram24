@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
-import Configuration from '../../../config/configuration'
-import { UsersService } from '../../user/application/user.service'
-import { IUserRepository } from '../../user/infrastructure/interfaces/user.repository.interface'
+import { UsersService } from '../../../app/src/modules/user/application/user.service'
+import { IUserRepository } from '../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import Configuration from '../../../../libs/config/configuration'
 import {
     CreatedEmailDto,
     CreatedUserWithGithubProviderDto,
     CreatedUserWithGoogleProviderDto,
-} from '../../../helpers/types/types'
-import { PasswordRecoveryDto } from '../../../helpers/types/passwordRecoveryDto'
-import { createEmailDto, createPassDto } from '../../../helpers/functions'
+} from '../../../../libs/helpers/types/types'
+import {
+    createEmailDto,
+    createPassDto,
+} from '../../../../libs/helpers/functions'
+import { PasswordRecoveryDto } from '../../../../libs/helpers/types/passwordRecoveryDto'
 
 @Injectable()
 export class AuthService {

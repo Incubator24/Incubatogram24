@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { v4 as uuidv4 } from 'uuid'
 import { HttpStatus } from '@nestjs/common'
-import { ResultObject } from '../../../../helpers/types/helpersType'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
 import { User } from '@prisma/client'
-import { EmailExpirationDto } from '../../../../helpers/types/emailConfirmationType'
 import { add } from 'date-fns'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
+import { EmailExpirationDto } from '../../../../../libs/helpers/types/emailConfirmationType'
 
 export class ChangeUserConfirmationCodeCommand {
     constructor(public email: string) {}

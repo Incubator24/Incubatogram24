@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../auth.service'
 import { Injectable } from '@nestjs/common'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
 
 @Injectable()
 export class CheckCredentialCommand {

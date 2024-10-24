@@ -2,20 +2,20 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthService } from '../auth.service'
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { CreateUserDto } from '../../api/dto/CreateUserDto'
-import { v4 as uuidv4 } from 'uuid'
-import { add } from 'date-fns'
 import * as bcrypt from 'bcryptjs'
-import { EmailService } from '../../../email/email.service'
-import { ResultObject } from '../../../../helpers/types/helpersType'
-import Configuration from '../../../../config/configuration'
-import { EmailConfirmationType } from '../../../../helpers/types/emailConfirmationType'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import { EmailService } from '../../../../app/src/modules/email/email.service'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
+import Configuration from '../../../../../libs/config/configuration'
 import {
     CreatedEmailDto,
     CreatedUserDto,
-} from '../../../../helpers/types/types'
-import { PasswordRecoveryDto } from '../../../../helpers/types/passwordRecoveryDto'
-import { createEmailDto, createPassDto } from '../../../../helpers/functions'
+} from '../../../../../libs/helpers/types/types'
+import { PasswordRecoveryDto } from '../../../../../libs/helpers/types/passwordRecoveryDto'
+import {
+    createEmailDto,
+    createPassDto,
+} from '../../../../../libs/helpers/functions'
 
 @Injectable()
 export class CreateUserByRegistrationCommand {

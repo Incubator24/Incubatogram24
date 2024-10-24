@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ResultObject } from '../../../../helpers/types/helpersType'
 import { S3StorageAdapter } from '../../../files/adapter/file-storage-adapter-service'
 import { IUserRepository } from '../../infrastructure/interfaces/user.repository.interface'
+import { ResultObject } from '../../../../../../../libs/helpers/types/helpersType'
 
 @Injectable()
 export class DeleteAvatarUseCaseCommand {

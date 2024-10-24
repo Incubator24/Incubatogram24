@@ -1,6 +1,6 @@
-import { DeviceDBModel } from '../../../devices/device.types'
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../../../../../../prisma/prisma.service'
+import { PrismaService } from '../../../../../prisma/prisma.service'
+import { DeviceDBModel } from '../../../../app/src/modules/devices/device.types'
 
 @Injectable()
 export class AuthRepository {

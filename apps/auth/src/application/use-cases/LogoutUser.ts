@@ -1,12 +1,12 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 
-import { DeviceQueryRepositorySql } from '../../../devices/deviceQuery.repository.sql'
-import { DeviceRepository } from '../../../devices/device.repository'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus } from '@nestjs/common'
 import { UserAndDeviceTypeFromRefreshToken } from '../../jwt/jwt.types'
 import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cases/GetTokenInfoByRefreshToken'
-import { ResultObject } from '../../../../helpers/types/helpersType'
+import { DeviceRepository } from '../../../../app/src/modules/devices/device.repository'
+import { DeviceQueryRepositorySql } from '../../../../app/src/modules/devices/deviceQuery.repository.sql'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
 
 export class LogoutUserCommand {
     constructor(public refreshToken: string) {}

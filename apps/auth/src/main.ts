@@ -1,15 +1,17 @@
 import { NestFactory } from '@nestjs/core'
-import { ConfigService } from '@nestjs/config'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { AppModule } from '../../app/src/app.module'
-import { ConfigType } from '../../../libs/config/configuration'
-import { appSettings } from '../../../libs/common/app.setting'
+import { AuthModule } from './auth.module'
+import Configuration from '../../../libs/config/configuration'
 
 async function bootstrap() {
     const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-        AppModule,
+        AuthModule,
         {
             transport: Transport.TCP,
+            options: {
+                host: Configuration.getConfiguration().AUTH_SERVICE_HOST,
+                port: Configuration.getConfiguration().AUTH_SERVICE_PORT,
+            },
         }
     )
     // const configService = app.get(ConfigService<ConfigType, true>)

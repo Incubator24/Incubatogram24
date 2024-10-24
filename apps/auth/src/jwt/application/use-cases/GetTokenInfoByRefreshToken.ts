@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserAndDeviceTypeFromRefreshToken } from '../../jwt.types'
 import * as jwt from 'jsonwebtoken'
-import { UserRepository } from '../../../../user/infrastructure/repositories/user.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { ResultObject } from '../../../../../helpers/types/helpersType'
-import Configuration from '../../../../../config/configuration'
-import { IUserRepository } from '../../../../user/infrastructure/interfaces/user.repository.interface'
+import { IUserRepository } from '../../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import { ResultObject } from '../../../../../../libs/helpers/types/helpersType'
+import Configuration from '../../../../../../libs/config/configuration'
 
 @Injectable()
 export class GetTokenInfoByRefreshTokenCommand {

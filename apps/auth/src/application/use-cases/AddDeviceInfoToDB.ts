@@ -4,9 +4,9 @@ import { CreateJWTCommand } from '../../jwt/application/use-cases/CreateJWT'
 import { CreateRefreshJWTCommand } from '../../jwt/application/use-cases/CreateRefreshJWT'
 import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cases/GetTokenInfoByRefreshToken'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { DeviceDBModel } from '../../../devices/device.types'
+import { DeviceDBModel } from '../../../../app/src/modules/devices/device.types'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
-import { ResultObject } from '../../../../helpers/types/helpersType'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
 
 @Injectable()
 export class AddDeviceInfoToDBCommand {

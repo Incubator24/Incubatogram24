@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { ProfileTpeDTOSwagger } from '../../../../swagger/user/types'
+import { ProfileTpeDTOSwagger } from '../../../../../libs/swagger/user/types'
 
 export class UserInfoDTO {
     @ApiProperty({ example: '117' })

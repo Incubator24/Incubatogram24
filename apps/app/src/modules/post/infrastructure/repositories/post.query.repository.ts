@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { IPostRepository } from '../interfaces/post.repository.interface'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
-import { PaginatorDto, PostType } from '../../../../helpers/types/types'
+import {
+    PaginatorDto,
+    PostType,
+} from '../../../../../../../libs/helpers/types/types'
 
 @Injectable()
 export class PostQueryRepository implements IPostRepository {

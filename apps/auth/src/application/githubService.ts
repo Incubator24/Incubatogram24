@@ -1,7 +1,7 @@
 // github.service.ts
 import { Injectable } from '@nestjs/common'
 import axios from 'axios'
-import Configuration from '../../../config/configuration'
+import Configuration from '../../../../libs/config/configuration'
 
 @Injectable()
 export class GithubService {

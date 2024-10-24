@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { AuthService } from './application/auth.service'
 import { ConfigService } from '@nestjs/config'
-import { AuthController } from './api/auth.controller'
 import { CreateUserByRegistration } from './application/use-cases/CreateUserByRegistration'
 import { CqrsModule } from '@nestjs/cqrs'
 import { AddDeviceInfoToDB } from './application/use-cases/AddDeviceInfoToDB'
@@ -41,6 +40,7 @@ import { DeleteUserDeviceById } from '../../app/src/modules/devices/application/
 import { DeviceRepository } from '../../app/src/modules/devices/device.repository'
 import { DeviceQueryRepositorySql } from '../../app/src/modules/devices/deviceQuery.repository.sql'
 import { UserRepository } from '../../app/src/modules/user/infrastructure/repositories/user.repository'
+import { AuthController } from './api/auth.controller'
 
 // const configModule = ConfigModule.forRoot({
 //     isGlobal: true,

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { LoginSuccessViewModel } from '../../jwt.types'
 import * as jwt from 'jsonwebtoken'
 import { Injectable } from '@nestjs/common'
-import Configuration from '../../../../../config/configuration'
+import Configuration from '../../../../../../libs/config/configuration'
 
 @Injectable()
 export class CreateJWTCommand {

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus } from '@nestjs/common'
-import { ResultObject } from '../../../../helpers/types/helpersType'
-import { IUserRepository } from '../../../user/infrastructure/interfaces/user.repository.interface'
+import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
+import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
 
 export class ConfirmEmailCommand {
     constructor(public code: string) {}

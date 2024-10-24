@@ -1,16 +1,16 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { DeviceQueryRepositorySql } from '../../../devices/deviceQuery.repository.sql'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { UserAndDeviceTypeFromRefreshToken } from '../../jwt/jwt.types'
 import { GetTokenInfoByRefreshTokenCommand } from '../../jwt/application/use-cases/GetTokenInfoByRefreshToken'
 import { HttpStatus } from '@nestjs/common'
 import { CreateJWTCommand } from '../../jwt/application/use-cases/CreateJWT'
 import { CreateRefreshJWTCommand } from '../../jwt/application/use-cases/CreateRefreshJWT'
-import { DeviceDBModel } from '../../../devices/device.types'
+import { DeviceDBModel } from '../../../../app/src/modules/devices/device.types'
+import { DeviceQueryRepositorySql } from '../../../../app/src/modules/devices/deviceQuery.repository.sql'
 import {
     mappingErrorStatus,
     ResultObject,
-} from '../../../../helpers/types/helpersType'
+} from '../../../../../libs/helpers/types/helpersType'
 
 export class RefreshTokenByRefreshCommand {
     constructor(

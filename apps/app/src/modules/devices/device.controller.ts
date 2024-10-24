@@ -12,13 +12,13 @@ import { DeleteOtherUserDeviceCommand } from './application/use-cases/DeleteOthe
 import { DeleteUserDeviceByIdCommand } from './application/use-cases/DeleteUserDeviceById'
 import { SkipThrottle } from '@nestjs/throttler'
 import { DeviceQueryRepositorySql } from './deviceQuery.repository.sql'
-import { GetUserIdByRefreshTokenCommand } from '../auth/jwt/application/use-cases/GetUserIdByRefreshToken'
-import { GetTokenInfoByRefreshTokenCommand } from '../auth/jwt/application/use-cases/GetTokenInfoByRefreshToken'
-import { Cookies } from '../auth/api/decorators/auth.decorator'
-import { mappingErrorStatus } from '../../helpers/types/helpersType'
-import { DeleteDeviceByIdEndpoint } from '../../swagger/devices/deleteDeviceByIdEndpoint'
-import { DeleteDeviceEndpoint } from '../../swagger/devices/deleteDeviceEndpoint'
-import { GetDeviceEndpoint } from '../../swagger/devices/getDeviceEndpoint'
+import { Cookies } from 'apps/auth/src/api/decorators/auth.decorator'
+import { GetDeviceEndpoint } from '../../../../../libs/swagger/devices/getDeviceEndpoint'
+import { GetUserIdByRefreshTokenCommand } from '../../../../auth/src/jwt/application/use-cases/GetUserIdByRefreshToken'
+import { mappingErrorStatus } from '../../../../../libs/helpers/types/helpersType'
+import { DeleteDeviceEndpoint } from '../../../../../libs/swagger/devices/deleteDeviceEndpoint'
+import { GetTokenInfoByRefreshTokenCommand } from '../../../../auth/src/jwt/application/use-cases/GetTokenInfoByRefreshToken'
+import { DeleteDeviceByIdEndpoint } from '../../../../../libs/swagger/devices/deleteDeviceByIdEndpoint'
 
 @SkipThrottle()
 @Injectable()

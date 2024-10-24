@@ -8,20 +8,20 @@ import {
 import { CreateProfileDto } from '../../api/dto/CreateProfileDto'
 import { UpdateProfileDto } from '../../api/dto/UpdateProfileDto'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
+import { IUserRepository } from '../interfaces/user.repository.interface'
 import {
     CreatedUserDto,
     CreatedUserWithGithubProviderDto,
     CreatedUserWithGoogleProviderDto,
-} from '../../../../helpers/types/types'
+} from '../../../../../../../libs/helpers/types/types'
 import {
     EmailConfirmationType,
     EmailExpirationDto,
-} from '../../../../helpers/types/emailConfirmationType'
-import { IUserRepository } from '../interfaces/user.repository.interface'
+} from '../../../../../../../libs/helpers/types/emailConfirmationType'
 import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
-} from '../../../../helpers/types/passwordRecoveryDto'
+} from '../../../../../../../libs/helpers/types/passwordRecoveryDto'
 
 type GetFullInfoModelType = { user: User; emailExpiration: EmailExpiration }
 

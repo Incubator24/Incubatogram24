@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { IRecoveryCodesRepository } from '../interfaces/recoveryCodes.repository.interface'
 import { PasswordRecovery } from '@prisma/client'
-import { PrismaService } from '../../../../../../../prisma/prisma.service'
+import { PrismaService } from '../../../../../prisma/prisma.service'
 
 @Injectable()
 export class RecoveryCodesRepository implements IRecoveryCodesRepository {

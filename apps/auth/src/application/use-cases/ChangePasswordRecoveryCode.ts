@@ -54,8 +54,7 @@ export class ChangePasswordRecoveryCode
         const updatePasswordRecoveryCode: PasswordRecoveryDto = {
             recoveryCode: uuidv4(),
             expirationAt: add(new Date(), {
-                hours: 2,
-                minutes: 3,
+                minutes: 1,
             }),
         }
         const updatedPasswordRecoveryCode =

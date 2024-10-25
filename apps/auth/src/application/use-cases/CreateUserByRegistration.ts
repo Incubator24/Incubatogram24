@@ -4,7 +4,7 @@ import { HttpStatus, Injectable } from '@nestjs/common'
 import { CreateUserDto } from '../../api/dto/CreateUserDto'
 import * as bcrypt from 'bcryptjs'
 import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
-import { EmailService } from '../../../../app/src/modules/email/email.service'
+import { EmailService } from '../../../../../libs/modules/email/email.service'
 import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
 import Configuration from '../../../../../libs/config/configuration'
 import {

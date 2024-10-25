@@ -4,7 +4,7 @@ import * as bcrypt from 'bcryptjs'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { IUserRepository } from '../../../../app/src/modules/user/infrastructure/interfaces/user.repository.interface'
-import { RecoveryCodesRepository } from '../../../../app/src/modules/email/infrastructure/repositories/recoveryCodes.repository'
+import { RecoveryCodesRepository } from '../../../../../libs/modules/email/infrastructure/repositories/recoveryCodes.repository'
 import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
 import Configuration from '../../../../../libs/config/configuration'
 import { UpdatePasswordDto } from '../../../../../libs/helpers/types/passwordRecoveryDto'
@@ -23,7 +23,6 @@ export class ConfirmAndChangePassword
 {
     constructor(
         public authService: AuthService,
-        public authRepository: AuthRepository,
         public userRepository: IUserRepository,
         public recoveryCodesRepository: RecoveryCodesRepository
     ) {}
@@ -35,7 +34,6 @@ export class ConfirmAndChangePassword
             await this.recoveryCodesRepository.findDataByRecoveryCode(
                 command.recoveryCode
             )
-        //  await this.authRepository.findEmailByRecoveryCode(command.recoveryCode);
         if (!foundEmailByRecoveryCode) {
             return {
                 data: null,

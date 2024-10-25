@@ -1,3 +1,4 @@
+import { CommandBus } from '@nestjs/cqrs'
 import {
     BadRequestException,
     Body,
@@ -18,9 +19,7 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { Response } from 'express'
-import axios from 'axios'
 import { AuthGuard } from '@nestjs/passport'
-import { EmailService } from './modules/email/email.service'
 import { UserRepository } from './modules/user/infrastructure/repositories/user.repository'
 import { UserQueryRepository } from './modules/user/infrastructure/repositories/user.query.repository'
 import { GithubService } from '../../auth/src/application/githubService'
@@ -33,30 +32,33 @@ import {
 } from '../../../libs/helpers/types/helpersType'
 import { LocalAuthGuard } from '../../../libs/guards/local-auth.guard'
 import { LoginEndpoint } from '../../../libs/swagger/auth/login'
-import { AuthInputModel } from '../../auth/src/api/dto/AuthInputModel'
 import { UserId } from '../../auth/src/api/decorators/user.decorator'
 import { ResponseAccessTokenViewDTO } from '../../auth/src/api/dto/ResponseAccessTokenViewDTO'
 import { RefreshTokenEndpoint } from '../../../libs/swagger/auth/refreshTokenEndpoint'
 import { Cookies } from 'apps/auth/src/api/decorators/auth.decorator'
 import { LogoutEndpoint } from '../../../libs/swagger/auth/logoutEndpoint'
-import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
 import { RegistrationEmailResendingEndpoint } from '../../../libs/swagger/auth/registrationEmailResendingEndpoint'
 import { emailDto } from '../../auth/src/types/emailDto'
 import { PasswordRecoveryEndpoint } from '../../../libs/swagger/auth/passwordRecoveryEndpoint'
-import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
-import Configuration from '../../../libs/config/configuration'
-import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
-import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
-import { Me } from '../../../libs/swagger/auth/me'
 import { JwtAuthGuard } from '../../../libs/guards/jwt-auth.guard'
-import { ClientProxy } from '@nestjs/microservices'
+import { EmailService } from '../../../libs/modules/email/email.service'
 import { firstValueFrom } from 'rxjs'
+import { AuthInputModel } from '../../auth/src/api/dto/AuthInputModel'
 import { tokensDto } from '../../../libs/types/TokensDto'
+import { Me } from '../../../libs/swagger/auth/me'
+import Configuration from '../../../libs/config/configuration'
+import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
+import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
+import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/use-cases/ValidPasswordRecoveryCode'
+import { ClientProxy } from '@nestjs/microservices'
+import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
+import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
 
 @Injectable()
 @Controller('auth')
 export class AuthController {
     constructor(
+        private readonly commandBus: CommandBus,
         private readonly emailService: EmailService,
         private readonly userRepository: UserRepository,
         private readonly userQueryRepository: UserQueryRepository,
@@ -146,7 +148,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
         @Cookies('refreshToken') refreshToken: string
     ) {
-        const result = await firstValueFrom(
+        const result = await firstValueFrom<ResultObject<string>>(
             this.authServiceClient.send('logout', {
                 refreshToken,
             })
@@ -162,7 +164,7 @@ export class AuthController {
         @Query('code') code: string,
         @Res() res: Response
     ) {
-        const result = await firstValueFrom(
+        const result = await firstValueFrom<ResultObject<string>>(
             this.authServiceClient.send('registration-confirmation', { code })
         )
         if (!result.data) return mappingErrorStatus(result)
@@ -175,7 +177,9 @@ export class AuthController {
     @RegistrationEmailResendingEndpoint()
     @HttpCode(204)
     async registrationEmailResending(@Body() { email }: emailDto) {
-        const newUserConfirmationCode = await firstValueFrom(
+        const newUserConfirmationCode = await firstValueFrom<
+            ResultObject<string>
+        >(
             this.authServiceClient.send('registration-email-resending', {
                 email,
             })
@@ -215,6 +219,7 @@ export class AuthController {
         }
     }
 
+    // 1 получаем от клиента код и смотрим его валидность
     @Get('new-password')
     @SwaggerGetRegistrationConfirmationEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
@@ -222,25 +227,18 @@ export class AuthController {
         @Query('code') code: string,
         @Res() res: Response
     ) {
-        try {
-            const result = await axios.post(
-                `https://app.incubatogram.org/api/v1/auth/create-new-password?code=${code}`,
-                { newPassword: code }
-            )
-
-            if (result.status === 204 || (result.data && result.data !== '')) {
-                res.send({
-                    message: 'Your password successfully changed',
-                })
-            } else {
-                res.status(500).send('Error change password')
-            }
-        } catch (error) {
-            console.error('Error confirming registration:', error)
-            res.status(500).send('Error change password')
+        // тут проверим валидный ли код
+        const isValidPasswordRecoveryCode = await this.commandBus.execute(
+            new ValidatePasswordRecoveryCodeCommand(code)
+        )
+        if (isValidPasswordRecoveryCode) {
+            return res.status(HttpStatus.OK).send('Code is valid')
+        } else {
+            return res.status(HttpStatus.BAD_REQUEST).send('Invalid code')
         }
     }
 
+    // 2-й если код валидный, клиент отправляет код и пароль
     @Post('new-password')
     @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
@@ -266,24 +264,23 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response
     ) {
         const accessToken = await this.githubService.validate(body.code)
-        console.log('accessToken = ', accessToken)
         const user = await this.githubService.getGithubUserByToken(accessToken)
-        console.log('user = ', user)
 
         // та же логика что и на google
 
-        const tokensInfo = await firstValueFrom<ResultObject<tokensDto>>(
+        const tokensInfoAndCurrentUser = await firstValueFrom<{
+            tokensInfo: ResultObject<tokensDto>
+            currentUser: any
+        }>(
             this.authServiceClient.send('github', {
                 code: body.code,
                 userAgent,
                 ip,
             })
         )
-        console.log('tokensInfo = ', tokensInfo)
-        if (tokensInfo.data === null) return mappingErrorStatus(tokensInfo)
-
-        const currentUser = await this.userRepository.findUserById(user.id)
-        //
+        const { tokensInfo, currentUser } = tokensInfoAndCurrentUser
+        if (tokensInfoAndCurrentUser.tokensInfo.data === null)
+            return mappingErrorStatus(tokensInfo)
 
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
@@ -292,7 +289,7 @@ export class AuthController {
         }).header('accessToken', tokensInfo.data.accessToken)
         res.redirect(
             Configuration.getConfiguration().FRONT_URL +
-                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         )
         return { accessToken: tokensInfo.data.accessToken }
     }
@@ -330,13 +327,9 @@ export class AuthController {
         }).header('accessToken', tokensInfo.data.accessToken)
         res.redirect(
             Configuration.getConfiguration().FRONT_URL +
-                `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
+                `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         )
         return { accessToken: tokensInfo.data.accessToken }
-        // res.redirect(
-        //     `http://localhost:3000?id=${currentUser.id}&userName=${currentUser.userName}&avatar=${currentUser.avatarId}&accessToken=${tokensInfo.data.accessToken}`
-        // )
-        // return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Get('me')

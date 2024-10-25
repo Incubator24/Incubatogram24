@@ -30,22 +30,6 @@ export class AuthService {
         return 'Hello World, ' + `${Configuration.getConfiguration().CITY}`
     }
 
-    // async validateOAuthLogin(profile: any, provider: string): Promise<any> {
-    //     console.log('profileId = ', profile.id)
-    //     console.log('email = ', profile.emails[0].value)
-    //
-    //     let user = await this.usersService.findByProviderId(
-    //         profile.id,
-    //         provider
-    //     )
-    //
-    //     if (!user) {
-    //         user = await this.usersService.createOAuthUser(profile, provider)
-    //     }
-    //
-    //     return user
-    // }
-
     async validateOAuthLogin(profile: any, provider: string): Promise<any> {
         if (provider === 'google') {
             const email = profile.emails[0].value
@@ -98,14 +82,14 @@ export class AuthService {
             )
             if (foundUser) {
                 if (foundUser.githubId) {
-                    return { id: foundUser.id }
+                    return foundUser.id
                 } else {
                     await this.userRepository.updateGithubProvider(
                         foundUser.id,
                         profile.email,
                         foundUser.githubId
                     )
-                    return { id: foundUser.id }
+                    return foundUser.id
                 }
             } else {
                 const createUserWithGithubProvider: CreatedUserWithGithubProviderDto =
@@ -136,7 +120,7 @@ export class AuthService {
                     emailConfirmationInfo,
                     createdUserId
                 )
-                return { id: createdUserId }
+                return createdUserId
             }
         }
     }

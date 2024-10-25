@@ -13,7 +13,7 @@ import { UserRepository } from './modules/user/infrastructure/repositories/user.
 import { PostModule } from './modules/post/post.module'
 import Configuration from '../../../libs/config/configuration'
 import { AuthController } from './auth.controller'
-import { EmailService } from './modules/email/email.service'
+import { EmailService } from '../../../libs/modules/email/email.service'
 import { GithubService } from '../../auth/src/application/githubService'
 import { ClientProxyFactory } from '@nestjs/microservices'
 import { LocalStrategy } from '../../../libs/strategies/local.strategy'

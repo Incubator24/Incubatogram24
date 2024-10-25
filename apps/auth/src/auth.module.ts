@@ -26,11 +26,8 @@ import { GitHubStrategy } from '../../../libs/strategies/github.strategy'
 import { GoogleStrategy } from '../../../libs/strategies/google.strategy'
 import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
 import { GithubService } from './application/githubService'
-import { IRecoveryCodesRepository } from '../../app/src/modules/email/infrastructure/interfaces/recoveryCodes.repository.interface'
-import { RecoveryCodesRepository } from '../../app/src/modules/email/infrastructure/repositories/recoveryCodes.repository'
 import { UserModule } from '../../app/src/modules/user/user.module'
 import { DeviceController } from '../../app/src/modules/devices/device.controller'
-import { EmailService } from '../../app/src/modules/email/email.service'
 import { UserQueryRepository } from '../../app/src/modules/user/infrastructure/repositories/user.query.repository'
 import { RecaptchaAdapter } from '../../../libs/helpers/types/helpersType'
 import { PrismaService } from '../../../prisma/prisma.service'
@@ -41,12 +38,16 @@ import { DeviceRepository } from '../../app/src/modules/devices/device.repositor
 import { DeviceQueryRepositorySql } from '../../app/src/modules/devices/deviceQuery.repository.sql'
 import { UserRepository } from '../../app/src/modules/user/infrastructure/repositories/user.repository'
 import { AuthController } from './api/auth.controller'
+import { ValidatePasswordRecoveryCode } from './application/use-cases/ValidPasswordRecoveryCode'
+import { IRecoveryCodesRepository } from '../../../libs/modules/email/infrastructure/interfaces/recoveryCodes.repository.interface'
+import { RecoveryCodesRepository } from '../../../libs/modules/email/infrastructure/repositories/recoveryCodes.repository'
+import { EmailService } from '../../../libs/modules/email/email.service'
 
 const repositories = [
     { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
 ]
 
-const useCases = [ChangeUserConfirmationCode]
+const useCases = [ChangeUserConfirmationCode, ValidatePasswordRecoveryCode]
 
 @Module({
     imports: [CqrsModule, UserModule],

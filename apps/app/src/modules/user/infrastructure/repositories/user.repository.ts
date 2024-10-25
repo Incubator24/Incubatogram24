@@ -38,6 +38,7 @@ export class UserRepository implements IUserRepository {
         if (!foundUser) {
             return null
         }
+        console.log('foundUser = ', foundUser)
         return {
             id: foundUser.id,
             userName: foundUser.userName,

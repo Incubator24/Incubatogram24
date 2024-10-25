@@ -1,7 +1,7 @@
 import { Controller, Injectable } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { AuthService } from '../application/auth.service'
-import { EmailService } from '../../../app/src/modules/email/email.service'
+import { EmailService } from '../../../../libs/modules/email/email.service'
 import { UserRepository } from '../../../app/src/modules/user/infrastructure/repositories/user.repository'
 import { UserQueryRepository } from '../../../app/src/modules/user/infrastructure/repositories/user.query.repository'
 import { GithubService } from '../application/githubService'
@@ -76,21 +76,6 @@ export class AuthController {
         )
         return result
     }
-    //
-    // @Post('/registration-confirmation')
-    // @SwaggerPostRegistrationConfirmationEndpoint()
-    // @HttpCode(204)
-    // async registrationConfirmation(@Body() code: string, @Res() res: Response) {
-    //     console.log('code = ', code)
-    //     const result = await this.commandBus.execute(
-    //         new ConfirmEmailCommand(code)
-    //     )
-    //     console.log('result2 = ', result)
-    //     if (!result.data) return mappingErrorStatus(result)
-    //     return res.redirect(
-    //         'https://incubatogram.org/auth/sign-up/congratulations'
-    //     )
-    // }
 
     @MessagePattern('registration-confirmation')
     async getRegistrationConfirmation(data: {
@@ -140,24 +125,26 @@ export class AuthController {
         code: string
         userAgent: string
         ip: string
-    }): Promise<ResultObject<tokensDto>> {
+    }): Promise<{ tokensInfo: ResultObject<tokensDto>; currentUser: any }> {
         const { code, ip, userAgent } = data
         const accessToken = await this.githubService.validate(code)
         console.log('accessToken = ', accessToken)
         const user = await this.githubService.getGithubUserByToken(accessToken)
-        console.log('user = ', user)
-        await this.authService.validateOAuthLogin(user, 'github')
+        console.log('user github = ', user)
+        const userId: number = await this.authService.validateOAuthLogin(
+            user,
+            'github'
+        )
 
         // та же логика что и на google
 
-        const tokensInfo: ResultObject<tokensDto> =
-            await this.commandBus.execute(
-                new AddDeviceInfoToDBCommand(user.id, userAgent, ip)
-            )
+        const tokensInfo = await this.commandBus.execute(
+            new AddDeviceInfoToDBCommand(userId, userAgent, ip)
+        )
 
-        if (tokensInfo.data === null) return null
+        const currentUser = await this.userRepository.findUserById(userId)
 
-        return tokensInfo
+        return { tokensInfo, currentUser }
     }
 
     @MessagePattern('google-success')

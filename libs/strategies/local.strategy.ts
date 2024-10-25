@@ -2,8 +2,8 @@ import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
-import { CheckCredentialCommand } from '../application/use-cases/CheckCredential'
-import { UserRepository } from '../../../app/src/modules/user/infrastructure/repositories/user.repository'
+import { CheckCredentialCommand } from '../../apps/auth/src/application/use-cases/CheckCredential'
+import { UserRepository } from '../../apps/app/src/modules/user/infrastructure/repositories/user.repository'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

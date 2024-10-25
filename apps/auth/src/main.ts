@@ -9,7 +9,7 @@ async function bootstrap() {
         {
             transport: Transport.TCP,
             options: {
-                host: Configuration.getConfiguration().AUTH_SERVICE_HOST,
+                host: '0.0.0.0',
                 port: Configuration.getConfiguration().AUTH_SERVICE_PORT,
             },
         }

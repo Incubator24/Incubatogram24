@@ -37,7 +37,7 @@ import { UpdateAvatarEndpoint } from '../../../../../../libs/swagger/user/Update
 import { DeleteAvatarEndpoint } from '../../../../../../libs/swagger/user/DeleteAvatarEndpoint'
 import { GetAllUsersEndpoint } from '../../../../../../libs/swagger/superAdmin/GetAllUsers'
 import { RemoveUserByIdEndpoint } from '../../../../../../libs/swagger/superAdmin/RemoveUserById'
-import { JwtAuthGuard } from '../../../../../auth/src/guards/jwt-auth.guard'
+import { JwtAuthGuard } from '../../../../../../libs/guards/jwt-auth.guard'
 import { UserId } from '../../../../../auth/src/api/decorators/user.decorator'
 
 @Controller('profile')

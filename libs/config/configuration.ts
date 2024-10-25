@@ -1,15 +1,8 @@
 import * as dotenv from 'dotenv'
+import { Transport } from '@nestjs/microservices'
+import { ClientOptions } from '@nestjs/microservices/interfaces/client-metadata.interface'
 
 class Configuration {
-    // private static loadEnv() {
-    //     const environment =
-    //         process.env.NODE_ENV === 'development' ? 'development' : ''
-    //     const envFilePath = environment
-    //         ? ['.env', '.env.development', '.env.development.local']
-    //         : ''
-    //     dotenv.config({ path: envFilePath, override: true })
-    // }
-
     private static loadEnv() {
         const environment = [
             'development',
@@ -220,6 +213,33 @@ class Configuration {
         )
     }
 
+    private static getAuthService(): ClientOptions {
+        return {
+            options: {
+                host: this.readEnvVariableWithDefault(
+                    'AUTH_SERVICE_HOST',
+                    '0.0.0.0'
+                ),
+                port: Number(
+                    this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3001')
+                ),
+            },
+            transport: Transport.TCP,
+        }
+    }
+
+    private static getAuthServiceHost(): string {
+        return String(
+            this.readEnvVariableWithDefault('AUTH_SERVICE_HOST', '0.0.0.0')
+        )
+    }
+
+    private static getAuthServicePort(): number {
+        return Number(
+            this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3001')
+        )
+    }
+
     static getConfiguration() {
         Configuration.loadEnv()
         return {
@@ -252,6 +272,9 @@ class Configuration {
             YANDEX_S3_ENDPOINT: Configuration.getYandexS3Endpoint(),
             YANDEX_S3_ENDPOINT_WITH_BUCKET:
                 Configuration.getYandexS3EndpointWithBucket(),
+            AUTH_SERVICE: Configuration.getAuthService(),
+            AUTH_SERVICE_HOST: Configuration.getAuthServiceHost(),
+            AUTH_SERVICE_PORT: Configuration.getAuthServicePort(),
         }
     }
 }

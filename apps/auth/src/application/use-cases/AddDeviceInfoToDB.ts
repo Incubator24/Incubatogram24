@@ -7,6 +7,7 @@ import { HttpStatus, Injectable } from '@nestjs/common'
 import { DeviceDBModel } from '../../../../app/src/modules/devices/device.types'
 import { AuthRepository } from '../../infrastructure/repositories/auth.repository'
 import { ResultObject } from '../../../../../libs/helpers/types/helpersType'
+import { tokensDto } from '../../../../../libs/types/TokensDto'
 
 @Injectable()
 export class AddDeviceInfoToDBCommand {
@@ -29,7 +30,7 @@ export class AddDeviceInfoToDB
 
     async execute(
         command: AddDeviceInfoToDBCommand
-    ): Promise<ResultObject<any>> {
+    ): Promise<ResultObject<tokensDto>> {
         console.log('AddDeviceInfoToDB is working')
         const accessToken = await this.commandBus.execute(
             new CreateJWTCommand(command.userId)

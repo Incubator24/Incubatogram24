@@ -21,7 +21,7 @@ export class LogoutUser implements ICommandHandler<LogoutUserCommand> {
         private commandBus: CommandBus
     ) {}
 
-    async execute(command: LogoutUserCommand): Promise<ResultObject<any>> {
+    async execute(command: LogoutUserCommand): Promise<ResultObject<string>> {
         const isRefreshTokenInBlackList =
             await this.authRepository.findTokenInBlackList(command.refreshToken)
         if (isRefreshTokenInBlackList)

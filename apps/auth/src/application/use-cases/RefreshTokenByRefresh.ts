@@ -11,6 +11,7 @@ import {
     mappingErrorStatus,
     ResultObject,
 } from '../../../../../libs/helpers/types/helpersType'
+import { tokensDto } from '../../../../../libs/types/TokensDto'
 
 export class RefreshTokenByRefreshCommand {
     constructor(
@@ -32,7 +33,7 @@ export class RefreshTokenByRefresh
 
     async execute(
         command: RefreshTokenByRefreshCommand
-    ): Promise<ResultObject<any>> {
+    ): Promise<ResultObject<tokensDto>> {
         const isRefreshTokenInBlackList =
             await this.authRepository.findTokenInBlackList(command.refreshToken)
         if (isRefreshTokenInBlackList)

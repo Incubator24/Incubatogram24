@@ -11,19 +11,19 @@ import { GetTokenInfoByRefreshToken } from './jwt/application/use-cases/GetToken
 import { GetUserIdByAccessToken } from './jwt/application/use-cases/GetUserIdByAccessToken'
 import { GetUserIdByRefreshToken } from './jwt/application/use-cases/GetUserIdByRefreshToken'
 import { AuthRepository } from './infrastructure/repositories/auth.repository'
-import { LocalStrategy } from './strategies/local.strategy'
-import { LocalAuthGuard } from './guards/local-auth.guard'
-import { JwtAuthGuard } from './guards/jwt-auth.guard'
-import { BasicStrategy } from './strategies/basic.strategy'
-import { BasicAuthGuard } from './guards/basic-auth.guard'
+import { LocalStrategy } from '../../../libs/strategies/local.strategy'
+import { LocalAuthGuard } from '../../../libs/guards/local-auth.guard'
+import { JwtAuthGuard } from '../../../libs/guards/jwt-auth.guard'
+import { BasicStrategy } from '../../../libs/strategies/basic.strategy'
+import { BasicAuthGuard } from '../../../libs/guards/basic-auth.guard'
 import { LogoutUser } from './application/use-cases/LogoutUser'
 import { ChangePasswordRecoveryCode } from './application/use-cases/ChangePasswordRecoveryCode'
 import { ConfirmAndChangePassword } from './application/use-cases/ConfirmAndChangePassword'
 import { ConfirmEmail } from './application/use-cases/ConfirmEmail'
 import { RefreshTokenByRefresh } from './application/use-cases/RefreshTokenByRefresh'
-import { JwtStrategy } from './strategies/jwt.strategy'
-import { GitHubStrategy } from './strategies/github.strategy'
-import { GoogleStrategy } from './strategies/google.strategy'
+import { JwtStrategy } from '../../../libs/strategies/jwt.strategy'
+import { GitHubStrategy } from '../../../libs/strategies/github.strategy'
+import { GoogleStrategy } from '../../../libs/strategies/google.strategy'
 import { ChangeUserConfirmationCode } from './application/use-cases/ChangeUserConfirmationCode'
 import { GithubService } from './application/githubService'
 import { IRecoveryCodesRepository } from '../../app/src/modules/email/infrastructure/interfaces/recoveryCodes.repository.interface'
@@ -42,11 +42,6 @@ import { DeviceQueryRepositorySql } from '../../app/src/modules/devices/deviceQu
 import { UserRepository } from '../../app/src/modules/user/infrastructure/repositories/user.repository'
 import { AuthController } from './api/auth.controller'
 
-// const configModule = ConfigModule.forRoot({
-//     isGlobal: true,
-//     envFilePath: '.env.main.main',
-//     load: [Configuration.getConfiguration],
-// })
 const repositories = [
     { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
 ]

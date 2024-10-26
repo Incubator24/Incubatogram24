@@ -35,7 +35,6 @@ import { LoginEndpoint } from '../../../libs/swagger/auth/login'
 import { UserId } from '../../auth/src/api/decorators/user.decorator'
 import { ResponseAccessTokenViewDTO } from '../../auth/src/api/dto/ResponseAccessTokenViewDTO'
 import { RefreshTokenEndpoint } from '../../../libs/swagger/auth/refreshTokenEndpoint'
-import { Cookies } from 'apps/auth/src/api/decorators/auth.decorator'
 import { LogoutEndpoint } from '../../../libs/swagger/auth/logoutEndpoint'
 import { RegistrationEmailResendingEndpoint } from '../../../libs/swagger/auth/registrationEmailResendingEndpoint'
 import { emailDto } from '../../auth/src/types/emailDto'
@@ -53,6 +52,7 @@ import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/
 import { ClientProxy } from '@nestjs/microservices'
 import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
 import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
+import { Cookies } from '../../auth/src/api/decorators/auth.decorator'
 
 @Injectable()
 @Controller('auth')

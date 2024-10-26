@@ -21,3 +21,134 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: DATABASE_URL
+             - name: SECRET_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: SECRET_KEY
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: JWT_SECRET
+             - name: ACCESS_JWT_LIFETIME
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: ACCESS_JWT_LIFETIME
+             - name: REFRESH_JWT_LIFETIME
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: REFRESH_JWT_LIFETIME
+             - name: PASSWORD_SALT
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: PASSWORD_SALT
+             - name: HTTP_BASIC_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: HTTP_BASIC_USER
+             - name: HTTP_BASIC_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: HTTP_BASIC_PASS
+             - name: EMAIL_SERVICE_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: EMAIL_SERVICE_USER
+             - name: EMAIL_SERVICE_PASSWORD_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: EMAIL_SERVICE_PASSWORD_USER
+             - name: RECAPCHA_PUBLIK_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: RECAPCHA_PUBLIK_KEY
+             - name: RECAPCHA_PRIVATE_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: RECAPCHA_PRIVATE_KEY
+             - name: GITHUB_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GITHUB_CLIENT_ID
+             - name: GITHUB_CALLBACK_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GITHUB_CALLBACK_URL
+             - name: GOOGLE_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GOOGLE_CLIENT_ID
+             - name: GOOGLE_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GOOGLE_CLIENT_SECRET
+             - name: GOOGLE_CALLBACK_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GOOGLE_CALLBACK_URL
+             - name: FRONT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: FRONT_URL
+             - name: BACK_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: BACK_URL
+             - name: YANDEX_S3_KEY_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_KEY_ID
+             - name: YANDEX_S3_SECRET_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_SECRET_KEY
+             - name: YANDEX_S3_BUCKET_NAME
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_BUCKET_NAME
+             - name: YANDEX_S3_ENDPOINT
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_ENDPOINT
+             - name: YANDEX_S3_ENDPOINT_WITH_BUCKET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: YANDEX_S3_ENDPOINT_WITH_BUCKET
+             - name: GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: GITHUB_CLIENT_SECRET
+             - name: CITY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: CITY

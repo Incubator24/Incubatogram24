@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from './app.module'
 import { ConfigService } from '@nestjs/config'
-import { ConfigType } from './config/configuration'
+import { ConfigType } from '../../../libs/config/configuration'
 
 describe('AppController', () => {
     let city

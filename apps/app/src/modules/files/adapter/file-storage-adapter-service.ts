@@ -6,7 +6,7 @@ import {
     S3Client,
 } from '@aws-sdk/client-s3'
 import { UserRepository } from '../../user/infrastructure/repositories/user.repository'
-import Configuration from '../../../config/configuration'
+import Configuration from '../../../../../../libs/config/configuration'
 
 @Injectable()
 export class S3StorageAdapter {

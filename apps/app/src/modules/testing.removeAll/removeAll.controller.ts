@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common'
-import { RemoveAllDataEndpoint } from '../../swagger/superAdmin/RemoveAllData'
 import { UserRepository } from '../user/infrastructure/repositories/user.repository'
 import { DeviceRepository } from '../devices/device.repository'
+import { RemoveAllDataEndpoint } from '../../../../../libs/swagger/superAdmin/RemoveAllData'
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {

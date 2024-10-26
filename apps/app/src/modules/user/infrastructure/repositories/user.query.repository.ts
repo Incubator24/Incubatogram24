@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
-import { ProfileViewModel } from '../../../../helpers/types/types'
-import Configuration from '../../../../config/configuration'
+import { ProfileViewModel } from '../../../../../../../libs/helpers/types/types'
+import Configuration from '../../../../../../../libs/config/configuration'
 
 @Injectable()
 export class UserQueryRepository {

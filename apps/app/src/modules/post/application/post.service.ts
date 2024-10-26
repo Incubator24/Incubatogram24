@@ -3,12 +3,15 @@ import { PrismaService } from '../../../../../../prisma/prisma.service'
 import { CreatePostInputDto } from '../api/dto/input/CreatePostInputDto'
 import { S3StorageAdapter } from '../../files/adapter/file-storage-adapter-service'
 import { Post, Profile } from '@prisma/client'
-import { ResultObject } from '../../../helpers/types/helpersType'
 import { UserRepository } from '../../user/infrastructure/repositories/user.repository'
 import { UpdatePostInputDto } from '../api/dto/input/UpdatePostInputDto'
 import { PostRepository } from '../infrastructure/repositories/post.repository'
 import { PostQueryRepository } from '../infrastructure/repositories/post.query.repository'
-import { PaginatorDto, PostType } from '../../../helpers/types/types'
+import { ResultObject } from '../../../../../../libs/helpers/types/helpersType'
+import {
+    PaginatorDto,
+    PostType,
+} from '../../../../../../libs/helpers/types/types'
 
 @Injectable()
 export class PostsService {

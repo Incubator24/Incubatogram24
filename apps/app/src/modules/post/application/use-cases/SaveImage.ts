@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { S3StorageAdapter } from '../../../files/adapter/file-storage-adapter-service'
 import { IPostRepository } from '../../infrastructure/interfaces/post.repository.interface'
-import { ResultObject } from '../../../../helpers/types/helpersType'
 
 @Injectable()
 export class SavePostImageCommand {

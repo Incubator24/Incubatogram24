@@ -19,13 +19,13 @@
         "tsConfigPath": "apps/app/tsconfig.app.json"
       }
     },
-    "second-app": {
+    "auth": {
       "type": "application",
-      "root": "apps/second-app",
+      "root": "apps/auth",
       "entryFile": "main",
-      "sourceRoot": "apps/second-app/src",
+      "sourceRoot": "apps/auth/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/second-app/tsconfig.app.json"
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     }
   }

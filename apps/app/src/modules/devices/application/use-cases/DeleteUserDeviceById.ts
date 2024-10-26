@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { DeviceQueryRepositorySql } from '../../deviceQuery.repository.sql'
 import { DeviceRepository } from '../../device.repository'
 import { HttpStatus, Injectable } from '@nestjs/common'
-import { UserAndDeviceTypeFromRefreshToken } from '../../../auth/jwt/jwt.types'
-import { ResultObject } from '../../../../helpers/types/helpersType'
+import { UserAndDeviceTypeFromRefreshToken } from '../../../../../../auth/src/jwt/jwt.types'
+import { ResultObject } from '../../../../../../../libs/helpers/types/helpersType'
 
 @Injectable()
 export class DeleteUserDeviceByIdCommand {

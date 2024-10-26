@@ -10,6 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "set NODE_ENV=development&& nest start --watch",
+    "start:dev auth": "set NODE_ENV=development&& nest start auth --watch",
     "start:test": "set NODE_ENV=test&&nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "set NODE_ENV=production&&node dist/apps/app/main",
@@ -22,6 +23,9 @@
     "build:app": "nest build app",
     "start:app": "node dist/apps/app/main",
     "start:dev:app": "nest start app --watch",
+    "build:auth": "nest build auth",
+    "start:auth": "node dist/apps/auth/main",
+    "start:dev:auth": "nest start auth --watch",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"

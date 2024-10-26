@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { UserRepository } from '../../infrastructure/repositories/user.repository'
-import { UserWithEmailViewModel } from '../../../../helpers/types/types'
+import { UserWithEmailViewModel } from '../../../../../../../libs/helpers/types/types'
 
 export class GetUserByIdFromTokenCommand {
     constructor(public userId: number) {}

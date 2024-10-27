@@ -42,6 +42,8 @@ import { ValidatePasswordRecoveryCode } from './application/use-cases/ValidPassw
 import { IRecoveryCodesRepository } from '../../../libs/modules/email/infrastructure/interfaces/recoveryCodes.repository.interface'
 import { RecoveryCodesRepository } from '../../../libs/modules/email/infrastructure/repositories/recoveryCodes.repository'
 import { EmailService } from '../../../libs/modules/email/email.service'
+import Configuration from '../../../libs/config/configuration'
+import { ClientProxyFactory } from '@nestjs/microservices'
 
 const repositories = [
     { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
@@ -93,6 +95,13 @@ const useCases = [ChangeUserConfirmationCode, ValidatePasswordRecoveryCode]
         GithubService,
         ...repositories,
         ...useCases,
+        {
+            provide: 'AUTH_SERVICE',
+            useFactory: () => {
+                const { AUTH_SERVICE } = Configuration.getConfiguration()
+                return ClientProxyFactory.create(AUTH_SERVICE)
+            },
+        },
     ],
     exports: [PrismaService, ...repositories],
 })

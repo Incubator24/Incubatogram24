@@ -18,6 +18,7 @@ import { ChangePasswordRecoveryCodeCommand } from '../application/use-cases/Chan
 import { ConfirmAndChangePasswordCommand } from '../application/use-cases/ConfirmAndChangePassword'
 import { MessagePattern } from '@nestjs/microservices'
 import { tokensDto } from '../../../../libs/types/TokensDto'
+import { CheckCredentialCommand } from '../application/use-cases/CheckCredential'
 
 @Injectable()
 @Controller('auth')
@@ -53,6 +54,18 @@ export class AuthController {
             new AddDeviceInfoToDBCommand(userId, userAgent, ip)
         )
         return tokensInfo
+    }
+
+    @MessagePattern('check-credential')
+    async checkCredentialUser(data: {
+        loginOrEmail: string
+        password: string
+    }) {
+        const { loginOrEmail, password } = data
+        const userId = await this.commandBus.execute(
+            new CheckCredentialCommand(loginOrEmail, password)
+        )
+        return userId
     }
 
     @MessagePattern('refresh-token')

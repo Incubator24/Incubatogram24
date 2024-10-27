@@ -310,7 +310,7 @@ export class AuthController {
     ) {
         userAgent = userAgent ?? 'unknow'
         const tokensInfo = await firstValueFrom<ResultObject<tokensDto>>(
-            this.authServiceClient.send('', {
+            this.authServiceClient.send('google-success', {
                 userId: req.user.id,
                 userAgent,
                 ip,

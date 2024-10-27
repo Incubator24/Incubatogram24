@@ -1,15 +1,17 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
-import { CheckCredentialCommand } from '../../apps/auth/src/application/use-cases/CheckCredential'
 import { UserRepository } from '../../apps/app/src/modules/user/infrastructure/repositories/user.repository'
+import { ClientProxy } from '@nestjs/microservices'
+import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(
         public userRepository: UserRepository,
-        private commandBus: CommandBus
+        private commandBus: CommandBus,
+        @Inject('AUTH_SERVICE') private readonly authServiceClient: ClientProxy
     ) {
         super({
             usernameField: 'loginOrEmail',
@@ -17,8 +19,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(loginOrEmail: string, password: string): Promise<any> {
-        const userId = await this.commandBus.execute(
-            new CheckCredentialCommand(loginOrEmail, password)
+        const userId = await firstValueFrom(
+            this.authServiceClient.send('check-credential', {
+                loginOrEmail,
+                password,
+            })
         )
         if (!userId) {
             throw new UnauthorizedException()

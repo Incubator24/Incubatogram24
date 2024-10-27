@@ -221,7 +221,7 @@ class Configuration {
                     '0.0.0.0'
                 ),
                 port: Number(
-                    this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3001')
+                    this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', 3001)
                 ),
             },
             transport: Transport.TCP,
@@ -236,7 +236,7 @@ class Configuration {
 
     private static getAuthServicePort(): number {
         return Number(
-            this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3001')
+            this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', 3001)
         )
     }
 

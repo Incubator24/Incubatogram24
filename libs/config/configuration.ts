@@ -218,7 +218,7 @@ class Configuration {
             options: {
                 host: this.readEnvVariableWithDefault(
                     'AUTH_SERVICE_HOST',
-                    '0.0.0.0'
+                    'micro-auth-service'
                 ),
                 port: Number(
                     this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3594')

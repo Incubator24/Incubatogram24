@@ -167,10 +167,13 @@ export class AuthController {
         const result = await firstValueFrom<ResultObject<string>>(
             this.authServiceClient.send('registration-confirmation', { code })
         )
-        if (!result.data) return mappingErrorStatus(result)
-        return res.redirect(
-            'https://incubatogram.org/auth/sign-up/congratulations'
-        )
+        if(result.data){
+            return res.redirect(
+                'https://incubatogram.org/auth/sign-up/congratulations'
+            )
+        } else{
+            return res.redirect('https://incubatogram.org/auth/sign-up/link-expired')
+        }
     }
 
     @Post('registration-email-resending')

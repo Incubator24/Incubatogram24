@@ -17,6 +17,7 @@ import { EmailService } from '../../../libs/modules/email/email.service'
 import { GithubService } from '../../auth/src/application/githubService'
 import { ClientProxyFactory } from '@nestjs/microservices'
 import { LocalStrategy } from '../../../libs/strategies/local.strategy'
+import { JwtStrategy } from '../../../libs/strategies/jwt.strategy'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -39,6 +40,7 @@ const configModule = ConfigModule.forRoot({
         AppService,
         ConfigService,
         PrismaService,
+        JwtStrategy,
         LocalStrategy,
         UsersService,
         EmailService,

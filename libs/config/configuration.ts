@@ -216,13 +216,12 @@ class Configuration {
     private static getAuthService(): ClientOptions {
         return {
             options: {
-                // host: this.readEnvVariableWithDefault(
-                //     'AUTH_SERVICE_HOST',
-                //     'micro-auth-service'
-                // ),
-                host: 'micro-auth-service',
+                host: this.readEnvVariableWithDefault(
+                    'AUTH_SERVICE_HOST',
+                    '0.0.0.0'
+                ),
                 port: Number(
-                    this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3594')
+                    this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', 3001)
                 ),
             },
             transport: Transport.TCP,
@@ -237,7 +236,7 @@ class Configuration {
 
     private static getAuthServicePort(): number {
         return Number(
-            this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', '3594')
+            this.readEnvVariableWithDefault('AUTH_SERVICE_PORT', 3001)
         )
     }
 

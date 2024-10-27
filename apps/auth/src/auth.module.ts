@@ -94,6 +94,7 @@ const useCases = [ChangeUserConfirmationCode, ValidatePasswordRecoveryCode]
         UsersService,
         GithubService,
         ...repositories,
+        //
         ...useCases,
         {
             provide: 'AUTH_SERVICE',

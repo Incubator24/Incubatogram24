@@ -10,6 +10,7 @@ describe('AppController', () => {
         const app: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile()
+        //
 
         const configService = app.get(ConfigService<ConfigType, true>)
         city = configService.get('CITY')

@@ -66,6 +66,9 @@ export type ProfileViewModel = {
     createdAt: string
     updatedAt: string
     profile: ProfileType | null
+    followingCount: number
+    followersCount: number
+    publicationsCount: number
 }
 
 export type CreatedEmailDto = {

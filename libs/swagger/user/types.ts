@@ -32,7 +32,14 @@ export class UserTypeDTOSwagger {
     updatedAt: string
     @ApiProperty({ example: ProfileTpeDTOSwagger })
     profile: ProfileTpeDTOSwagger
+    @ApiProperty({ example: 0 })
+    followingCount: number
+    @ApiProperty({ example: 0 })
+    followersCount: number
+    @ApiProperty({ example: 0 })
+    publicationsCount: number
 }
+
 export class UrlAvatarSwagger {
     @ApiProperty({ example: 'https://somesite.ok' })
     url: string

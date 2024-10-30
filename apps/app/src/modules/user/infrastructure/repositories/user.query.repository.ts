@@ -95,6 +95,9 @@ export class UserQueryRepository {
                 EmailExpiration: true,
             },
         })
+        const countPosts = await this.prisma.post.count({
+            where: { profileId: result.Profile?.id ?? 0, isDraft: false },
+        })
         if (result) {
             return {
                 id: result.id,
@@ -117,6 +120,10 @@ export class UserQueryRepository {
                               result.Profile.avatarId,
                       }
                     : null,
+                //todo пока что заглушка для фронтов, потому что нет еще функционала подписок
+                followingCount: 0,
+                followersCount: 0,
+                publicationsCount: countPosts ?? 0,
             }
         } else {
             return null

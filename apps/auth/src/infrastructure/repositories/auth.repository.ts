@@ -18,6 +18,17 @@ export class AuthRepository {
             : false
     }
 
+    async findUserByConfirmationCode(code:string){
+        const foundedUser = await this.prisma.emailExpiration.findFirst(
+            {
+                where: {confirmationCode: code},
+                include: {
+                    user: true, // Загружаем связанного пользователя с email
+                },
+            }
+        )
+        return foundedUser;
+    }
     async updateUserPassword(
         email: string,
         passwordHash: string

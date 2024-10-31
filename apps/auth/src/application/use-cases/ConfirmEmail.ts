@@ -16,9 +16,10 @@ export class ConfirmEmail implements ICommandHandler<ConfirmEmailCommand> {
     ) {}
 
     async execute(command: ConfirmEmailCommand): Promise<ResultObject<string>> {
-        const foundUser = await this.userRepository.findUserByEmailCode(
+        const foundUser = await this.authRepository.findUserByConfirmationCode(
             command.code
         )
+
         if (!foundUser) {
             return {
                 data: null,
@@ -27,24 +28,27 @@ export class ConfirmEmail implements ICommandHandler<ConfirmEmailCommand> {
                 field: 'code',
             }
         }
+        // Проверка на истечение срока действия кода
         if (+foundUser.emailExpiration < new Date().getTime()) {
             console.log(+foundUser.emailExpiration + 'emailExpiration')
             console.log(new Date().getTime() + 'now time')
             return {
-                data: null,
+                data: foundUser.user.email,
                 resultCode: HttpStatus.BAD_REQUEST,
                 message: 'confirmation code is Expired',
                 field: 'code',
             }
         }
+        // Проверка, был ли код уже подтверждён
         if (foundUser.isConfirmed) {
             return {
-                data: null,
+                data: foundUser.user.email,
                 resultCode: HttpStatus.BAD_REQUEST,
                 message: 'confirmation code is already confirmed',
                 field: 'code',
             }
         }
+        // Обновляем подтверждение email
         const isUpdated = await this.authRepository.updateEmailConfirmation(
             foundUser.userId
         )

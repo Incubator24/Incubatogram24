@@ -53,6 +53,7 @@ import { ClientProxy } from '@nestjs/microservices'
 import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
 import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
 import { Cookies } from '../../auth/src/api/decorators/auth.decorator'
+import {EmailResendingDto} from "../../auth/src/api/dto/EmailResendingDto";
 
 @Injectable()
 @Controller('auth')
@@ -167,19 +168,20 @@ export class AuthController {
         const result = await firstValueFrom<ResultObject<string>>(
             this.authServiceClient.send('registration-confirmation', { code })
         )
-        if(result.data){
+        if(result.data==='ok'){
             return res.redirect(
-                'https://incubatogram.org/auth/sign-up/congratulations'
+                'https://localhost:3000/auth/sign-up/congratulations'
             )
         } else{
-            return res.redirect('https://incubatogram.org/auth/sign-up/link-expired')
+            const emailParam = result.data ? `?email=${encodeURIComponent(result.data)}` : '';
+            return res.redirect(`https://localhost:3000/auth/sign-up/link-expired${emailParam}`)
         }
     }
 
     @Post('registration-email-resending')
     @RegistrationEmailResendingEndpoint()
     @HttpCode(204)
-    async registrationEmailResending(@Body() { email }: emailDto) {
+    async registrationEmailResending(@Body() { email }: EmailResendingDto) {
         const newUserConfirmationCode = await firstValueFrom<
             ResultObject<string>
         >(

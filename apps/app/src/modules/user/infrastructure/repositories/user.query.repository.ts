@@ -95,6 +95,9 @@ export class UserQueryRepository {
                 EmailExpiration: true,
             },
         })
+        if (!result) {
+            return null
+        }
         const countPosts = await this.prisma.post.count({
             where: { profileId: result.Profile?.id ?? 0, isDraft: false },
         })

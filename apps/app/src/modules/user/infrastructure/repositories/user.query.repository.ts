@@ -82,16 +82,9 @@ export class UserQueryRepository {
     //     }
     // }
 
-    async getProfile(profileId: number): Promise<ProfileViewModel | null> {
-        const profile = await this.prisma.profile.findFirst({
-            where: { id: profileId },
-        })
-        if (!profile) {
-            return null
-        }
-
-        const user = await this.prisma.user.findFirst({
-            where: { id: profile.userId },
+    async getProfile(userId: number): Promise<ProfileViewModel | null> {
+        const result = await this.prisma.user.findFirst({
+            where: { id: userId },
             select: {
                 id: true,
                 userName: true,
@@ -102,29 +95,32 @@ export class UserQueryRepository {
                 EmailExpiration: true,
             },
         })
-        if (user) {
-            const countPosts = await this.prisma.post.count({
-                where: { profileId: user.Profile.id, isDraft: false },
-            })
+        if (!result) {
+            return null
+        }
+        const countPosts = await this.prisma.post.count({
+            where: { profileId: result.Profile?.id ?? 0, isDraft: false },
+        })
+        if (result) {
             return {
-                id: user.id,
-                userName: user.userName,
-                email: user.email,
-                emailIsConfirm: user.EmailExpiration.isConfirmed,
-                createdAt: user.createdAt.toString(),
-                updatedAt: user.updatedAt.toString(),
-                profile: user.Profile
+                id: result.id,
+                userName: result.userName,
+                email: result.email,
+                emailIsConfirm: result.EmailExpiration.isConfirmed,
+                createdAt: result.createdAt.toString(),
+                updatedAt: result.updatedAt.toString(),
+                profile: result.Profile
                     ? {
-                          firstName: user.Profile.firstName,
-                          lastName: user.Profile.lastName,
-                          dateOfBirth: user.Profile.dateOfBirth.toString(),
-                          country: user.Profile.country,
-                          city: user.Profile.city,
-                          aboutMe: user.Profile.aboutMe,
+                          firstName: result.Profile.firstName,
+                          lastName: result.Profile.lastName,
+                          dateOfBirth: result.Profile.dateOfBirth.toString(),
+                          country: result.Profile.country,
+                          city: result.Profile.city,
+                          aboutMe: result.Profile.aboutMe,
                           url:
                               Configuration.getConfiguration()
                                   .YANDEX_S3_ENDPOINT_WITH_BUCKET +
-                              user.Profile.avatarId,
+                              result.Profile.avatarId,
                       }
                     : null,
                 //todo пока что заглушка для фронтов, потому что нет еще функционала подписок

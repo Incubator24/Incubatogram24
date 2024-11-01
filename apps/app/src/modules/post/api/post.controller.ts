@@ -19,7 +19,6 @@ import {
 } from '@nestjs/common'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { PostsService } from '../application/post.service'
-import { CommandBus } from '@nestjs/cqrs'
 import { GetPostsInputDto } from './dto/input/GetPostsInputDto'
 import { JwtAuthGuard } from '../../../../../../libs/guards/jwt-auth.guard'
 import { CreatePostEndpoint } from '../../../../../../libs/swagger/post/CreatePostEndPoint'
@@ -31,15 +30,10 @@ import { GetPostEndpoint } from '../../../../../../libs/swagger/post/GetPostEndP
 import { DeletePostEndpoint } from '../../../../../../libs/swagger/post/DeletePostEndPoint'
 import { GetPostsEndpoint } from '../../../../../../libs/swagger/post/GetPostsEndPoint'
 import { GetPostsUnregisteredEndpoint } from '../../../../../../libs/swagger/post/GetPostsUnregisteredEndPoint'
-import { PostQueryRepository } from '../infrastructure/repositories/post.query.repository'
 
 @Controller('posts')
 export class PostsController {
-    constructor(
-        private readonly postsService: PostsService,
-        private readonly commandBus: CommandBus,
-        private readonly postQueryRepository: PostQueryRepository
-    ) {}
+    constructor(private readonly postsService: PostsService) {}
 
     @Get('public')
     @GetPostsUnregisteredEndpoint()
@@ -49,6 +43,25 @@ export class PostsController {
         const posts = await this.postsService.getPublicPosts(page)
 
         return posts.data
+    }
+
+    @Get(':postId/public')
+    @GetPostEndpoint()
+    @HttpCode(HttpStatus.OK)
+    async getPostPublic(@Param('postId') postId: string) {
+        const post = await this.postsService.getPost(postId)
+        if (!post.data) {
+            switch (post.resultCode) {
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+
+        return post.data
     }
 
     @Get()

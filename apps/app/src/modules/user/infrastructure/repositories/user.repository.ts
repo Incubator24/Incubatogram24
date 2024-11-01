@@ -28,6 +28,14 @@ import { UserViewDto } from '../../api/dto/output/UserViewDto'
 export class UserRepository implements IUserRepository {
     constructor(private prisma: PrismaService) {}
 
+    async countUsers(): Promise<number> {
+        return this.prisma.user.count({
+            where: {
+                isDeleted: false,
+            },
+        })
+    }
+
     async findUserById(userId: number): Promise<UserViewDto | null> {
         const foundUser = await this.prisma.user.findUnique({
             where: {

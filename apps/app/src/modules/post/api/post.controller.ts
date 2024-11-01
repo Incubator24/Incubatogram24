@@ -45,11 +45,10 @@ export class PostsController {
     @GetPostsUnregisteredEndpoint()
     @HttpCode(HttpStatus.OK)
     async getPublicPosts(@Query() getPostsInputDto: GetPostsInputDto) {
-        const posts = await this.postQueryRepository.getPublicPosts(
-            getPostsInputDto.page
-        )
+        const { page = 1 } = getPostsInputDto
+        const posts = await this.postsService.getPublicPosts(page)
 
-        return posts
+        return posts.data
     }
 
     @Get()

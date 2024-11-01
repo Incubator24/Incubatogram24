@@ -126,3 +126,8 @@ export class PaginatorDto<T> {
     @ApiProperty()
     items: Array<T>
 }
+
+export class PaginatorDtoWithCountUsers<T> extends PaginatorDto<T> {
+    @ApiProperty()
+    usersCount: number
+}

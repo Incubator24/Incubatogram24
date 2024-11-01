@@ -18,6 +18,7 @@ import {
 import { UserViewDto } from '../../api/dto/output/UserViewDto'
 
 export abstract class IUserRepository {
+    abstract countUsers(): Promise<number>
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>
     abstract findUserByLoginOrEmailWithEmailInfo(
         userName: string,

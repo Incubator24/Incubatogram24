@@ -7,11 +7,5 @@ export class GetPostsInputDto {
     @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsNotEmpty()
-    userId: number
-
-    @ApiProperty()
-    @Transform(({ value }) => Number(value))
-    @IsNumber()
-    @IsNotEmpty()
     page: number
 }

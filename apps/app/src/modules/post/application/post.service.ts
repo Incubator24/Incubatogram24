@@ -235,7 +235,7 @@ export class PostsService {
     async getPosts(
         userId: number,
         page: number
-    ): Promise<ResultObject<PaginatorDto<PostType[]>>> {
+    ): Promise<ResultObject<PaginatorDto<PostType>>> {
         const profile = await this.userRepository.foundProfileFromUserId(userId)
         if (!profile) {
             return {
@@ -249,7 +249,11 @@ export class PostsService {
         const posts = await this.postQueryRepository.getPosts(profile.id, page)
 
         return {
-            data: posts,
+            data: {
+                pagesCount: posts.pagesCount,
+                page: posts.page,
+                items: posts.items,
+            },
             resultCode: HttpStatus.OK,
         }
     }

@@ -1,6 +1,5 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import {
-    ApiBearerAuth,
     ApiExtraModels,
     ApiOkResponse,
     ApiOperation,
@@ -10,11 +9,10 @@ import {
 } from '@nestjs/swagger'
 import { PaginatorDto, PostType } from '../../helpers/types/types'
 
-export function GetPostsEndpoint() {
+export function GetPostsUnregisteredEndpoint() {
     return applyDecorators(
         ApiTags('posts'),
-        ApiOperation({ summary: 'Get posts' }),
-        ApiBearerAuth('JWT-auth'),
+        ApiOperation({ summary: 'Get public posts' }),
         ApiQuery({
             name: 'page',
             type: String,

@@ -30,13 +30,60 @@ import { UpdatePostInputDto } from './dto/input/UpdatePostInputDto'
 import { GetPostEndpoint } from '../../../../../../libs/swagger/post/GetPostEndPoint'
 import { DeletePostEndpoint } from '../../../../../../libs/swagger/post/DeletePostEndPoint'
 import { GetPostsEndpoint } from '../../../../../../libs/swagger/post/GetPostsEndPoint'
+import { GetPostsUnregisteredEndpoint } from '../../../../../../libs/swagger/post/GetPostsUnregisteredEndPoint'
+import { PostQueryRepository } from '../infrastructure/repositories/post.query.repository'
 
 @Controller('posts')
 export class PostsController {
     constructor(
         private readonly postsService: PostsService,
-        private readonly commandBus: CommandBus
+        private readonly commandBus: CommandBus,
+        private readonly postQueryRepository: PostQueryRepository
     ) {}
+
+    @Get('public')
+    @GetPostsUnregisteredEndpoint()
+    @HttpCode(HttpStatus.OK)
+    async getPublicPosts(@Query() getPostsInputDto: GetPostsInputDto) {
+        const { page = 1 } = getPostsInputDto
+        const posts = await this.postsService.getPublicPosts(page)
+
+        return posts.data
+    }
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @GetPostsEndpoint()
+    @HttpCode(HttpStatus.OK)
+    async getPosts(
+        @Query() getPostsInputDto: GetPostsInputDto,
+        @UserId() userId: number
+    ) {
+        const posts = await this.postsService.getPosts(
+            userId,
+            getPostsInputDto.page
+        )
+        if (!posts.data) {
+            switch (posts.resultCode) {
+                case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [
+                            { message: posts.message, field: posts.field },
+                        ],
+                    })
+                case HttpStatus.FORBIDDEN:
+                    throw new ForbiddenException({
+                        message: [
+                            { message: posts.message, field: posts.field },
+                        ],
+                    })
+                default:
+                    throw new BadRequestException({})
+            }
+        }
+
+        return posts.data
+    }
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -118,7 +165,7 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     @GetPostEndpoint()
     @HttpCode(HttpStatus.OK)
-    async getPost(@Param('postId') postId: string, @UserId() userId: number) {
+    async getPost(@Param('postId') postId: string) {
         const post = await this.postsService.getPost(postId)
         if (!post.data) {
             switch (post.resultCode) {
@@ -155,35 +202,5 @@ export class PostsController {
                     })
             }
         }
-    }
-
-    @Get()
-    @GetPostsEndpoint()
-    @HttpCode(HttpStatus.OK)
-    async getPosts(@Query() getPostsInputDto: GetPostsInputDto) {
-        const posts = await this.postsService.getPosts(
-            getPostsInputDto.userId,
-            getPostsInputDto.page
-        )
-        if (!posts.data) {
-            switch (posts.resultCode) {
-                case HttpStatus.NOT_FOUND:
-                    throw new NotFoundException({
-                        message: [
-                            { message: posts.message, field: posts.field },
-                        ],
-                    })
-                case HttpStatus.FORBIDDEN:
-                    throw new ForbiddenException({
-                        message: [
-                            { message: posts.message, field: posts.field },
-                        ],
-                    })
-                default:
-                    throw new BadRequestException({})
-            }
-        }
-
-        return posts.data
     }
 }

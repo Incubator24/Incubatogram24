@@ -22,30 +22,45 @@ import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
 } from '../../../../../../../libs/helpers/types/passwordRecoveryDto'
-
-type GetFullInfoModelType = { user: User; emailExpiration: EmailExpiration }
+import { UserViewDto } from '../../api/dto/output/UserViewDto'
 
 @Injectable()
 export class UserRepository implements IUserRepository {
     constructor(private prisma: PrismaService) {}
 
-    async findUserById(userId: number): Promise<any | null> {
-        const foundUser: any = (await this.prisma.user.findUnique({
+    async countUsers(): Promise<number> {
+        return this.prisma.user.count({
+            where: {
+                isDeleted: false,
+            },
+        })
+    }
+
+    async findUserById(userId: number): Promise<UserViewDto | null> {
+        const foundUser = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-        })) as User
+            include: {
+                Profile: true,
+            },
+        })
         if (!foundUser) {
             return null
         }
         console.log('foundUser = ', foundUser)
+        const profile = await this.prisma.profile.findUnique({
+            where: {
+                id: foundUser.Profile.id,
+            },
+        })
         return {
             id: foundUser.id,
             userName: foundUser.userName,
             name: foundUser.userName,
             email: foundUser.email,
             createdAt: foundUser.createdAt,
-            avatarId: foundUser.avatarId,
+            avatarId: profile?.avatarId ?? null,
         }
     }
     async foundProfileFromUserId(userId: number): Promise<Profile | null> {

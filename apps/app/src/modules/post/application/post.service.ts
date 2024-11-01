@@ -10,6 +10,7 @@ import { PostQueryRepository } from '../infrastructure/repositories/post.query.r
 import { ResultObject } from '../../../../../../libs/helpers/types/helpersType'
 import {
     PaginatorDto,
+    PaginatorDtoWithCountUsers,
     PostType,
 } from '../../../../../../libs/helpers/types/types'
 
@@ -235,7 +236,7 @@ export class PostsService {
     async getPosts(
         userId: number,
         page: number
-    ): Promise<ResultObject<PaginatorDto<PostType[]>>> {
+    ): Promise<ResultObject<PaginatorDto<PostType>>> {
         const profile = await this.userRepository.foundProfileFromUserId(userId)
         if (!profile) {
             return {
@@ -249,7 +250,29 @@ export class PostsService {
         const posts = await this.postQueryRepository.getPosts(profile.id, page)
 
         return {
-            data: posts,
+            data: {
+                pagesCount: posts.pagesCount,
+                page: posts.page,
+                items: posts.items,
+            },
+            resultCode: HttpStatus.OK,
+        }
+    }
+
+    // получения публичных постов, не черновика
+    async getPublicPosts(
+        page: number
+    ): Promise<ResultObject<PaginatorDtoWithCountUsers<PostType>>> {
+        const posts = await this.postQueryRepository.getPublicPosts(page)
+        const countUsers = await this.userRepository.countUsers()
+
+        return {
+            data: {
+                pagesCount: posts.pagesCount,
+                usersCount: countUsers,
+                page: posts.page,
+                items: posts.items,
+            },
             resultCode: HttpStatus.OK,
         }
     }

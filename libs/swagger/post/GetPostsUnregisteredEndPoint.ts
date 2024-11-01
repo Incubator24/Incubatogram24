@@ -1,33 +1,31 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import {
-    ApiBearerAuth,
     ApiExtraModels,
     ApiOkResponse,
     ApiOperation,
-    ApiQuery,
+    ApiPropertyOptional,
     ApiTags,
     getSchemaPath,
 } from '@nestjs/swagger'
-import { PaginatorDto, PostType } from '../../helpers/types/types'
+import { PaginatorDtoWithCountUsers, PostType } from '../../helpers/types/types'
 
-export function GetPostsEndpoint() {
+export function GetPostsUnregisteredEndpoint() {
     return applyDecorators(
         ApiTags('posts'),
-        ApiOperation({ summary: 'Get posts' }),
-        ApiBearerAuth('JWT-auth'),
-        ApiQuery({
+        ApiOperation({ summary: 'Get public posts' }),
+        ApiPropertyOptional({
             name: 'page',
             type: String,
             description: 'Page number',
             example: '1',
         }),
-        ApiExtraModels(PaginatorDto, PostType),
+        ApiExtraModels(PaginatorDtoWithCountUsers, PostType),
         ApiOkResponse({
             status: HttpStatus.OK,
             description: 'Posts were successfully found',
             schema: {
                 allOf: [
-                    { $ref: getSchemaPath(PaginatorDto) },
+                    { $ref: getSchemaPath(PaginatorDtoWithCountUsers) },
                     {
                         properties: {
                             items: {

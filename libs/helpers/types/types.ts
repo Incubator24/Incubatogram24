@@ -97,11 +97,25 @@ export class PostType {
     @ApiProperty()
     id: number
     @ApiProperty()
+    username: string
+    @ApiProperty()
+    avatarId: string
+    @ApiProperty()
+    aboutMe: string
+    @ApiProperty()
     description: string
     @ApiProperty()
-    isDraft: boolean
+    createdAt: Date
     @ApiProperty({ type: [PostImage] })
     postImages: PostImage[]
+    //todo здесь пустой массив с комментариями, пока заглушка, в будущем когда будет реализован функционал, то переделать
+    @ApiProperty()
+    comments: []
+}
+
+export class PublicPostType {
+    @ApiProperty({ type: [PostType] })
+    posts: PostType[]
 }
 
 export class PaginatorDto<T> {
@@ -111,4 +125,9 @@ export class PaginatorDto<T> {
     page: number
     @ApiProperty()
     items: Array<T>
+}
+
+export class PaginatorDtoWithCountUsers<T> extends PaginatorDto<T> {
+    @ApiProperty()
+    usersCount: number
 }

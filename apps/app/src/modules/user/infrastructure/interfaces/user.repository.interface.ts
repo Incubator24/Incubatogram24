@@ -15,15 +15,17 @@ import {
     PasswordRecoveryDto,
     UpdatePasswordDto,
 } from '../../../../../../../libs/helpers/types/passwordRecoveryDto'
+import { UserViewDto } from '../../api/dto/output/UserViewDto'
 
 export abstract class IUserRepository {
+    abstract countUsers(): Promise<number>
     abstract findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null>
     abstract findUserByLoginOrEmailWithEmailInfo(
         userName: string,
         email: string
     ): Promise<any>
     abstract findUserByEmail(email: string): Promise<User | null>
-    abstract findUserById(userId: number): Promise<User | null>
+    abstract findUserById(userId: number): Promise<UserViewDto | null>
     abstract findUserByEmailCode(
         code: string
     ): Promise<EmailExpirationRawType | null>

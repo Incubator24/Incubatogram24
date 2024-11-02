@@ -5,6 +5,7 @@ import {
     PaginatorDto,
     PostType,
 } from '../../../../../../../libs/helpers/types/types'
+import Configuration from '../../../../../../../libs/config/configuration'
 
 @Injectable()
 export class PostQueryRepository implements IPostRepository {
@@ -42,9 +43,22 @@ export class PostQueryRepository implements IPostRepository {
                 },
             },
         })
+
         if (!post) {
             return null
         }
+
+        //для корректного пути к фотографиям
+        post.images.forEach((image) => {
+            image.url = `${
+                Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
+            }${image.url}`
+        })
+        //для корректного пути к аватару
+        post.profile.avatarId = `${
+            Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
+        }${post.profile.avatarId}`
+
         return {
             id: post.id,
             createdAt: post.createdAt,
@@ -113,6 +127,25 @@ export class PostQueryRepository implements IPostRepository {
             },
         })
 
+        //для корректного пути к фотографиям
+        posts.forEach((post) => {
+            if (post.images || post.images.length === 0) {
+                return null
+            }
+
+            post.profile.avatarId = `${
+                Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
+            }${post.profile.avatarId}`
+
+            post.images = post.images.map((image) => ({
+                ...image,
+                url: `${
+                    Configuration.getConfiguration()
+                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                }${image.url}`,
+            }))
+        })
+
         const pagesCount = Math.ceil(postsCount / LIMIT)
 
         if (posts.length === 0) {
@@ -175,6 +208,25 @@ export class PostQueryRepository implements IPostRepository {
                     },
                 },
             },
+        })
+
+        //для корректного пути к фотографиям
+        posts.forEach((post) => {
+            if (post.images || post.images.length === 0) {
+                return null
+            }
+
+            post.profile.avatarId = `${
+                Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
+            }${post.profile.avatarId}`
+
+            post.images = post.images.map((image) => ({
+                ...image,
+                url: `${
+                    Configuration.getConfiguration()
+                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                }${image.url}`,
+            }))
         })
 
         const postsCount = await this.prisma.post.count({

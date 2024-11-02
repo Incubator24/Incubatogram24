@@ -29,14 +29,15 @@ import { UpdatePostInputDto } from './dto/input/UpdatePostInputDto'
 import { GetPostEndpoint } from '../../../../../../libs/swagger/post/GetPostEndPoint'
 import { DeletePostEndpoint } from '../../../../../../libs/swagger/post/DeletePostEndPoint'
 import { GetPostsEndpoint } from '../../../../../../libs/swagger/post/GetPostsEndPoint'
-import { GetPostsUnregisteredEndpoint } from '../../../../../../libs/swagger/post/GetPostsUnregisteredEndPoint'
+import { GetPostsPublicEndPoint } from '../../../../../../libs/swagger/post/GetPostsPublicEndPoint'
+import { GetPostPublicEndpoint } from '../../../../../../libs/swagger/post/GetPostPublicEndPoint'
 
 @Controller('posts')
 export class PostsController {
     constructor(private readonly postsService: PostsService) {}
 
     @Get('public')
-    @GetPostsUnregisteredEndpoint()
+    @GetPostsPublicEndPoint()
     @HttpCode(HttpStatus.OK)
     async getPublicPosts(@Query() getPostsInputDto: GetPostsInputDto) {
         const { page = 1 } = getPostsInputDto
@@ -46,7 +47,7 @@ export class PostsController {
     }
 
     @Get(':postId/public')
-    @GetPostEndpoint()
+    @GetPostPublicEndpoint()
     @HttpCode(HttpStatus.OK)
     async getPostPublic(@Param('postId') postId: string) {
         const post = await this.postsService.getPost(postId)

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/swagger'
 import { PaginatorDtoWithCountUsers, PostType } from '../../helpers/types/types'
 
-export function GetPostsUnregisteredEndpoint() {
+export function GetPostsPublicEndPoint() {
     return applyDecorators(
         ApiTags('posts'),
         ApiOperation({ summary: 'Get public posts' }),

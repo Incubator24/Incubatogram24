@@ -55,9 +55,13 @@ export class PostQueryRepository implements IPostRepository {
             }${image.url}`
         })
         //для корректного пути к аватару
-        post.profile.avatarId = `${
-            Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
-        }${post.profile.avatarId}`
+        post.profile.avatarId === null
+            ? post.profile.avatarId
+            : `${
+                  Configuration.getConfiguration()
+                      .YANDEX_S3_ENDPOINT_WITH_BUCKET
+              }${post.profile.avatarId}`
+
 
         return {
             id: post.id,
@@ -129,21 +133,22 @@ export class PostQueryRepository implements IPostRepository {
 
         //для корректного пути к фотографиям
         posts.forEach((post) => {
-            if (post.images || post.images.length === 0) {
-                return null
-            }
-
-            post.profile.avatarId = `${
-                Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
-            }${post.profile.avatarId}`
-
-            post.images = post.images.map((image) => ({
-                ...image,
-                url: `${
+            if (post.profile.avatarId) {
+                post.profile.avatarId = `${
                     Configuration.getConfiguration()
                         .YANDEX_S3_ENDPOINT_WITH_BUCKET
-                }${image.url}`,
-            }))
+                }${post.profile.avatarId}`
+            }
+
+            if (post.images && post.images.length > 0) {
+                post.images = post.images.map((image) => ({
+                    ...image,
+                    url: `${
+                        Configuration.getConfiguration()
+                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                    }${image.url}`,
+                }))
+            }
         })
 
         const pagesCount = Math.ceil(postsCount / LIMIT)
@@ -212,21 +217,22 @@ export class PostQueryRepository implements IPostRepository {
 
         //для корректного пути к фотографиям
         posts.forEach((post) => {
-            if (post.images || post.images.length === 0) {
-                return null
-            }
-
-            post.profile.avatarId = `${
-                Configuration.getConfiguration().YANDEX_S3_ENDPOINT_WITH_BUCKET
-            }${post.profile.avatarId}`
-
-            post.images = post.images.map((image) => ({
-                ...image,
-                url: `${
+            if (post.profile.avatarId) {
+                post.profile.avatarId = `${
                     Configuration.getConfiguration()
                         .YANDEX_S3_ENDPOINT_WITH_BUCKET
-                }${image.url}`,
-            }))
+                }${post.profile.avatarId}`
+            }
+
+            if (post.images && post.images.length > 0) {
+                post.images = post.images.map((image) => ({
+                    ...image,
+                    url: `${
+                        Configuration.getConfiguration()
+                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                    }${image.url}`,
+                }))
+            }
         })
 
         const postsCount = await this.prisma.post.count({

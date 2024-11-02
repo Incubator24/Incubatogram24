@@ -62,6 +62,7 @@ export class PostQueryRepository implements IPostRepository {
                       .YANDEX_S3_ENDPOINT_WITH_BUCKET
               }${post.profile.avatarId}`
 
+
         return {
             id: post.id,
             createdAt: post.createdAt,

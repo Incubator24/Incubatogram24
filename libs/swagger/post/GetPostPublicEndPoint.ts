@@ -1,7 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import {
     ApiBadRequestResponse,
-    ApiBearerAuth,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
@@ -10,10 +9,9 @@ import {
 } from '@nestjs/swagger'
 import { PostType } from '../../helpers/types/types'
 
-export function GetPostEndpoint() {
+export function GetPostPublicEndpoint() {
     return applyDecorators(
         ApiTags('posts'),
-        ApiBearerAuth('JWT-auth'),
         ApiOperation({ summary: 'Get post' }),
         ApiOkResponse({
             status: HttpStatus.OK,

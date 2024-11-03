@@ -15,7 +15,7 @@
   function onSubmit(token) {
     console.log('reCAPTCHA token:', token);
     // отправьте запрос на ваш сервер с токеном reCAPTCHA
-    fetch('http://localhost:3001/api/v1/password-recovery', {
+    fetch('http://incubatogram.org/api/v1/password-recovery', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

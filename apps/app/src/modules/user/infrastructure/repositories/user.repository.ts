@@ -49,11 +49,15 @@ export class UserRepository implements IUserRepository {
             return null
         }
         console.log('foundUser = ', foundUser)
-        const profile = await this.prisma.profile.findUnique({
-            where: {
-                id: foundUser.Profile.id,
-            },
-        })
+        let profile: Profile
+        try {
+            profile = await this.prisma.profile.findUnique({
+                where: {
+                    id: foundUser.Profile.id,
+                },
+            })
+        } catch {}
+
         return {
             id: foundUser.id,
             userName: foundUser.userName,

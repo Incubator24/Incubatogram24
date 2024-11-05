@@ -62,7 +62,6 @@ export class PostQueryRepository implements IPostRepository {
                       .YANDEX_S3_ENDPOINT_WITH_BUCKET
               }${post.profile.avatarId}`
 
-
         return {
             id: post.id,
             createdAt: post.createdAt,
@@ -189,6 +188,10 @@ export class PostQueryRepository implements IPostRepository {
         const posts = await this.prisma.post.findMany({
             orderBy: {
                 createdAt: 'desc',
+            },
+            where: {
+                deletedAt: null,
+                isDraft: false,
             },
             take: LIMIT,
             skip: (page - 1) * LIMIT,

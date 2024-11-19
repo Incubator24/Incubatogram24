@@ -18,6 +18,7 @@ import { GithubService } from '../../auth/src/application/githubService'
 import { ClientProxyFactory } from '@nestjs/microservices'
 import { LocalStrategy } from '../../../libs/strategies/local.strategy'
 import { JwtStrategy } from '../../../libs/strategies/jwt.strategy'
+import { AuthModule } from '../../auth/src/auth.module'
 
 const configModule = ConfigModule.forRoot({
     isGlobal: true,
@@ -34,6 +35,7 @@ const configModule = ConfigModule.forRoot({
         PostModule,
         JwtModule,
         RemoveAllModule,
+        AuthModule,
     ],
     controllers: [AppController, AuthController],
     providers: [

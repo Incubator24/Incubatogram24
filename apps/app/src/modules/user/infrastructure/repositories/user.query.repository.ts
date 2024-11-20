@@ -117,10 +117,11 @@ export class UserQueryRepository {
                           country: result.Profile.country,
                           city: result.Profile.city,
                           aboutMe: result.Profile.aboutMe,
-                          url:
-                              Configuration.getConfiguration()
-                                  .YANDEX_S3_ENDPOINT_WITH_BUCKET +
-                              result.Profile.avatarId,
+                          url: result.Profile.avatarId
+                              ? Configuration.getConfiguration()
+                                    .YANDEX_S3_ENDPOINT_WITH_BUCKET +
+                                result.Profile.avatarId
+                              : null,
                       }
                     : null,
                 //todo пока что заглушка для фронтов, потому что нет еще функционала подписок

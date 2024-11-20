@@ -52,8 +52,8 @@ import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/
 import { ClientProxy } from '@nestjs/microservices'
 import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
 import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
-import { Cookies } from '../../../libs/decorators/auth.decorator'
 import { EmailResendingDto } from '../../auth/src/api/dto/EmailResendingDto'
+import { Cookies } from '../../../libs/decorators/auth.decorator'
 
 @Injectable()
 @Controller('auth')

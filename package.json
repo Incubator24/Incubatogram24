@@ -28,7 +28,8 @@
     "start:dev:auth": "nest start auth --watch",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:deploy": "prisma migrate deploy"
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:seed": "ts-node ./prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.445.0",

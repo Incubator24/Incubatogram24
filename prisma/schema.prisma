@@ -147,12 +147,14 @@ model PaymentSystem {
 }
 
 model Order {
-  id              Int    @id @default(autoincrement())
-  paymentSystemId Int
-  productId       Int
-  quantity        Int
-  userId          Int
-  status          String
+  id                Int    @id @default(autoincrement())
+  paymentSystemId   Int
+  productId         Int
+  quantity          Int
+  userId            Int
+  status            String
+  clientReferenceId String
+  subscriptionType  String
 
   product       Product       @relation(references: [id], fields: [productId])
   paymentSystem PaymentSystem @relation(references: [id], fields: [paymentSystemId])
@@ -162,9 +164,8 @@ model Order {
 
 model Payment {
   id                    Int      @id @default(autoincrement())
-  subscriptionType      String
-  dateOfPayment         DateTime
-  endDateOfSubscription DateTime
+  dateOfPayment         DateTime @db.Timestamptz()
+  endDateOfSubscription DateTime @db.Timestamptz()
   price                 Int
   paymentSystemId       Int
   status                String

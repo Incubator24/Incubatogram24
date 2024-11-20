@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger } from '@nestjs/common'
 import Stripe from 'stripe'
 import { StripeRepository } from './stripe.repository'
 import { GetPremiumInputDto } from '../../api/dto/input/GetPremiumInputDto'
+import { v4 as uuidv4 } from 'uuid'
+import Configuration from '../../../../../../../libs/config/configuration'
 
 @Injectable()
 export class StripeService {
@@ -10,6 +12,7 @@ export class StripeService {
 
     constructor(
         @Inject('STRIPE_API_KEY') private readonly apiKey: string,
+        @Inject('STRIPE_SIGNING_SECRET') private readonly signingSecret: string,
         private readonly stripeRepository: StripeRepository
     ) {
         this.stripe = new Stripe(this.apiKey, {
@@ -23,26 +26,32 @@ export class StripeService {
         userId: number
     ): Promise<{ url: string } | null> {
         try {
+            const product = await this.stripeRepository.getProduct(
+                getPremiumInputDto.subscriptionName
+            )
+            const quantity = 1
+            this.logger.warn('product', product)
+            const backend_url = Configuration.getConfiguration().BACK_URL
             const session = await this.stripe.checkout.sessions.create({
-                success_url: 'http://localhost:3001/success',
-                cancel_url: 'http://localhost:3001/cancel',
+                success_url: backend_url + '/stripe/success',
+                cancel_url: backend_url + '/stripe/cancel',
                 line_items: [
                     {
                         // price: 'price_1QK16LE3a7cUSYV4DObnb97C',
                         price_data: {
                             product_data: {
-                                name: 'ProductId',
+                                name: product.name,
                                 description:
                                     'It is description about my product',
                             },
-                            unit_amount: 100 * 100,
-                            currency: 'USD',
+                            unit_amount: product.amount * 100,
+                            currency: product.currency,
                         },
-                        quantity: 1,
+                        quantity: quantity,
                     },
                 ],
                 mode: 'payment',
-                client_reference_id: '12',
+                client_reference_id: uuidv4(),
             })
             this.logger.log('session', session)
 
@@ -52,9 +61,18 @@ export class StripeService {
 
             this.logger.warn('session.url', session.url)
 
-            this.stripeRepository.createOrder()
+            const order = await this.stripeRepository.createOrder(
+                getPremiumInputDto.subscriptionName,
+                session.client_reference_id,
+                getPremiumInputDto.paymentSystem,
+                userId,
+                product.id,
+                quantity
+            )
 
-            return { url: session.url }
+            if (order) {
+                return { url: session.url }
+            }
         } catch (error) {
             this.logger.error(
                 'Failed to fetch products from Stripe',
@@ -65,24 +83,21 @@ export class StripeService {
     }
 
     async workWithWebhook(data, signature) {
-        const signingSecret = 'whsec_87UUBudfJctHdIzLXWzdhpE4MyB99oPI'
-
         try {
             const event = this.stripe.webhooks.constructEvent(
                 data,
                 signature,
-                signingSecret
+                this.signingSecret
             )
-            console.log('event', event)
+            console.log('event ', event)
 
             if (event.type === 'checkout.session.completed') {
-                //todo создать платёж
+                this.logger.warn('data', data)
 
-                // this.finishPaymentUseCase(
-                //     event.data.object.client_reference_id,
-                //     event
-                // )
-                this.logger.log('payment success')
+                const payment = await this.stripeRepository.createPayment(
+                    event.data.object
+                )
+                this.logger.warn('payment', payment)
             }
         } catch (e) {
             return this.logger.error('payment not success', e)

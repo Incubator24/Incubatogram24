@@ -1,12 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Logger,
-    Post,
-    Res,
-    UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common'
 import { SwaggerCreateOrder } from '../../../../../libs/swagger/payments/swaggerCreateOrder'
 import { GetPremiumInputDto } from './api/dto/input/GetPremiumInputDto'
 import { UserId } from '../../../../auth/src/api/decorators/user.decorator'
@@ -20,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger'
 export class PaymentsController {
     private readonly logger = new Logger(PaymentsController.name)
 
-    constructor(private readonly paymentsService: PaymentsService) {} // private readonly stripeService: StripeService
+    constructor(private readonly paymentsService: PaymentsService) {}
 
     @Post('premium')
     @SwaggerCreateOrder()
@@ -39,23 +31,4 @@ export class PaymentsController {
             this.logger.log('method get premium returns url: ', url)
         }
     }
-
-    @Get('success')
-    async successEndpoint() {
-        return 'All is successfully'
-    }
-
-    @Get('cancel')
-    async cancelEndpoint() {
-        return 'All is not successfully'
-    }
-
-    // @Post('hook')
-    // async stripeHook(@Req() res: RawBodyRequest<Request>) {
-    //     const signature = res.headers['stripe-signature']
-    //
-    //     await this.stripeService.workWithWebhook(res.rawBody, signature)
-    //
-    //     console.log('data', JSON.stringify(res.rawBody))
-    // }
 }

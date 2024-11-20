@@ -31,10 +31,10 @@ export class StripeService {
             )
             const quantity = 1
             this.logger.warn('product', product)
-            const backend_url = Configuration.getConfiguration().BACK_URL
+            const frontUrl = Configuration.getConfiguration().FRONT_URL
             const session = await this.stripe.checkout.sessions.create({
-                success_url: backend_url + '/stripe/success',
-                cancel_url: backend_url + '/stripe/cancel',
+                success_url: frontUrl + '/stripe/success',
+                cancel_url: frontUrl + '/stripe/cancel',
                 line_items: [
                     {
                         // price: 'price_1QK16LE3a7cUSYV4DObnb97C',

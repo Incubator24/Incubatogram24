@@ -32,7 +32,5 @@ export class StripeController {
         const signature = res.headers['stripe-signature']
 
         await this.stripeService.workWithWebhook(res.rawBody, signature)
-
-        console.log('data', JSON.stringify(res.rawBody))
     }
 }

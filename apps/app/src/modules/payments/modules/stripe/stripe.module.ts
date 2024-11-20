@@ -4,6 +4,7 @@ import { StripeController } from './stripe.controller'
 import { ConfigModule } from '@nestjs/config'
 import { StripeService } from './stripe.service'
 import { StripeRepository } from './stripe.repository'
+import { PrismaService } from '../../../../../../../prisma/prisma.service'
 
 @Module({})
 export class StripeModule {
@@ -13,6 +14,7 @@ export class StripeModule {
             controllers: [StripeController],
             imports: [ConfigModule.forRoot()],
             providers: [
+                PrismaService,
                 StripeService,
                 StripeRepository,
                 {
@@ -21,6 +23,14 @@ export class StripeModule {
                         const { STRIPE_API_KEY } =
                             Configuration.getConfiguration()
                         return STRIPE_API_KEY
+                    },
+                },
+                {
+                    provide: 'STRIPE_SIGNING_SECRET',
+                    useFactory: () => {
+                        const { STRIPE_SIGNING_SECRET } =
+                            Configuration.getConfiguration()
+                        return STRIPE_SIGNING_SECRET
                     },
                 },
             ],

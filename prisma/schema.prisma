@@ -51,6 +51,7 @@ model User {
   EmailExpiration  EmailExpiration?
   PasswordRecovery PasswordRecovery?
   Profile          Profile?
+  order            Order[]
 }
 
 model EmailExpiration {
@@ -128,4 +129,46 @@ model Device {
   deviceName   String
   user         User   @relation(references: [id], fields: [userId])
   userId       Int
+}
+
+model Product {
+  id       Int     @id @default(autoincrement())
+  name     String
+  amount   Int
+  currency String
+  order    Order[]
+}
+
+model PaymentSystem {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  order Order[]
+}
+
+model Order {
+  id                Int    @id @default(autoincrement())
+  paymentSystemId   Int
+  productId         Int
+  quantity          Int
+  userId            Int
+  status            String
+  clientReferenceId String
+  subscriptionType  String
+
+  product       Product       @relation(references: [id], fields: [productId])
+  paymentSystem PaymentSystem @relation(references: [id], fields: [paymentSystemId])
+  user          User          @relation(references: [id], fields: [userId])
+  payment       Payment?
+}
+
+model Payment {
+  id                    Int      @id @default(autoincrement())
+  dateOfPayment         DateTime @db.Timestamptz()
+  endDateOfSubscription DateTime @db.Timestamptz()
+  price                 Int
+  paymentSystemId       Int
+  status                String
+  orderId               Int      @unique
+  order                 Order    @relation(references: [id], fields: [orderId])
 }

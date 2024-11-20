@@ -240,6 +240,14 @@ class Configuration {
         )
     }
 
+    private static getStripeApiKey(): string {
+        return this.readEnvVariableWithDefault('STRIPE_API_KEY', 'abc')
+    }
+
+    private static getStripeSigningSecret(): string {
+        return this.readEnvVariableWithDefault('STRIPE_SIGNING_SECRET', 'abc')
+    }
+
     static getConfiguration() {
         Configuration.loadEnv()
         return {
@@ -275,6 +283,8 @@ class Configuration {
             AUTH_SERVICE: Configuration.getAuthService(),
             AUTH_SERVICE_HOST: Configuration.getAuthServiceHost(),
             AUTH_SERVICE_PORT: Configuration.getAuthServicePort(),
+            STRIPE_API_KEY: Configuration.getStripeApiKey(),
+            STRIPE_SIGNING_SECRET: Configuration.getStripeSigningSecret(),
         }
     }
 }

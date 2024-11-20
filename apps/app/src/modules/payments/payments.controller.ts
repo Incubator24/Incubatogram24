@@ -1,7 +1,7 @@
 import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common'
 import { SwaggerCreateOrder } from '../../../../../libs/swagger/payments/swaggerCreateOrder'
 import { GetPremiumInputDto } from './api/dto/input/GetPremiumInputDto'
-import { UserId } from '../../../../auth/src/api/decorators/user.decorator'
+import { UserId } from '../../../../../libs/decorators/user.decorator'
 import { JwtAuthGuard } from '../../../../../libs/guards/jwt-auth.guard'
 import { PaymentsService } from './payments.service'
 import { Response } from 'express'

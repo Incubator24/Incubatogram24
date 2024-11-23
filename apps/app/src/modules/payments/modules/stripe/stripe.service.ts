@@ -15,9 +15,7 @@ export class StripeService {
         @Inject('STRIPE_SIGNING_SECRET') private readonly signingSecret: string,
         private readonly stripeRepository: StripeRepository
     ) {
-        this.stripe = new Stripe(this.apiKey, {
-            apiVersion: '2024-10-28.acacia',
-        })
+        this.stripe = new Stripe(this.apiKey)
         this.logger.log('StripeService initialized with API version 2023-10-16')
     }
 

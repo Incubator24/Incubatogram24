@@ -50,8 +50,11 @@ import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
 import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/use-cases/ValidPasswordRecoveryCode'
 import { ClientProxy } from '@nestjs/microservices'
 import { Cookies } from '../../auth/src/api/decorators/auth.decorator'
+import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
+import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
 import { EmailResendingDto } from '../../auth/src/api/dto/EmailResendingDto'
 import { ApiExcludeEndpoint } from '@nestjs/swagger'
+import { Cookies } from '../../../libs/decorators/auth.decorator'
 
 @Injectable()
 @Controller('auth')
@@ -158,7 +161,7 @@ export class AuthController {
     }
 
     @Get('registration-confirmation')
-    @ApiExcludeEndpoint()
+    @SwaggerGetRegistrationConfirmationEndpoint()
     async getRegistrationConfirmation(
         @Query('code') code: string,
         @Res() res: Response
@@ -228,7 +231,7 @@ export class AuthController {
 
     // 1 получаем от клиента код и смотрим его валидность
     @Get('new-password')
-    @ApiExcludeEndpoint()
+    @SwaggerGetRegistrationConfirmationEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
         @Query('code') code: string,
@@ -247,7 +250,7 @@ export class AuthController {
 
     // 2-й если код валидный, клиент отправляет код и пароль
     @Post('new-password')
-    @ApiExcludeEndpoint()
+    @SwaggerPostRegistrationConfirmationEndpoint()
     @HttpCode(204)
     async getNewPassword(
         @Query('code') code: string,
@@ -309,7 +312,7 @@ export class AuthController {
     async googleAuth() {}
 
     @Get('google-success')
-    @ApiExcludeEndpoint()
+    @SwaggerPostGoogleEndpoint()
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,

@@ -18,6 +18,7 @@ import { GithubService } from '../../auth/src/application/githubService'
 import { ClientProxyFactory } from '@nestjs/microservices'
 import { LocalStrategy } from '../../../libs/strategies/local.strategy'
 import { JwtStrategy } from '../../../libs/strategies/jwt.strategy'
+import { PaymentsModule } from './modules/payments/payments.module'
 import { AuthModule } from '../../auth/src/auth.module'
 
 const configModule = ConfigModule.forRoot({
@@ -32,6 +33,7 @@ const configModule = ConfigModule.forRoot({
         configModule,
         CqrsModule,
         UserModule,
+        PaymentsModule,
         PostModule,
         JwtModule,
         RemoveAllModule,

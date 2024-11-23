@@ -157,6 +157,16 @@ spec:
                  secretKeyRef:
                    name: app-mono-repo-production-config-secret
                    key: AUTH_SERVICE_PORT
+             - name: STRIPE_API_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: STRIPE_API_KEY
+             - name: STRIPE_SIGNING_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: app-mono-repo-production-config-secret
+                   key: STRIPE_SIGNING_SECRET
              - name: CITY
                valueFrom:
                  secretKeyRef:

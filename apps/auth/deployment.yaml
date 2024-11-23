@@ -157,6 +157,16 @@ spec:
                  secretKeyRef:
                    name: micro-auth-production-config-secret
                    key: AUTH_SERVICE_PORT
+             - name: STRIPE_API_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: micro-auth-production-config-secret
+                   key: STRIPE_API_KEY
+             - name: STRIPE_SIGNING_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: micro-auth-production-config-secret
+                   key: STRIPE_SIGNING_SECRET
              - name: DATABASE_URL
                valueFrom:
                  secretKeyRef:

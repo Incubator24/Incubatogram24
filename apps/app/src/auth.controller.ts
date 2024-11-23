@@ -46,14 +46,12 @@ import { AuthInputModel } from '../../auth/src/api/dto/AuthInputModel'
 import { tokensDto } from '../../../libs/types/TokensDto'
 import { Me } from '../../../libs/swagger/auth/me'
 import Configuration from '../../../libs/config/configuration'
-import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
 import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
 import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/use-cases/ValidPasswordRecoveryCode'
 import { ClientProxy } from '@nestjs/microservices'
-import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
-import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
 import { Cookies } from '../../auth/src/api/decorators/auth.decorator'
 import { EmailResendingDto } from '../../auth/src/api/dto/EmailResendingDto'
+import { ApiExcludeEndpoint } from '@nestjs/swagger'
 
 @Injectable()
 @Controller('auth')
@@ -160,7 +158,7 @@ export class AuthController {
     }
 
     @Get('registration-confirmation')
-    @SwaggerGetRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     async getRegistrationConfirmation(
         @Query('code') code: string,
         @Res() res: Response
@@ -230,7 +228,7 @@ export class AuthController {
 
     // 1 получаем от клиента код и смотрим его валидность
     @Get('new-password')
-    @SwaggerGetRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
         @Query('code') code: string,
@@ -249,7 +247,7 @@ export class AuthController {
 
     // 2-й если код валидный, клиент отправляет код и пароль
     @Post('new-password')
-    @SwaggerPostRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     @HttpCode(204)
     async getNewPassword(
         @Query('code') code: string,
@@ -272,7 +270,9 @@ export class AuthController {
         @Ip() ip: string,
         @Res({ passthrough: true }) res: Response
     ) {
+        console.log('body.code = ', body.code)
         const accessToken = await this.githubService.validate(body.code)
+        console.log('accessToken = ', accessToken)
         const user = await this.githubService.getGithubUserByToken(accessToken)
 
         // та же логика что и на google
@@ -309,7 +309,7 @@ export class AuthController {
     async googleAuth() {}
 
     @Get('google-success')
-    @SwaggerPostGoogleEndpoint()
+    @ApiExcludeEndpoint()
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,

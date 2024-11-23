@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common'
 import { UserRepository } from '../user/infrastructure/repositories/user.repository'
 import { DeviceRepository } from '../devices/device.repository'
-import { RemoveAllDataEndpoint } from '../../../../../libs/swagger/superAdmin/RemoveAllData'
+import { ApiExcludeEndpoint } from '@nestjs/swagger'
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {
@@ -12,7 +12,7 @@ export class TestingRemoveAll {
 
     @HttpCode(204)
     @Delete()
-    @RemoveAllDataEndpoint()
+    @ApiExcludeEndpoint()
     async removeAllData() {
         await this.userRepository.deleteAllProfile()
         await this.userRepository.deleteAllEmailData()

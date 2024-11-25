@@ -161,7 +161,7 @@ export class AuthController {
     }
 
     @Get('registration-confirmation')
-    @SwaggerGetRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     async getRegistrationConfirmation(
         @Query('code') code: string,
         @Res() res: Response
@@ -231,7 +231,7 @@ export class AuthController {
 
     // 1 получаем от клиента код и смотрим его валидность
     @Get('new-password')
-    @SwaggerGetRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     @HttpCode(HttpStatus.NO_CONTENT)
     async getNewPasswordGetRequest(
         @Query('code') code: string,
@@ -250,7 +250,7 @@ export class AuthController {
 
     // 2-й если код валидный, клиент отправляет код и пароль
     @Post('new-password')
-    @SwaggerPostRegistrationConfirmationEndpoint()
+    @ApiExcludeEndpoint()
     @HttpCode(204)
     async getNewPassword(
         @Query('code') code: string,
@@ -312,7 +312,7 @@ export class AuthController {
     async googleAuth() {}
 
     @Get('google-success')
-    @SwaggerPostGoogleEndpoint()
+    @ApiExcludeEndpoint()
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,

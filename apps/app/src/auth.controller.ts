@@ -55,6 +55,7 @@ import { ApiExcludeEndpoint } from '@nestjs/swagger'
 import { Cookies } from '../../../libs/decorators/auth.decorator'
 import { UserId } from '../../../libs/decorators/user.decorator'
 import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
+import { GithubEndpoint } from '../../../libs/swagger/auth/githubEndpoint'
 
 @Injectable()
 @Controller('auth')
@@ -267,6 +268,7 @@ export class AuthController {
     }
 
     @Post('github')
+    @GithubEndpoint()
     async github(
         @Body() body: { code: string },
         @Headers('User-Agent') userAgent: string | 'unknow',
@@ -280,29 +282,45 @@ export class AuthController {
 
         // та же логика что и на google
 
+        console.log('user = ', user)
+
         const tokensInfoAndCurrentUser = await firstValueFrom<{
             tokensInfo: ResultObject<tokensDto>
             currentUser: any
         }>(
             this.authServiceClient.send('github', {
-                code: body.code,
+                user: user,
                 userAgent,
                 ip,
             })
         )
         const { tokensInfo, currentUser } = tokensInfoAndCurrentUser
+
         if (tokensInfoAndCurrentUser.tokensInfo.data === null)
             return mappingErrorStatus(tokensInfo)
+
+        // res.cookie('refreshToken', tokensInfo.data.refreshToken, {
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: 'none',
+        // }).header('accessToken', tokensInfo.data.accessToken)
+        // res.redirect(
+        //     Configuration.getConfiguration().FRONT_URL +
+        //         `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
+        // )
+        // return { accessToken: tokensInfo.data.accessToken }
 
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
         }).header('accessToken', tokensInfo.data.accessToken)
-        res.redirect(
-            Configuration.getConfiguration().FRONT_URL +
-                `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
-        )
+
+        // res.redirect(
+        //     Configuration.getConfiguration().FRONT_URL +
+        //     `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
+        // )
+
         return { accessToken: tokensInfo.data.accessToken }
     }
 
@@ -341,7 +359,6 @@ export class AuthController {
             Configuration.getConfiguration().FRONT_URL +
                 `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         )
-        return { accessToken: tokensInfo.data.accessToken }
     }
 
     @Get('me')

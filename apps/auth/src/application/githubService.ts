@@ -66,7 +66,7 @@ export class GithubService {
         const { email } = response[1].data.find(
             (emailObj: any) => emailObj.primary
         )
-        console.log('user = ', user)
+        // console.log('user = ', user)
         return {
             id: user.id,
             email: email,

@@ -135,15 +135,16 @@ export class AuthController {
 
     @MessagePattern('github')
     async github(data: {
-        code: string
+        user: {id: number, email: string}
         userAgent: string
         ip: string
     }): Promise<{ tokensInfo: ResultObject<tokensDto>; currentUser: any }> {
-        const { code, ip, userAgent } = data
-        const accessToken = await this.githubService.validate(code)
-        console.log('accessToken = ', accessToken)
-        const user = await this.githubService.getGithubUserByToken(accessToken)
-        console.log('user github = ', user)
+        console.log('1')
+        const { user, ip, userAgent } = data
+        // const accessToken = await this.githubService.validate(code)
+        // console.log('accessToken = ', accessToken)
+        // const user = await this.githubService.getGithubUserByToken(accessToken)
+        // console.log('user github = ', user)
         const userId: number = await this.authService.validateOAuthLogin(
             user,
             'github'
@@ -156,6 +157,9 @@ export class AuthController {
         )
 
         const currentUser = await this.userRepository.findUserById(userId)
+
+        console.log('tokensInfo = ', tokensInfo)
+        console.log('currentUser = ', currentUser)
 
         return { tokensInfo, currentUser }
     }

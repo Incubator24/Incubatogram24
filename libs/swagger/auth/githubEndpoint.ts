@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-export function githubEndpoint() {
+export function GithubEndpoint() {
     return applyDecorators(
         ApiTags('auth'),
         ApiOperation({

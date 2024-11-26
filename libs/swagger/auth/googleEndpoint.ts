@@ -5,7 +5,7 @@ export function GoogleEndpoint() {
     return applyDecorators(
         ApiTags('auth'),
         ApiOperation({
-            summary: 'Registration from Github',
+            summary: 'Registration from Google',
         }),
         ApiResponse({
             status: HttpStatus.OK,

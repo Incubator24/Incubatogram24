@@ -55,6 +55,7 @@ import { ApiExcludeEndpoint } from '@nestjs/swagger'
 import { Cookies } from '../../../libs/decorators/auth.decorator'
 import { UserId } from '../../../libs/decorators/user.decorator'
 import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
+import { GithubEndpoint } from '../../../libs/swagger/auth/githubEndpoint'
 
 @Injectable()
 @Controller('auth')
@@ -267,7 +268,7 @@ export class AuthController {
     }
 
     @Post('github')
-    @GoogleEndpoint()
+    @GithubEndpoint()
     async github(
         @Body() body: { code: string },
         @Headers('User-Agent') userAgent: string | 'unknow',

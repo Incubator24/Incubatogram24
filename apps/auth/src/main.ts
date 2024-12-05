@@ -14,6 +14,7 @@ async function bootstrap() {
             },
         }
     )
+    console.log(Configuration.getConfiguration().AUTH_SERVICE_PORT)
     await app.listen()
 }
 

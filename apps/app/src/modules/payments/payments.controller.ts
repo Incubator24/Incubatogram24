@@ -27,8 +27,9 @@ export class PaymentsController {
             userId
         )
         if (url) {
-            res.redirect(url)
+            // res.redirect(url)
             this.logger.log('method get premium returns url: ', url)
+            return { url: url }
         }
     }
 }

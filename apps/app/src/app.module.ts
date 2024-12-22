@@ -27,7 +27,7 @@ const configModule = ConfigModule.forRoot({
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     load: [Configuration.getConfiguration],
 })
-
+//
 @Module({
     imports: [
         configModule,

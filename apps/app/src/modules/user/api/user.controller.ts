@@ -74,22 +74,22 @@ export class UserController {
         }
     }
 
-    @Post('settings')
-    @CreateProfileEndpoint()
-    @UseGuards(JwtAuthGuard)
-    async createProfile(
-        @UserId()
-        userId: number,
-        @Body()
-        createProfileDto: CreateProfileDto
-    ) {
-        const createdProfile = await this.commandBus.execute(
-            new CreateProfileCommand(createProfileDto, userId)
-        )
-        if (createdProfile.data === null)
-            return mappingErrorStatus(createdProfile)
-        return await this.userQueryRepository.getProfile(userId)
-    }
+    // @Post('settings')
+    // @CreateProfileEndpoint()
+    // @UseGuards(JwtAuthGuard)
+    // async createProfile(
+    //     @UserId()
+    //     userId: number,
+    //     @Body()
+    //     createProfileDto: CreateProfileDto
+    // ) {
+    //     const createdProfile = await this.commandBus.execute(
+    //         new CreateProfileCommand(createProfileDto, userId)
+    //     )
+    //     if (createdProfile.data === null)
+    //         return mappingErrorStatus(createdProfile)
+    //     return await this.userQueryRepository.getProfile(userId)
+    // }
 
     @Put('settings')
     @HttpCode(HttpStatus.NO_CONTENT)

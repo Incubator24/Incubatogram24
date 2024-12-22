@@ -19,6 +19,7 @@ import { ConfirmAndChangePasswordCommand } from '../application/use-cases/Confir
 import { MessagePattern } from '@nestjs/microservices'
 import { tokensDto } from '../../../../libs/types/TokensDto'
 import { CheckCredentialCommand } from '../application/use-cases/CheckCredential'
+import { AddDefaultProfileCommand } from '../application/use-cases/AddDefaultProfile'
 
 @Injectable()
 @Controller('auth')
@@ -150,6 +151,7 @@ export class AuthController {
             'github'
         )
 
+        await this.commandBus.execute(new AddDefaultProfileCommand(userId))
         // та же логика что и на google
 
         const tokensInfo = await this.commandBus.execute(
@@ -171,6 +173,7 @@ export class AuthController {
         ip: string
     }): Promise<ResultObject<tokensDto>> {
         let { userId, userAgent, ip } = data
+        await this.commandBus.execute(new AddDefaultProfileCommand(userId))
         userAgent = userAgent ?? 'unknow'
         const tokensInfo = await this.commandBus.execute(
             new AddDeviceInfoToDBCommand(userId, userAgent, ip)

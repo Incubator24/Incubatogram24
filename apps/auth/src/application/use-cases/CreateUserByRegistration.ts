@@ -140,6 +140,16 @@ export class CreateUserByRegistration
                 message: 'couldn`t create email confirmation',
             }
         }
+        // создаем профиль
+        const createdProfile = {
+            userName: null,
+            firstName: null,
+            lastName: null,
+            dateOfBirth: null,
+            city: null,
+            aboutMe: null,
+        }
+        await this.userRepository.createProfile(createdUserId, createdProfile)
         try {
             await this.emailService.sendConfirmationEmail(
                 createdEmailConfirmationCode,

@@ -308,7 +308,7 @@ export class UserRepository implements IUserRepository {
                 },
                 firstName,
                 lastName,
-                dateOfBirth: new Date(dateOfBirth),
+                dateOfBirth,
                 city,
                 aboutMe,
             },

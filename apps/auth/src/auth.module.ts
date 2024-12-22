@@ -44,12 +44,17 @@ import { RecoveryCodesRepository } from '../../../libs/modules/email/infrastruct
 import { EmailService } from '../../../libs/modules/email/email.service'
 import Configuration from '../../../libs/config/configuration'
 import { ClientProxyFactory } from '@nestjs/microservices'
+import { AddDefaultProfile } from './application/use-cases/AddDefaultProfile'
 
 const repositories = [
     { provide: IRecoveryCodesRepository, useClass: RecoveryCodesRepository },
 ]
 
-const useCases = [ChangeUserConfirmationCode, ValidatePasswordRecoveryCode]
+const useCases = [
+    ChangeUserConfirmationCode,
+    ValidatePasswordRecoveryCode,
+    AddDefaultProfile,
+]
 
 @Module({
     imports: [CqrsModule, UserModule],

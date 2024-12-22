@@ -66,6 +66,19 @@ export class AuthService {
                     passRecoveryDto,
                     createdUserId
                 )
+                // создаем профиль
+                const createdProfile = {
+                    userName: null,
+                    firstName: null,
+                    lastName: null,
+                    dateOfBirth: null,
+                    city: null,
+                    aboutMe: null,
+                }
+                await this.userRepository.createProfile(
+                    createdUserId,
+                    createdProfile
+                )
                 // создаем объект для отправки кода на мыло
                 const emailConfirmationInfo: CreatedEmailDto =
                     createEmailDto(true)
@@ -106,6 +119,19 @@ export class AuthService {
                     await this.userRepository.createUserWithGithubProvider(
                         createUserWithGithubProvider
                     )
+                // создаем профиль
+                const createdProfile = {
+                    userName: null,
+                    firstName: null,
+                    lastName: null,
+                    dateOfBirth: null,
+                    city: null,
+                    aboutMe: null,
+                }
+                await this.userRepository.createProfile(
+                    createdUserId,
+                    createdProfile
+                )
                 // создаем объект для восстановления пароля
                 const passRecoveryDto: PasswordRecoveryDto = createPassDto()
                 await this.userRepository.createRecoveryCode(

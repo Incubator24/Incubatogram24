@@ -273,7 +273,7 @@ export class AuthController {
         @Body() body: { code: string },
         @Headers('User-Agent') userAgent: string | 'unknow',
         @Ip() ip: string,
-        @Res({ passthrough: true }) res: Response
+        @Res() res: Response
     ) {
         console.log('body.code = ', body.code)
         const accessToken = await this.githubService.validate(body.code)
@@ -314,7 +314,7 @@ export class AuthController {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-        }).header('accessToken', tokensInfo.data.accessToken)
+        })
 
         // res.redirect(
         //     Configuration.getConfiguration().FRONT_URL +
@@ -334,7 +334,7 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     async googleAuthCallback(
         @Req() req,
-        @Res({ passthrough: true }) res: Response,
+        @Res() res: Response,
         @Headers('User-Agent') userAgent: string | 'unknow',
         @Ip() ip: string
     ) {
@@ -354,8 +354,8 @@ export class AuthController {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-        }).header('accessToken', tokensInfo.data.accessToken)
-        res.redirect(
+        })
+        return res.redirect(
             Configuration.getConfiguration().FRONT_URL +
                 `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         )

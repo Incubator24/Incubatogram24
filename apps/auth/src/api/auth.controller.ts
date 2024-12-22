@@ -136,7 +136,7 @@ export class AuthController {
 
     @MessagePattern('github')
     async github(data: {
-        user: {id: number, email: string}
+        user: { id: number; email: string }
         userAgent: string
         ip: string
     }): Promise<{ tokensInfo: ResultObject<tokensDto>; currentUser: any }> {
@@ -151,7 +151,7 @@ export class AuthController {
             'github'
         )
 
-        await this.commandBus.execute(new AddDefaultProfileCommand(userId))
+        // await this.commandBus.execute(new AddDefaultProfileCommand(userId))
         // та же логика что и на google
 
         const tokensInfo = await this.commandBus.execute(
@@ -173,7 +173,7 @@ export class AuthController {
         ip: string
     }): Promise<ResultObject<tokensDto>> {
         let { userId, userAgent, ip } = data
-        await this.commandBus.execute(new AddDefaultProfileCommand(userId))
+        // await this.commandBus.execute(new AddDefaultProfileCommand(userId))
         userAgent = userAgent ?? 'unknow'
         const tokensInfo = await this.commandBus.execute(
             new AddDeviceInfoToDBCommand(userId, userAgent, ip)

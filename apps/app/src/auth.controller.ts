@@ -314,14 +314,16 @@ export class AuthController {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-        })
+        }).header('accessToken', tokensInfo.data.accessToken)
 
         // res.redirect(
         //     Configuration.getConfiguration().FRONT_URL +
         //     `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         // )
 
-        return { accessToken: tokensInfo.data.accessToken }
+        return new ResponseAccessTokenViewDTO({
+            accessToken: tokensInfo.data.accessToken,
+        })
     }
 
     @Get('google')

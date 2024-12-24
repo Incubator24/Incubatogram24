@@ -1,5 +1,5 @@
 // github.service.ts
-import { Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import axios from 'axios'
 import Configuration from '../../../../libs/config/configuration'
 
@@ -25,6 +25,12 @@ export class GithubService {
 
             if ('error' in resp.data) {
                 console.error('-> error', resp.data)
+                return {
+                    resultCode: HttpStatus.UNAUTHORIZED,
+                    field: 'anuathorized',
+                    message: 'anuathorized 123',
+                    data: null,
+                }
                 throw new Error(resp.data.error)
             }
             return resp.data

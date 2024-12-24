@@ -277,6 +277,7 @@ export class AuthController {
     ) {
         console.log('body.code = ', body.code)
         const accessToken = await this.githubService.validate(body.code)
+        if (accessToken.data === null) return mappingErrorStatus(accessToken)
         console.log('accessToken = ', accessToken)
         const user = await this.githubService.getGithubUserByToken(accessToken)
 
@@ -310,6 +311,8 @@ export class AuthController {
         // )
         // return { accessToken: tokensInfo.data.accessToken }
 
+        console.log('tokensInfoAndCurrentUser = ', tokensInfoAndCurrentUser)
+
         res.cookie('refreshToken', tokensInfo.data.refreshToken, {
             httpOnly: true,
             secure: true,
@@ -321,7 +324,10 @@ export class AuthController {
         //     `auth/github-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         // )
 
-        return new ResponseAccessTokenViewDTO({
+        // return new ResponseAccessTokenViewDTO({
+        //     accessToken: tokensInfo.data.accessToken,
+        // })
+        return res.status(200).json({
             accessToken: tokensInfo.data.accessToken,
         })
     }

@@ -99,6 +99,7 @@ export class AuthController {
         const result = await this.commandBus.execute(
             new ConfirmEmailCommand(code)
         )
+        console.log('result = ', result)
         return result
     }
 

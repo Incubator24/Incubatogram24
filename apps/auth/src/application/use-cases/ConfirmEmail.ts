@@ -52,6 +52,7 @@ export class ConfirmEmail implements ICommandHandler<ConfirmEmailCommand> {
         const isUpdated = await this.authRepository.updateEmailConfirmation(
             foundUser.userId
         )
+        console.log('isUpdated = ', isUpdated)
         if (!isUpdated) {
             return {
                 data: null,

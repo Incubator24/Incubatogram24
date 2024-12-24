@@ -48,13 +48,10 @@ import Configuration from '../../../libs/config/configuration'
 import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
 import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/use-cases/ValidPasswordRecoveryCode'
 import { ClientProxy } from '@nestjs/microservices'
-import { SwaggerGetRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerGetNewPasswordEndpoint'
-import { SwaggerPostRegistrationConfirmationEndpoint } from '../../../libs/swagger/Internal/swaggerPostNewPasswordEndpoint'
 import { EmailResendingDto } from '../../auth/src/api/dto/EmailResendingDto'
 import { ApiExcludeEndpoint } from '@nestjs/swagger'
 import { Cookies } from '../../../libs/decorators/auth.decorator'
 import { UserId } from '../../../libs/decorators/user.decorator'
-import { SwaggerPostGoogleEndpoint } from '../../../libs/swagger/Internal/swaggerPostGoogleEndpoint'
 import { GithubEndpoint } from '../../../libs/swagger/auth/githubEndpoint'
 
 @Injectable()

@@ -7,7 +7,7 @@ import {
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { UserTypeDTOSwagger } from '../user/types'
 
-export function Me() {
+export function UserMe() {
     return applyDecorators(
         ApiTags('auth'),
 

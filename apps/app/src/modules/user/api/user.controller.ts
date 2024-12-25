@@ -48,7 +48,7 @@ export class UserController {
         private readonly userQueryRepository: UserQueryRepository
     ) {}
 
-    @Get('me')
+    @Get()
     @GetMyProfileEndpoint()
     @UseGuards(JwtAuthGuard)
     async getMyProfile(
@@ -187,11 +187,11 @@ export class UserController {
     }
 
     // for testing
-    @Get()
-    @GetAllUsersEndpoint()
-    async getAllUsers() {
-        return this.userQueryRepository.getAllUsers()
-    }
+    // @Get('/users')
+    // @GetAllUsersEndpoint()
+    // async getAllUsers() {
+    //     return this.userQueryRepository.getAllUsers()
+    // }
 
     @Delete(':userId')
     @RemoveUserByIdEndpoint()

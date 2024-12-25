@@ -11,6 +11,12 @@ export type UserWithEmailViewModel = {
     emailExpiration: Date
     isConfirmed: boolean
 }
+export type UserViewModel = {
+    id: number
+    userName: string
+    email: string
+    isBlocked: boolean
+}
 export type CreatedUserDto = {
     email: string
     userName: string

@@ -43,7 +43,7 @@ import { EmailService } from '../../../libs/modules/email/email.service'
 import { firstValueFrom } from 'rxjs'
 import { AuthInputModel } from '../../auth/src/api/dto/AuthInputModel'
 import { tokensDto } from '../../../libs/types/TokensDto'
-import { Me } from '../../../libs/swagger/auth/me'
+import { UserMe } from '../../../libs/swagger/auth/userMe'
 import Configuration from '../../../libs/config/configuration'
 import { GoogleEndpoint } from '../../../libs/swagger/auth/googleEndpoint'
 import { ValidatePasswordRecoveryCodeCommand } from '../../auth/src/application/use-cases/ValidPasswordRecoveryCode'
@@ -367,15 +367,15 @@ export class AuthController {
     }
 
     @Get('me')
-    @Me()
+    @UserMe()
     @UseGuards(JwtAuthGuard)
     async me(
         @UserId()
         userId: number
     ) {
-        const getProfile = await this.userQueryRepository.getProfile(userId)
-        if (getProfile) {
-            return getProfile
+        const getUser = await this.userQueryRepository.getUserByUserId(userId)
+        if (getUser) {
+            return getUser
         } else {
             throw new NotFoundException()
         }

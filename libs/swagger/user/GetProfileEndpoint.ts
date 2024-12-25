@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { UserTypeDTOSwagger } from './types'
+import { ProfileTypeDTOSwagger } from './types'
 
 export function GetProfileEndpoint() {
     return applyDecorators(
@@ -9,7 +9,7 @@ export function GetProfileEndpoint() {
         ApiResponse({
             status: HttpStatus.OK,
             description: 'Success',
-            type: UserTypeDTOSwagger,
+            type: ProfileTypeDTOSwagger,
         }),
         ApiResponse({
             status: HttpStatus.NOT_FOUND,

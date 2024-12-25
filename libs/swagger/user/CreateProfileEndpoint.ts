@@ -5,7 +5,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger'
-import { UserTypeDTOSwagger } from './types'
+import { ProfileTypeDTOSwagger } from './types'
 
 export function CreateProfileEndpoint() {
     return applyDecorators(
@@ -15,7 +15,7 @@ export function CreateProfileEndpoint() {
         ApiResponse({
             status: HttpStatus.CREATED,
             description: 'create profile',
-            type: UserTypeDTOSwagger,
+            type: ProfileTypeDTOSwagger,
         }),
         ApiResponse({
             status: HttpStatus.UNAUTHORIZED,

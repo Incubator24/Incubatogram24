@@ -29,12 +29,19 @@ export class StripeService {
             )
             const quantity = 1
             this.logger.warn('product', product)
-            const frontUrl = Configuration.getConfiguration().FRONT_URL
+            // const frontUrl = Configuration.getConfiguration().FRONT_URL
+            const frontUrl = 'http://localhost:3000/my-profile/'
             const session = await this.stripe.checkout.sessions.create({
                 // success_url: frontUrl + '/stripe/success',
                 // cancel_url: frontUrl + '/stripe/cancel',
-                success_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=success`,
-                cancel_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=cancel`,
+                success_url:
+                    frontUrl +
+                    userId +
+                    '/settings/management?paymentStatus=success',
+                cancel_url:
+                    frontUrl +
+                    userId +
+                    '/settings/management?paymentStatus=cancel',
                 line_items: [
                     {
                         // price: 'price_1QK16LE3a7cUSYV4DObnb97C',
@@ -53,13 +60,16 @@ export class StripeService {
                 mode: 'payment',
                 client_reference_id: uuidv4(),
             })
+            console.log(1)
             this.logger.log('session', session)
+            console.log('session', session)
 
             if (!session) {
                 return null
             }
-
+            console.log(2)
             this.logger.warn('session.url', session.url)
+            console.log(2.5)
 
             const order = await this.stripeRepository.createOrder(
                 getPremiumInputDto.subscriptionName,
@@ -69,7 +79,8 @@ export class StripeService {
                 product.id,
                 quantity
             )
-
+            console.log(3)
+            console.log('session.url = ', session.url)
             if (order) {
                 return { url: session.url }
             }
@@ -80,9 +91,15 @@ export class StripeService {
                 error.stack
             )
             return {
-                url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=error`,
+                url:
+                    'http://localhost:3000/my-profile/' +
+                    userId +
+                    '/settings/management?paymentStatus=error',
             } // Вернуть URL ошибки
         }
+        // } catch (error) {
+        //     throw new Error('Unable to fetch products from Stripe')
+        // }
     }
 
     async workWithWebhook(data, signature) {

@@ -25,6 +25,7 @@ export class StripeRepository {
                 name: paymentSystemName,
             },
         })
+        console.log('clientReferenceId = ', clientReferenceId)
         try {
             const order = await this.prisma.order.create({
                 data: {

@@ -19,12 +19,14 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(loginOrEmail: string, password: string): Promise<any> {
+        console.log('loginOrEmail', loginOrEmail, password)
         const userId = await firstValueFrom(
             this.authServiceClient.send('check-credential', {
                 loginOrEmail,
                 password,
             })
         )
+        console.log('userId = ', userId)
         if (!userId) {
             throw new UnauthorizedException()
         }

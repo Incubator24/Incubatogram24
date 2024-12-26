@@ -31,8 +31,10 @@ export class StripeService {
             this.logger.warn('product', product)
             const frontUrl = Configuration.getConfiguration().FRONT_URL
             const session = await this.stripe.checkout.sessions.create({
-                success_url: frontUrl + '/stripe/success',
-                cancel_url: frontUrl + '/stripe/cancel',
+                // success_url: frontUrl + '/stripe/success',
+                // cancel_url: frontUrl + '/stripe/cancel',
+                success_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=success`,
+                cancel_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=cansel`,
                 line_items: [
                     {
                         // price: 'price_1QK16LE3a7cUSYV4DObnb97C',
@@ -72,11 +74,14 @@ export class StripeService {
                 return { url: session.url }
             }
         } catch (error) {
+            // throw new Error('Unable to fetch products from Stripe')
             this.logger.error(
                 'Failed to fetch products from Stripe',
                 error.stack
             )
-            throw new Error('Unable to fetch products from Stripe')
+            return {
+                url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=error`,
+            } // Вернуть URL ошибки
         }
     }
 

@@ -34,7 +34,7 @@ export class StripeService {
                 // success_url: frontUrl + '/stripe/success',
                 // cancel_url: frontUrl + '/stripe/cancel',
                 success_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=success`,
-                cancel_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=cansel`,
+                cancel_url: `http://localhost:3000/my-profile/${userId}/settings/management?paymentStatus=cancel`,
                 line_items: [
                     {
                         // price: 'price_1QK16LE3a7cUSYV4DObnb97C',

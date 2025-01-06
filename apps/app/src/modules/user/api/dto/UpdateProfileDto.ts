@@ -57,6 +57,14 @@ export class UpdateProfileDto {
     dateOfBirth: string
 
     @ApiProperty({
+        example: 'Russia',
+        description: 'The city where the user resides.',
+    })
+    @IsString()
+    @IsOptional()
+    country: string
+
+    @ApiProperty({
         example: 'Moscow',
         description: 'The city where the user resides.',
     })

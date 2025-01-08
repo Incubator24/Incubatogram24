@@ -10,7 +10,6 @@ export class PaymentsService {
         private readonly stripeService: StripeService,
         private readonly paypalService: PaypalService
     ) {}
-    //
     getPremium(
         getPremiumInputDto: GetPremiumInputDto,
         userId: number

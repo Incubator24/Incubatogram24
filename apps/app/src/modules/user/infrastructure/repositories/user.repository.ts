@@ -346,6 +346,11 @@ export class UserRepository implements IUserRepository {
         if (changeProfileDto.city) {
             dataToUpdateProfile.city = changeProfileDto.city
         }
+
+        if (changeProfileDto.country) {
+            dataToUpdateProfile.country = changeProfileDto.country
+        }
+
         const updateProfile = await this.prisma.profile.updateMany({
             where: { userId: userId },
             data: dataToUpdateProfile,

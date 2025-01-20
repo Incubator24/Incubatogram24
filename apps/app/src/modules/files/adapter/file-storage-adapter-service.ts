@@ -30,16 +30,18 @@ export class S3StorageAdapter {
         originalName: string,
         mimetype: string,
         buffer: Buffer,
-        type: string
+        type: string,
+        postId?: number
     ) {
         if (!['image/png', 'image/jpeg'].includes(mimetype)) {
             throw new Error(
                 'Unsupported file type. Only PNG and JPEG are allowed.'
             )
         }
-
         const extension = mimetype.split('/')[1]
-        const key = `content/users/${userId}/${type}/${Date.now()}${userId}_image.${extension}`
+        const key = postId
+            ? `content/users/${userId}/${type}/${postId}/${Date.now()}${userId}_image.${extension}`
+            : `content/users/${userId}/${type}/${Date.now()}${userId}_image.${extension}`
         const bucketParams = {
             Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
             Key: key,
@@ -62,7 +64,8 @@ export class S3StorageAdapter {
         }
     }
 
-    async deleteImage(imagePath: string) {
+    async deleteImages(imagePath: string) {
+        console.log('imagePath = ', imagePath)
         const bucketParams = {
             Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,
             Key: imagePath,
@@ -85,6 +88,7 @@ export class S3StorageAdapter {
         if (!currentUserInfo) {
             return false
         }
+        console.log('currentUserInfo = ', currentUserInfo)
 
         const bucketParams = {
             Bucket: Configuration.getConfiguration().YANDEX_S3_BUCKET_NAME,

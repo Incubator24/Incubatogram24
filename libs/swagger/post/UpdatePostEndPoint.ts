@@ -30,7 +30,6 @@ export function UpdatePostEndpoint() {
         }),
         ApiNoContentResponse({
             status: HttpStatus.NO_CONTENT,
-            type: PostType,
             description: 'Post was updated successfully',
         }),
         ApiUnauthorizedResponse({

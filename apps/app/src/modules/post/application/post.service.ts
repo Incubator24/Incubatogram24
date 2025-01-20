@@ -44,28 +44,6 @@ export class PostsService {
 
         const photosPaths: { url: string; fileId: string }[] = []
         try {
-            //добавление фото на S3
-            for (const photo of photos) {
-                try {
-                    const photoPath = await this.fileStorage.saveImage(
-                        userId,
-                        photo.originalname,
-                        photo.mimetype,
-                        photo.buffer,
-                        'post_photos'
-                    )
-                    photosPaths.push({
-                        url: photoPath.url,
-                        fileId: photoPath.fileId,
-                    })
-                } catch (error) {
-                    console.error(
-                        `Ошибка при сохранении изображения ${photo.originalname}:`,
-                        error
-                    )
-                }
-            }
-
             //это надо вынести в post repository
             //создание в бд поста, и фотографий поста
             let post: Post
@@ -78,6 +56,29 @@ export class PostsService {
                         description: createPostInputDto.description,
                     },
                 })
+
+                //добавление фото на S3
+                for (const photo of photos) {
+                    try {
+                        const photoPath = await this.fileStorage.saveImage(
+                            userId,
+                            photo.originalname,
+                            photo.mimetype,
+                            photo.buffer,
+                            'post_photos',
+                            post.id
+                        )
+                        photosPaths.push({
+                            url: photoPath.url,
+                            fileId: photoPath.fileId,
+                        })
+                    } catch (error) {
+                        console.error(
+                            `Ошибка при сохранении изображения ${photo.originalname}:`,
+                            error
+                        )
+                    }
+                }
 
                 let index = 1
                 for (const path of photosPaths) {
@@ -104,7 +105,7 @@ export class PostsService {
             //если что-то пошло не так, то удаляем фото с S3
             for (const path of photosPaths) {
                 try {
-                    await this.fileStorage.deleteImage(path.url)
+                    await this.fileStorage.deleteImages(path.url)
                 } catch (error) {
                     console.error(
                         `Ошибка при удалении изображения: ${path.url}:`,
@@ -126,9 +127,10 @@ export class PostsService {
         userId: number,
         postId: string,
         updatePostInputDto: UpdatePostInputDto
-    ): Promise<ResultObject<PostType>> {
+    ): Promise<ResultObject<Post>> {
         const post = await this.postRepository.findPost(postId)
         //проверить существует ли пост
+        console.log('foundPost = ', post)
         if (!post) {
             return {
                 data: null,
@@ -148,7 +150,6 @@ export class PostsService {
                 field: 'userId',
             }
         }
-
         const updatedPost: Post = await this.postRepository.updatePost(
             postId,
             updatePostInputDto.description
@@ -163,10 +164,9 @@ export class PostsService {
             }
         }
 
-        const mappedPost = await this.postQueryRepository.getPost(postId)
-
+        // const mappedPost = await this.postQueryRepository.getPost(postId)
         return {
-            data: mappedPost,
+            data: post,
             resultCode: HttpStatus.NO_CONTENT,
         }
     }
@@ -205,7 +205,6 @@ export class PostsService {
                 field: 'postId',
             }
         }
-
         const profile = await this.userRepository.foundProfileFromUserId(userId)
         if (post.profileId !== profile.id) {
             return {
@@ -216,7 +215,18 @@ export class PostsService {
             }
         }
 
+        // находим postImages
+        const postImages = await this.postRepository.findPostImages(postId)
+        // const deleteImages = await this.fileStorage.deleteImages(imagePath)
+        for (const image of postImages) {
+            try {
+                await this.fileStorage.deleteImages(image.url)
+            } catch (error) {
+                console.log('Ошибка при удалении изображения', error)
+            }
+        }
         const deletedPost = await this.postRepository.deletePost(postId)
+        console.log('deletedPost = ', deletedPost)
         if (!deletedPost) {
             return {
                 data: null,

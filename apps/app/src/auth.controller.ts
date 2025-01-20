@@ -360,9 +360,12 @@ export class AuthController {
             secure: true,
             sameSite: 'none',
         })
+        // return res.redirect(
+        //     Configuration.getConfiguration().FRONT_URL +
+        //         `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
+        // )
         return res.redirect(
-            Configuration.getConfiguration().FRONT_URL +
-                `auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
+            `http://localhost:3000/auth/google-success?id=${currentUser.id}&userName=${currentUser.userName}&accessToken=${tokensInfo.data.accessToken}`
         )
     }
 

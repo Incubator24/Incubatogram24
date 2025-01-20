@@ -2,6 +2,7 @@ import { applyDecorators, HttpStatus } from '@nestjs/common'
 import {
     ApiBearerAuth,
     ApiBody,
+    ApiConsumes,
     ApiOperation,
     ApiResponse,
     ApiTags,
@@ -12,19 +13,18 @@ export function UpdateAvatarEndpoint() {
         ApiTags('profile'),
         ApiOperation({ summary: 'Load PNG or JPG image' }),
         ApiBearerAuth('JWT-auth'),
+        ApiConsumes('multipart/form-data'),
         ApiBody({
-            description: 'Upload PNG or JPG image',
-            type: 'multipart/form-data',
             schema: {
                 type: 'object',
                 properties: {
                     file: {
                         type: 'string',
-                        format: 'binary',
-                        description: 'PNG or JPG format image',
-                        example: 'image.png',
+                        format: 'binary', // Описание файла для загрузки
+                        description: 'JPEG or PNG image file',
                     },
                 },
+                required: ['file'], // Указание, что файл обязателен
             },
         }),
         ApiResponse({

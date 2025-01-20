@@ -148,7 +148,7 @@ export class PostsController {
     @Put(':postId')
     @UseGuards(JwtAuthGuard)
     @UpdatePostEndpoint()
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async updatePost(
         @Body() updatePostInputDto: UpdatePostInputDto,
         @Param('postId') postId: string,
@@ -159,6 +159,7 @@ export class PostsController {
             postId,
             updatePostInputDto
         )
+        console.log('post = ', post)
         if (!post.data) {
             switch (post.resultCode) {
                 case HttpStatus.BAD_REQUEST:
@@ -166,6 +167,10 @@ export class PostsController {
                         message: [{ message: post.message, field: post.field }],
                     })
                 case HttpStatus.NOT_FOUND:
+                    throw new NotFoundException({
+                        message: [{ message: post.message, field: post.field }],
+                    })
+                case HttpStatus.FORBIDDEN:
                     throw new NotFoundException({
                         message: [{ message: post.message, field: post.field }],
                     })

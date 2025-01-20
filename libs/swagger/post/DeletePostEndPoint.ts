@@ -27,7 +27,7 @@ export function DeletePostEndpoint() {
             description: 'Unauthorized',
         }),
         ApiBadRequestResponse({
-            status: HttpStatus.BAD_REQUEST,
+            status: HttpStatus.FORBIDDEN,
             description: 'User is not owner the post',
         })
     )

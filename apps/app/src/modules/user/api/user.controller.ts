@@ -39,6 +39,7 @@ import { GetAllUsersEndpoint } from '../../../../../../libs/swagger/superAdmin/G
 import { RemoveUserByIdEndpoint } from '../../../../../../libs/swagger/superAdmin/RemoveUserById'
 import { JwtAuthGuard } from '../../../../../../libs/guards/jwt-auth.guard'
 import { UserId } from '../../../../../../libs/decorators/user.decorator'
+import { ApiExcludeEndpoint } from '@nestjs/swagger'
 
 @Controller('profile')
 export class UserController {
@@ -194,7 +195,7 @@ export class UserController {
     // }
 
     @Delete(':userId')
-    @RemoveUserByIdEndpoint()
+    @ApiExcludeEndpoint()
     async removeUserById(
         @Param('userId')
         userId: string

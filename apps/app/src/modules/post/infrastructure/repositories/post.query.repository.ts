@@ -128,7 +128,8 @@ export class PostQueryRepository implements IPostRepository {
         posts.forEach((post) => {
             if (post.profile.avatarId) {
                 post.profile.avatarId = `${
-                    Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+                    Configuration.getConfiguration()
+                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
                 }${post.profile.avatarId}`
             }
 
@@ -136,7 +137,8 @@ export class PostQueryRepository implements IPostRepository {
                 post.images = post.images.map((image) => ({
                     ...image,
                     url: `${
-                        Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+                        Configuration.getConfiguration()
+                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
                     }${image.url}`,
                 }))
             }
@@ -316,7 +318,8 @@ export class PostQueryRepository implements IPostRepository {
         posts.forEach((post) => {
             if (post.profile.avatarId) {
                 post.profile.avatarId = `${
-                    Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+                    Configuration.getConfiguration()
+                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
                 }${post.profile.avatarId}`
             }
 
@@ -324,7 +327,8 @@ export class PostQueryRepository implements IPostRepository {
                 post.images = post.images.map((image) => ({
                     ...image,
                     url: `${
-                        Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+                        Configuration.getConfiguration()
+                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
                     }${image.url}`,
                 }))
             }

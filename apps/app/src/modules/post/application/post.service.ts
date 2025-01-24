@@ -9,9 +9,8 @@ import { PostRepository } from '../infrastructure/repositories/post.repository'
 import { PostQueryRepository } from '../infrastructure/repositories/post.query.repository'
 import { ResultObject } from '../../../../../../libs/helpers/types/helpersType'
 import {
-    PaginatorDto,
-    PaginatorDtoWithCountUsers,
     PostType,
+    PostViewModel,
 } from '../../../../../../libs/helpers/types/types'
 
 @Injectable()
@@ -245,9 +244,10 @@ export class PostsService {
     // получение постов с пагинацией поста, не черновиков
     async getPosts(
         userId: number,
-        page: number
-    ): Promise<ResultObject<PaginatorDto<PostType>>> {
+        page: number | undefined
+    ): Promise<ResultObject<PostViewModel> | null> {
         const profile = await this.userRepository.foundProfileFromUserId(userId)
+        console.log('profile = ', profile)
         if (!profile) {
             return {
                 data: null,
@@ -257,33 +257,14 @@ export class PostsService {
             }
         }
 
-        const posts = await this.postQueryRepository.getPosts(profile.id, page)
-
-        return {
-            data: {
-                pagesCount: posts.pagesCount,
-                page: posts.page,
-                items: posts.items,
-            },
-            resultCode: HttpStatus.OK,
-        }
+        return await this.postQueryRepository.getAllPostsCurrentUser(
+            profile.id,
+            page
+        )
     }
 
     // получения публичных постов, не черновика
-    async getPublicPosts(
-        page: number
-    ): Promise<ResultObject<PaginatorDtoWithCountUsers<PostType>>> {
-        const posts = await this.postQueryRepository.getPublicPosts(page)
-        const countUsers = await this.userRepository.countUsers()
-
-        return {
-            data: {
-                pagesCount: posts.pagesCount,
-                usersCount: countUsers,
-                page: posts.page,
-                items: posts.items,
-            },
-            resultCode: HttpStatus.OK,
-        }
+    async getPublicPosts(): Promise<ResultObject<PostViewModel> | null> {
+        return await this.postQueryRepository.getPublicPosts()
     }
 }

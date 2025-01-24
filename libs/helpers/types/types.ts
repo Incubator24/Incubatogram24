@@ -126,14 +126,45 @@ export class PublicPostType {
 
 export class PaginatorDto<T> {
     @ApiProperty()
-    pagesCount: number
-    @ApiProperty()
-    page: number
-    @ApiProperty()
     items: Array<T>
+    @ApiProperty()
+    usersCount: number
+}
+
+export class PostImages {
+    @ApiProperty()
+    id: number
+    @ApiProperty()
+    url: string
+}
+
+export class PaginatorPostItems {
+    @ApiProperty()
+    postId: number
+    @ApiProperty()
+    userId: number
+    @ApiProperty()
+    username: string
+    @ApiProperty()
+    avatar_url: string
+    @ApiProperty()
+    description: string
+    @ApiProperty()
+    createdAt: string
+    @ApiProperty()
+    updatedAt: string
+    @ApiProperty({ type: [PostImages] })
+    postImages: Array<PostImages>
+    @ApiProperty()
+    comments: Array<string>
 }
 
 export class PaginatorDtoWithCountUsers<T> extends PaginatorDto<T> {
     @ApiProperty()
+    usersCount: number
+}
+
+export type PostViewModel = {
+    items: Array<PaginatorPostItems>
     usersCount: number
 }

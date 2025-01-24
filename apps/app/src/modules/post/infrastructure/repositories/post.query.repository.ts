@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { IPostRepository } from '../interfaces/post.repository.interface'
 import { PrismaService } from '../../../../../../../prisma/prisma.service'
 import {
-    PaginatorDto,
+    PaginatorPostItems,
     PostType,
+    PostViewModel,
 } from '../../../../../../../libs/helpers/types/types'
 import Configuration from '../../../../../../../libs/config/configuration'
+import { ResultObject } from '../../../../../../../libs/helpers/types/helpersType'
 
 @Injectable()
 export class PostQueryRepository implements IPostRepository {
@@ -75,35 +77,31 @@ export class PostQueryRepository implements IPostRepository {
         }
     }
 
-    async getPosts(
+    async getAllPostsCurrentUser(
         profileId: number,
-        page: number
-    ): Promise<PaginatorDto<PostType>> {
+        pageNumberQuery: number | undefined
+    ): Promise<ResultObject<PostViewModel> | null> {
         const LIMIT = 8
+        pageNumberQuery = pageNumberQuery ? pageNumberQuery : 1
 
         const posts = await this.prisma.post.findMany({
-            where: {
-                profile: {
-                    id: profileId,
-                },
-                deletedAt: null,
-                isDraft: false,
-            },
             orderBy: {
                 createdAt: 'desc',
             },
+            where: {
+                deletedAt: null,
+                isDraft: true,
+                profileId: profileId,
+            },
             take: LIMIT,
-            skip: (page - 1) * LIMIT,
-            select: {
-                id: true,
-                createdAt: true,
-                description: true,
+            skip: (pageNumberQuery - 1) * LIMIT,
+            include: {
                 profile: {
                     select: {
-                        aboutMe: true,
                         avatarId: true,
                         user: {
                             select: {
+                                id: true,
                                 userName: true,
                             },
                         },
@@ -113,29 +111,24 @@ export class PostQueryRepository implements IPostRepository {
                     select: {
                         id: true,
                         url: true,
-                        fileId: true,
-                        order: true,
                     },
                 },
             },
         })
 
-        const postsCount = await this.prisma.post.count({
-            where: {
-                profile: {
-                    id: profileId,
-                },
-                deletedAt: null,
-                isDraft: false,
-            },
-        })
-
+        if (!posts) {
+            return {
+                data: null,
+                resultCode: HttpStatus.NOT_FOUND,
+                message: 'posts not found',
+                field: 'posts',
+            }
+        }
         //для корректного пути к фотографиям
         posts.forEach((post) => {
             if (post.profile.avatarId) {
                 post.profile.avatarId = `${
-                    Configuration.getConfiguration()
-                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                    Configuration.getConfiguration().YANDEX_S3_ENDPOINT
                 }${post.profile.avatarId}`
             }
 
@@ -143,32 +136,37 @@ export class PostQueryRepository implements IPostRepository {
                 post.images = post.images.map((image) => ({
                     ...image,
                     url: `${
-                        Configuration.getConfiguration()
-                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                        Configuration.getConfiguration().YANDEX_S3_ENDPOINT
                     }${image.url}`,
                 }))
             }
         })
 
-        const pagesCount = Math.ceil(postsCount / LIMIT)
+        const usersCount = await this.prisma.user.count({
+            where: {
+                isDeleted: false,
+            },
+        })
 
         if (posts.length === 0) {
             return {
-                items: [],
-                page: page,
-                pagesCount: 0,
+                data: { items: [], usersCount: usersCount },
+                resultCode: HttpStatus.OK,
+                message: 'posts',
+                field: 'posts',
             }
         }
 
-        const mappedPosts: PostType[] = []
+        const mappedPosts: PaginatorPostItems[] = []
         posts.forEach((post) => {
-            const tempPost: PostType = {
-                id: post.id,
-                createdAt: post.createdAt,
-                aboutMe: post.profile.aboutMe,
-                avatarId: post.profile.avatarId,
+            const tempPost: PaginatorPostItems = {
+                postId: post.id,
+                userId: post.profile.user.id,
                 username: post.profile.user.userName,
+                avatar_url: post.profile.avatarId,
                 description: post.description,
+                createdAt: post.createdAt.toISOString(),
+                updatedAt: post.updatedAt.toISOString(),
                 postImages: post.images,
                 //todo заглушка, т.к. не реализован функционал
                 comments: [],
@@ -176,13 +174,112 @@ export class PostQueryRepository implements IPostRepository {
             mappedPosts.push(tempPost)
         })
         return {
-            page: page,
-            pagesCount: pagesCount,
-            items: mappedPosts,
+            data: { items: mappedPosts, usersCount: usersCount },
+            resultCode: HttpStatus.OK,
+            message: 'posts',
+            field: 'posts',
         }
     }
 
-    async getPublicPosts(page: number = 1): Promise<PaginatorDto<PostType>> {
+    // async getPosts(
+    //     profileId: number,
+    //     page: number
+    // ): Promise<PaginatorDto<PostType>> {
+    //     const LIMIT = 8
+    //
+    //     const posts = await this.prisma.post.findMany({
+    //         where: {
+    //             profile: {
+    //                 id: profileId,
+    //             },
+    //             deletedAt: null,
+    //             isDraft: false,
+    //         },
+    //         orderBy: {
+    //             createdAt: 'desc',
+    //         },
+    //         take: LIMIT,
+    //         skip: (page - 1) * LIMIT,
+    //         select: {
+    //             id: true,
+    //             createdAt: true,
+    //             description: true,
+    //             profile: {
+    //                 select: {
+    //                     aboutMe: true,
+    //                     avatarId: true,
+    //                     user: {
+    //                         select: {
+    //                             userName: true,
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //             images: {
+    //                 select: {
+    //                     id: true,
+    //                     url: true,
+    //                     fileId: true,
+    //                     order: true,
+    //                 },
+    //             },
+    //         },
+    //     })
+    //
+    //     // получение юзеров
+    //     const usersCount = await this.prisma.user.count({
+    //         where: {
+    //             isDeleted: false,
+    //         },
+    //     })
+    //
+    //     //для корректного пути к фотографиям
+    //     posts.forEach((post) => {
+    //         if (post.profile.avatarId) {
+    //             post.profile.avatarId = `${
+    //                 Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+    //             }${post.profile.avatarId}`
+    //         }
+    //
+    //         if (post.images && post.images.length > 0) {
+    //             post.images = post.images.map((image) => ({
+    //                 ...image,
+    //                 url: `${
+    //                     Configuration.getConfiguration().YANDEX_S3_ENDPOINT
+    //                 }${image.url}`,
+    //             }))
+    //         }
+    //     })
+    //
+    //     if (posts.length === 0) {
+    //         return {
+    //             items: [],
+    //             usersCount: usersCount,
+    //         }
+    //     }
+    //
+    //     const mappedPosts: PostType[] = []
+    //     posts.forEach((post) => {
+    //         const tempPost: PostType = {
+    //             id: post.id,
+    //             createdAt: post.createdAt,
+    //             aboutMe: post.profile.aboutMe,
+    //             avatarId: post.profile.avatarId,
+    //             username: post.profile.user.userName,
+    //             description: post.description,
+    //             postImages: post.images,
+    //             //todo заглушка, т.к. не реализован функционал
+    //             comments: [],
+    //         }
+    //         mappedPosts.push(tempPost)
+    //     })
+    //     return {
+    //         items: mappedPosts,
+    //         usersCount: usersCount,
+    //     }
+    // }
+
+    async getPublicPosts(): Promise<ResultObject<PostViewModel> | null> {
         const LIMIT = 4
 
         const posts = await this.prisma.post.findMany({
@@ -191,17 +288,16 @@ export class PostQueryRepository implements IPostRepository {
             },
             where: {
                 deletedAt: null,
-                isDraft: false,
+                isDraft: true,
             },
             take: LIMIT,
-            skip: (page - 1) * LIMIT,
             include: {
                 profile: {
                     select: {
-                        aboutMe: true,
                         avatarId: true,
                         user: {
                             select: {
+                                id: true,
                                 userName: true,
                             },
                         },
@@ -211,8 +307,6 @@ export class PostQueryRepository implements IPostRepository {
                     select: {
                         id: true,
                         url: true,
-                        fileId: true,
-                        order: true,
                     },
                 },
             },
@@ -222,8 +316,7 @@ export class PostQueryRepository implements IPostRepository {
         posts.forEach((post) => {
             if (post.profile.avatarId) {
                 post.profile.avatarId = `${
-                    Configuration.getConfiguration()
-                        .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                    Configuration.getConfiguration().YANDEX_S3_ENDPOINT
                 }${post.profile.avatarId}`
             }
 
@@ -231,39 +324,37 @@ export class PostQueryRepository implements IPostRepository {
                 post.images = post.images.map((image) => ({
                     ...image,
                     url: `${
-                        Configuration.getConfiguration()
-                            .YANDEX_S3_ENDPOINT_WITH_BUCKET
+                        Configuration.getConfiguration().YANDEX_S3_ENDPOINT
                     }${image.url}`,
                 }))
             }
         })
 
-        const postsCount = await this.prisma.post.count({
+        const usersCount = await this.prisma.user.count({
             where: {
-                deletedAt: null,
-                isDraft: false,
+                isDeleted: false,
             },
         })
 
-        const pagesCount = Math.ceil(postsCount / LIMIT)
-
         if (posts.length === 0) {
             return {
-                items: [],
-                page: page,
-                pagesCount: 0,
+                data: { items: [], usersCount: usersCount },
+                resultCode: HttpStatus.OK,
+                message: 'posts',
+                field: 'posts',
             }
         }
 
-        const mappedPosts: PostType[] = []
+        const mappedPosts: PaginatorPostItems[] = []
         posts.forEach((post) => {
-            const tempPost: PostType = {
-                id: post.id,
-                createdAt: post.createdAt,
-                aboutMe: post.profile.aboutMe,
-                avatarId: post.profile.avatarId,
+            const tempPost: PaginatorPostItems = {
+                postId: post.id,
+                userId: post.profile.user.id,
                 username: post.profile.user.userName,
+                avatar_url: post.profile.avatarId,
                 description: post.description,
+                createdAt: post.createdAt.toISOString(),
+                updatedAt: post.updatedAt.toISOString(),
                 postImages: post.images,
                 //todo заглушка, т.к. не реализован функционал
                 comments: [],
@@ -271,9 +362,10 @@ export class PostQueryRepository implements IPostRepository {
             mappedPosts.push(tempPost)
         })
         return {
-            page: page,
-            pagesCount: pagesCount,
-            items: mappedPosts,
+            data: { items: mappedPosts, usersCount: usersCount },
+            resultCode: HttpStatus.OK,
+            message: 'posts',
+            field: 'posts',
         }
     }
 }

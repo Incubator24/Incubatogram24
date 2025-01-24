@@ -1,36 +1,47 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import {
-    ApiExtraModels,
     ApiOkResponse,
     ApiOperation,
-    ApiPropertyOptional,
+    ApiQuery,
     ApiTags,
+    ApiUnauthorizedResponse,
     getSchemaPath,
 } from '@nestjs/swagger'
-import { PaginatorDtoWithCountUsers, PostType } from '../../helpers/types/types'
+import {
+    PaginatorDto,
+    PaginatorPostItems,
+    PostType,
+} from '../../helpers/types/types'
 
-export function GetPostsPublicEndPoint() {
+export function GetPostsCurrentUserPublicEndpoint() {
     return applyDecorators(
-        ApiTags('posts'),
-        ApiOperation({ summary: 'Get public posts' }),
-        ApiPropertyOptional({
+        ApiTags('public-posts'),
+        ApiOperation({ summary: 'Get public posts current userId' }),
+        ApiQuery({
             name: 'page',
             type: String,
             description: 'Page number',
             example: '1',
+            required: false,
         }),
-        ApiExtraModels(PaginatorDtoWithCountUsers, PostType),
+        ApiOkResponse({
+            status: HttpStatus.OK,
+            type: PostType,
+            description: 'Posts was successfully found',
+        }),
         ApiOkResponse({
             status: HttpStatus.OK,
             description: 'Posts were successfully found',
             schema: {
                 allOf: [
-                    { $ref: getSchemaPath(PaginatorDtoWithCountUsers) },
+                    { $ref: getSchemaPath(PaginatorDto) },
                     {
                         properties: {
                             items: {
                                 type: 'array',
-                                items: { $ref: getSchemaPath(PostType) },
+                                items: {
+                                    $ref: getSchemaPath(PaginatorPostItems),
+                                },
                             },
                         },
                     },
